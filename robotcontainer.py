@@ -23,7 +23,7 @@ class RobotContainer:
         self._example_subsystem = controlled_motor.ControlledMotor()
         
         self.configureButtonBindings()
-
+        
     def configureButtonBindings(self) -> None:
         """
         Use this method to define your button->command mappings. Buttons can be created by

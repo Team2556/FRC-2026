@@ -10,8 +10,8 @@ class ControlledMotor(commands2.Subsystem):
         self._motor = phoenix6.hardware.TalonFX(22, "rio")
 
         self.cfg = phoenix6.configs.TalonFXConfiguration()
-        SmartDashboard.putNumber("Motor k_p", 1)
-        SmartDashboard.putNumber("Motor k_i", 0)
+        SmartDashboard.putNumber("Motor k_p", 0)
+        SmartDashboard.putNumber("Motor k_i", 5)
         SmartDashboard.putNumber("Motor k_d", 0)
 
         self.cfg.slot0.k_p = 0
