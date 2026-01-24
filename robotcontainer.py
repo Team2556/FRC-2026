@@ -4,10 +4,10 @@
 # the WPILib BSD license file in the root directory of this project.
 #
 
-from commands2 import button
+from _utils import custom_controller
 
-from subsystems import (controlled_motor)
-from commands import (spin_motor)
+from subsystems import (controlled_motor, limelight_camera, drivetrain)
+from commands import (spin_motor, auto_align, drive_commands)
 
 class RobotContainer:
     """
@@ -18,9 +18,11 @@ class RobotContainer:
     """
 
     def __init__(self) -> None:
-        self._controller = button.CommandXboxController(0)
+        self._controller_1 = custom_controller.XboxController(0).with_deadband(0.05).with_smoothing(.5)
         
-        self._example_subsystem = controlled_motor.ControlledMotor()
+        self._drivetrain = drivetrain.SwerveDriveTrain()
+        # self._example_subsystem = controlled_motor.ControlledMotor()
+        self._front_camera = limelight_camera.LimelightCamera('limelight')
         
         self.configureButtonBindings()
         
@@ -31,5 +33,11 @@ class RobotContainer:
         and then passing it to a JoystickButton.
         """
         
-        run_motor = spin_motor.SpinMotor(self._example_subsystem)
-        self._controller.b().whileTrue(run_motor)
+        # run_motor = spin_motor.SpinMotor(self._example_subsystem)
+        # self._controller.b().whileTrue(run_motor)
+        
+        auto_alignment = auto_align.StationaryAlign(self._front_camera)
+        self._front_camera.setDefaultCommand(auto_alignment)
+
+        drive_with_controller = drive_commands.ControllerDrive(self._drivetrain, self._controller_1)
+        self._drivetrain.setDefaultCommand(drive_with_controller)
