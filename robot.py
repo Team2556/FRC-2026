@@ -11,6 +11,8 @@ import typing
 
 from robotcontainer import RobotContainer
 
+from phoenix6 import SignalLogger
+
 
 class MyRobot(commands2.TimedCommandRobot):
     """
@@ -28,6 +30,7 @@ class MyRobot(commands2.TimedCommandRobot):
 
         # Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         # autonomous chooser on the dashboard.
+        SignalLogger.stop()
         self.container = RobotContainer()
 
     def robotPeriodic(self) -> None:

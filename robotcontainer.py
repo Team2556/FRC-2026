@@ -36,8 +36,12 @@ class RobotContainer:
         # run_motor = spin_motor.SpinMotor(self._example_subsystem)
         # self._controller.b().whileTrue(run_motor)
         
-        auto_alignment = auto_align.StationaryAlign(self._front_camera)
-        self._front_camera.setDefaultCommand(auto_alignment)
-
         drive_with_controller = drive_commands.ControllerDrive(self._drivetrain, self._controller_1)
         self._drivetrain.setDefaultCommand(drive_with_controller)
+        
+        reset_field_centric = drive_commands.ResetFieldCentric(self._drivetrain)
+        self._controller_1.rightBumper().onTrue(reset_field_centric)
+        
+        auto_alignment = auto_align.MobileAlign(self._front_camera, self._drivetrain, self._controller_1)
+        self._controller_1.a().whileTrue(auto_alignment)
+
