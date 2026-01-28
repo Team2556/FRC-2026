@@ -22,7 +22,7 @@ class RobotContainer:
         
         self._drivetrain = drivetrain.SwerveDriveTrain()
         # self._example_subsystem = controlled_motor.ControlledMotor()
-        self._front_camera = limelight_camera.LimelightCamera('limelight')
+        # self._front_camera = limelight_camera.LimelightCamera('limelight')
         
         self.configureButtonBindings()
         
@@ -42,6 +42,6 @@ class RobotContainer:
         reset_field_centric = drive_commands.ResetFieldCentric(self._drivetrain)
         self._controller_1.rightBumper().onTrue(reset_field_centric)
         
-        auto_alignment = auto_align.MobileAlign(self._front_camera, self._drivetrain, self._controller_1)
-        self._controller_1.a().whileTrue(auto_alignment)
+        # auto_alignment = auto_align.MobileAlign(self._front_camera, self._drivetrain, self._controller_1)
+        # self._controller_1.a().whileTrue(auto_alignment)
 

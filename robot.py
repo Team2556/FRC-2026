@@ -6,12 +6,15 @@
 #
 
 import wpilib
+from wpimath import units
 import commands2
 import typing
 
 from robotcontainer import RobotContainer
 
 from phoenix6 import SignalLogger
+
+from _utils import limelight_helpers
 
 
 class MyRobot(commands2.TimedCommandRobot):
@@ -45,6 +48,23 @@ class MyRobot(commands2.TimedCommandRobot):
         # and running subsystem periodic() methods.  This must be called from the robot's periodic
         # block in order for anything in the Command-based framework to work.
         commands2.CommandScheduler.getInstance().run()
+
+        omegaRPS = self.container._drivetrain._drivetrain.get_rotation3d
+        drive_state = self.container._drivetrain._drivetrain.get_state()
+        headingDeg = drive_state.pose.rotation().degrees()
+        omegaRPS = units.radiansToRotations(drive_state.speeds.omega)
+        llMeasurement = limelight_helpers.get_bot_pose_estimate(
+            "limelight", "botpose_orb_wpiblue", False
+        )
+        # print(llMeasurement)
+        if llMeasurement != None and llMeasurement.tagCount > 0 and abs(omegaRPS) < 2:
+            self.container._drivetrain._add_vision_measurements(
+                llMeasurement.pose, llMeasurement.timestampSeconds
+            )
+        wpilib.SmartDashboard.putNumber("LL Measurment X", drive_state.pose.X())
+        wpilib.SmartDashboard.putNumber("LL Measurment Y", drive_state.pose.Y())
+        
+        
 
     def disabledInit(self) -> None:
         """This function is called once each time the robot enters Disabled mode."""

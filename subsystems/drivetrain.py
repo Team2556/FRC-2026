@@ -67,3 +67,8 @@ class SwerveDriveTrain(commands2.Subsystem):
 
     def _stop(self):
         self.drive_with_values(velocity_x=0, velocity_y=0, rotation_rate=0)
+
+    def _add_vision_measurements(self, vision_robot_pose, timestamp):
+        self._drivetrain.add_vision_measurement(
+            vision_robot_pose=vision_robot_pose, timestamp=timestamp
+        )
