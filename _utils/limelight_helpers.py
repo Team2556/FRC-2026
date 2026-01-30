@@ -2,7 +2,6 @@ from wpimath.geometry import Pose2d, Translation2d, Rotation2d
 from wpimath import units
 from ntcore import DoubleArrayEntry, NetworkTableInstance, NetworkTable
 
-
 class PoseEstimate:
     def __init__(
         self,
@@ -131,3 +130,41 @@ def get_bot_pose_estimate(limelight_name: str, entry_name: str, is_megatag2: boo
         raw_fiducials,
         is_megatag2,
     )
+
+def set_robot_orientation(limelight_name, yaw, yaw_rate,
+                          pitch, pitch_rate,
+                          roll, roll_rate):
+    set_robot_orientation_internal(
+        limelight_name,
+        yaw, yaw_rate,
+        pitch, pitch_rate,
+        roll, roll_rate,
+        False
+    )
+
+def set_robot_orientation_internal(limelight_name, yaw, yaw_rate,
+                                   pitch, pitch_rate,
+                                   roll, roll_rate, flush):
+    entries = [
+        yaw,
+        yaw_rate,
+        pitch,
+        pitch_rate,
+        roll,
+        roll_rate
+    ]
+
+    set_limelight_nt_double_array(
+        limelight_name,
+        "robot_orientation_set",
+        entries
+    )
+
+    if flush:
+        flush()
+
+def set_limelight_nt_double_array(table_name, entry_name, val):
+    get_limelight_nt_table_entry(table_name, entry_name).setDoubleArray(val)
+
+def get_limelight_nt_table_entry(table_name, entry_name):
+    return get_limelight_nt_table(table_name).getEntry(entry_name)

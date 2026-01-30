@@ -53,18 +53,17 @@ class MyRobot(commands2.TimedCommandRobot):
         drive_state = self.container._drivetrain._drivetrain.get_state()
         headingDeg = drive_state.pose.rotation().degrees()
         omegaRPS = units.radiansToRotations(drive_state.speeds.omega)
+        
+        limelight_helpers.set_robot_orientation("limelight", headingDeg, 0, 0, 0, 0, 0)
+        
         llMeasurement = limelight_helpers.get_bot_pose_estimate(
-            "limelight", "botpose_orb_wpiblue", False
+            "limelight", "botpose_wpiblue", False
         )
         # print(llMeasurement)
         if llMeasurement != None and llMeasurement.tagCount > 0 and abs(omegaRPS) < 2:
             self.container._drivetrain._add_vision_measurements(
                 llMeasurement.pose, llMeasurement.timestampSeconds
             )
-        wpilib.SmartDashboard.putNumber("LL Measurment X", drive_state.pose.X())
-        wpilib.SmartDashboard.putNumber("LL Measurment Y", drive_state.pose.Y())
-        
-        
 
     def disabledInit(self) -> None:
         """This function is called once each time the robot enters Disabled mode."""
