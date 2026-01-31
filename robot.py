@@ -30,11 +30,15 @@ class MyRobot(commands2.TimedCommandRobot):
         This function is run when the robot is first started up and should be used for any
         initialization code.
         """
+        
+        self._field = wpilib.Field2d()
+        wpilib.SmartDashboard.putData("Field", self._field)
 
         # Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         # autonomous chooser on the dashboard.
         SignalLogger.stop()
         self.container = RobotContainer()
+        
 
     def robotPeriodic(self) -> None:
         """This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
@@ -64,6 +68,9 @@ class MyRobot(commands2.TimedCommandRobot):
             self.container._drivetrain._add_vision_measurements(
                 llMeasurement.pose, llMeasurement.timestampSeconds
             )
+        
+        # drive_state = self.container._drivetrain._drivetrain.get_state()
+        self._field.setRobotPose(drive_state.pose)
 
     def disabledInit(self) -> None:
         """This function is called once each time the robot enters Disabled mode."""

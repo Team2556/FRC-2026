@@ -9,6 +9,7 @@ from _utils import custom_controller
 from subsystems import controlled_motor, limelight_camera, drivetrain
 from commands import spin_motor, auto_align, drive_commands
 
+from wpilib import SmartDashboard
 
 class RobotContainer:
     """
@@ -20,12 +21,14 @@ class RobotContainer:
 
     def __init__(self) -> None:
         self._controller_1 = (
-            custom_controller.XboxController(0).with_deadband(0.05).with_smoothing(0.5)
+            custom_controller.XboxController(0).with_deadband(0.05).with_smoothing(1)
         )
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
         # self._example_subsystem = controlled_motor.ControlledMotor()
         # self._front_camera = limelight_camera.LimelightCamera('limelight')
+        
+        SmartDashboard.putData("Drivetrain", self._drivetrain)
 
         self.configureButtonBindings()
 

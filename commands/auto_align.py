@@ -1,16 +1,14 @@
 import commands2
-
 from wpilib import SmartDashboard
-
-from phoenix6 import swerve
+from wpimath.geometry import Translation2d
+import math
 
 from subsystems import limelight_camera, drivetrain
 
-from _utils import custom_controller
+from constants._configs import kShooter, kField
+from constants.tuners import kAutoAlign
 
-import math
-
-from wpimath.controller import PIDController
+from _utils import custom_controller, math_helpers
 
 
 class StationaryAlign(commands2.Command):
@@ -98,64 +96,67 @@ class MobileAlign(commands2.Command):
 
 
 class HubAlign(commands2.Command):
-    def __init__(self, drivetrain: drivetrain.SwerveDriveTrain, controller):
+    def __init__(
+        self,
+        drivetrain: drivetrain.SwerveDriveTrain,
+        controller: custom_controller.XboxController,
+    ):
         self._drivetrain = drivetrain
         self._controller = controller
 
-        self.shooter_offset_x = 0
-        self.shooter_offset_y = 0
-        self.shooter_direction = -90
+        self.shooter_offset = kShooter.SHOOTER_OFFSET
+        SmartDashboard.putNumber("Shooter/Offset/X", self.shooter_offset.x)
+        SmartDashboard.putNumber("Shooter/Offset/Y", self.shooter_offset.y)
 
-        self.hub_pos_x = 12
-        self.hub_pos_y = 4
+        self.shooter_direction = kShooter.SHOOTER_DIRECTION
+        self.shooter_direction_tuner = kAutoAlign.DIRECTION_TUNING
+        SmartDashboard.putNumber("Shooter/Direction/Tune", self.shooter_direction_tuner)
+        
+        self.hub_pos = kField.RED_HUB_POS  # Translation2d
 
-        self.rotation_PID = PIDController(4, 0, 0.1)
-        self.rotation_PID.enableContinuousInput(-1, 1)
-        
-        self.accuracy = 0
-        
+        # PID : PIDController(5.0 / 180.0, 0, 0.1)
+        self.rotation_PID = kAutoAlign.ROTATIONAL_PID
+        self.rotation_PID.enableContinuousInput(-180.0, 180.0)
+
         self.addRequirements(drivetrain)
 
-    def calculate_target_yaw(self):
-        robot_state = self._drivetrain._drivetrain.get_state()
-        robot_pos = robot_state.pose
-        robot_x = robot_pos.X()
-        robot_y = robot_pos.Y()
+    def calculate_target_yaw(self, robot_pose):
+        shooter_field_pos = robot_pose.translation() + self.shooter_offset.rotateBy(
+            robot_pose.rotation()
+        )
+        to_hub = self.hub_pos - shooter_field_pos
 
-        dx = self.hub_pos_x - robot_x
-        dy = self.hub_pos_y - robot_y
-
-        target_yaw_rad = math.atan2(dy, dx)
-        target_yaw_deg = math.degrees(target_yaw_rad)
-        # target_yaw_deg += self.shooter_offset_x
-
-        return target_yaw_deg
-
-    def clamp(self, value, min_value, max_value):
-        return max(min(value, max_value), min_value)
+        return math.degrees(math.atan2(to_hub.Y(), to_hub.X()))
 
     def execute(self):
+        self.shooter_offset = Translation2d(
+            SmartDashboard.getNumber("Shooter/Offset/Y", self.shooter_offset.y),
+            SmartDashboard.getNumber("Shooter/Offset/X", self.shooter_offset.x),
+        )
+        self.shooter_direction_tuner = SmartDashboard.getNumber("Shooter/Direction/Tune", self.shooter_direction_tuner)
+        SmartDashboard.putNumberArray('Shooter/Offset/Array', [
+            kShooter.SHOOTER_OFFSET.X(), kShooter.SHOOTER_OFFSET.Y()
+        ])
+
         robot_state = self._drivetrain._drivetrain.get_state()
-        robot_pos = robot_state.pose
+        robot_pose = robot_state.pose
 
-        robot_heading = float(robot_pos.rotation().degrees()) + self.shooter_direction
-        target_heading = self.calculate_target_yaw()
+        robot_heading = robot_pose.rotation().degrees()
+        target_heading = self.calculate_target_yaw(robot_pose) - self.shooter_direction - self.shooter_direction_tuner
 
-        d_heading = robot_heading - target_heading
-        normal_d_heading = d_heading / 180
-        
-        rotation_rate = self.rotation_PID.calculate(normal_d_heading, 0.0)
-        
-        SmartDashboard.putNumber("D HEading", d_heading)
-        SmartDashboard.putNumber("Rotation Rate to Hub", rotation_rate)
-        
-        if abs(d_heading) < self.accuracy:
-            rotation_rate = 0
-            
-        rotation_rate = self.clamp(rotation_rate, -1, 1)
-            
-        # rotation_rate = self.clamp(rotation_rate, -1, 1)
+        rotation_rate = self.rotation_PID.calculate(robot_heading, target_heading)
+
+        heading_error = self.rotation_PID.getError()
+
+        SmartDashboard.putNumber("HubAlign/TargetHeading", target_heading)
+        SmartDashboard.putNumber("HubAlign/RobotHeading", robot_heading)
+        SmartDashboard.putNumber("HubAlign/HeadingError", heading_error)
+        SmartDashboard.putNumber("HubAlign/RotationRate", rotation_rate)
+
+        rotation_rate = math_helpers.clamp(rotation_rate, -1.0, 1.0)
 
         self._drivetrain.drive_with_controller(
-            self._controller, rotation_rate=rotation_rate, velocity_mult = 0.5
+            self._controller,
+            rotation_rate=rotation_rate,
+            velocity_mult=kAutoAlign.ROBOT_VELOCITY_MULT,
         )
