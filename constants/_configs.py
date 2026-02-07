@@ -13,3 +13,7 @@ class kShooter:
 
 class kField:
     RED_HUB_POS = Translation2d(12.0, 4.0)
+
+class kLimelights:
+    FRONT = "limelight-front"
+    RIGHT = "limelight-right"

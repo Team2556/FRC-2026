@@ -6,10 +6,17 @@
 
 from _utils import custom_controller
 
-from subsystems import controlled_motor, limelight_camera, drivetrain
-from commands import spin_motor, auto_align, drive_commands
+from subsystems import controlled_motor, vision, drivetrain
+from commands import spin_motor, auto_align, drive_commands, vision_commands
+
+from commands2 import NotifierCommand
 
 from wpilib import SmartDashboard
+
+from pathplannerlib.auto import NamedCommands
+
+from constants._configs import kLimelights
+
 
 class RobotContainer:
     """
@@ -25,9 +32,10 @@ class RobotContainer:
         )
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
+        self._vision = vision.Vision(kLimelights.FRONT, kLimelights.RIGHT)
         # self._example_subsystem = controlled_motor.ControlledMotor()
         # self._front_camera = limelight_camera.LimelightCamera('limelight')
-        
+
         SmartDashboard.putData("Drivetrain", self._drivetrain)
 
         self.configureButtonBindings()
@@ -49,10 +57,16 @@ class RobotContainer:
 
         reset_field_centric = drive_commands.ResetFieldCentric(self._drivetrain)
         self._controller_1.rightBumper().onTrue(reset_field_centric)
-        
+
         auto_alignment = auto_align.HubAlign(self._drivetrain, self._controller_1)
         self._controller_1.rightTrigger().whileTrue(auto_alignment)
 
         self._drivetrain._drivetrain.register_telemetry(
             lambda state: self._drivetrain._logger.telemeterize(state)
         )
+
+        self._vision.setDefaultCommand(
+            vision_commands.LimelightOdometry(self._vision, self._drivetrain)
+        )
+
+        NamedCommands.registerCommand("Auto Align", auto_alignment)
