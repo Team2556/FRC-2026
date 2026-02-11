@@ -42,3 +42,4 @@ class Vision(commands2.Subsystem):
             limelight_name, entry_name, use_megatag2
         )
         return limelight_measurement
+

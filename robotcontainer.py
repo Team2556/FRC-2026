@@ -6,14 +6,17 @@
 
 from _utils import custom_controller
 
-from subsystems import controlled_motor, vision, drivetrain
+from subsystems import controlled_motor, drivetrain
 from commands import spin_motor, auto_align, drive_commands, vision_commands
 
 from commands2 import NotifierCommand
 
 from wpilib import SmartDashboard
 
-from pathplannerlib.auto import NamedCommands
+# from pathplannerlib.auto import NamedCommands
+
+from subsystems.vision.visionsubsystem import VisionSubsystem
+from subsystems.vision.visioniolimelight import VisionSubsystemIOLimelight
 
 from constants._configs import kLimelights
 
@@ -32,7 +35,15 @@ class RobotContainer:
         )
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
-        self._vision = vision.Vision(kLimelights.FRONT, kLimelights.RIGHT)
+
+        self._vision = VisionSubsystem(
+            self._drivetrain._add_vision_measurements,
+            [
+                VisionSubsystemIOLimelight(
+                    kLimelights.FRONT, _, self._drivetrain.get_robot_rotation
+                )
+            ],
+        )
         # self._example_subsystem = controlled_motor.ControlledMotor()
         # self._front_camera = limelight_camera.LimelightCamera('limelight')
 
@@ -54,9 +65,6 @@ class RobotContainer:
             self._drivetrain, self._controller_1
         )
         self._drivetrain.setDefaultCommand(drive_with_controller)
-
-        reset_field_centric = drive_commands.ResetFieldCentric(self._drivetrain)
-        self._controller_1.rightBumper().onTrue(reset_field_centric)
 
         auto_alignment = auto_align.HubAlign(self._drivetrain, self._controller_1)
         self._controller_1.rightTrigger().whileTrue(auto_alignment)

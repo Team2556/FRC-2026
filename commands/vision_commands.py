@@ -2,13 +2,13 @@ import commands2
 
 from constants.tuners import kVisionOdometry
 
-from subsystems import vision, drivetrain
+from subsystems import old_vision, drivetrain
 
 
 class LimelightOdometry(commands2.Command):
     def __init__(
         self,
-        vision_subsystem: vision.Vision,
+        vision_subsystem: old_vision.Vision,
         drivetrain_subsystem: drivetrain.SwerveDriveTrain,
     ):
         self._vision = vision_subsystem

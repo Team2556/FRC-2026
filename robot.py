@@ -30,15 +30,10 @@ class MyRobot(commands2.TimedCommandRobot):
         This function is run when the robot is first started up and should be used for any
         initialization code.
         """
-        
-        self._field = wpilib.Field2d()
-        wpilib.SmartDashboard.putData("Field", self._field)
 
         # Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         # autonomous chooser on the dashboard.
-        SignalLogger.stop()
         self.container = RobotContainer()
-        
 
     def robotPeriodic(self) -> None:
         """This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
@@ -52,25 +47,6 @@ class MyRobot(commands2.TimedCommandRobot):
         # and running subsystem periodic() methods.  This must be called from the robot's periodic
         # block in order for anything in the Command-based framework to work.
         commands2.CommandScheduler.getInstance().run()
-
-        # omegaRPS = self.container._drivetrain._drivetrain.get_rotation3d
-        drive_state = self.container._drivetrain._drivetrain.get_state()
-        # headingDeg = drive_state.pose.rotation().degrees()
-        # omegaRPS = units.radiansToRotations(drive_state.speeds.omega)
-        
-        # limelight_helpers.set_robot_orientation("limelight", headingDeg, 0, 0, 0, 0, 0)
-        
-        # llMeasurement = limelight_helpers.get_bot_pose_estimate(
-        #     "limelight", "botpose_wpiblue", False
-        # )
-        # # print(llMeasurement)
-        # if llMeasurement != None and llMeasurement.tagCount > 0 and abs(omegaRPS) < 2:
-        #     self.container._drivetrain._add_vision_measurements(
-        #         llMeasurement.pose, llMeasurement.timestampSeconds
-        #     )
-        
-        # drive_state = self.container._drivetrain._drivetrain.get_state()
-        self._field.setRobotPose(drive_state.pose)
 
     def disabledInit(self) -> None:
         """This function is called once each time the robot enters Disabled mode."""
