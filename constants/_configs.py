@@ -7,8 +7,8 @@ from wpimath.geometry import Translation2d
 
 
 class kShooter:
-    SHOOTER_OFFSET = Translation2d(0.0, 0.0)  # Meters
-    SHOOTER_DIRECTION = -90.0
+    SHOOTER_OFFSET = Translation2d(-0.029566, -0.212725)  # Meters
+    SHOOTER_DIRECTION = 0
 
 
 class kField:

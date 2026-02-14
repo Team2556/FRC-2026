@@ -26,7 +26,8 @@ requires = [
     # "photonlibpy",
     # "robotpy-ctre",  # Phoenix 5
     # "robotpy-navx",
-    # "robotpy-pathplannerlib",
+    "robotpy-pathplannerlib",
     # "robotpy-playingwithfusion",
     # "robotpy-rev",
+    "robotpy-apriltag",
 ]

@@ -1,6 +1,6 @@
 import commands2
 
-from subsystems import drivetrain
+from subsystems.drivetrain import drivetrain
 
 
 class ControllerDrive(commands2.Command):

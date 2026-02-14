@@ -7,7 +7,7 @@ from wpilib import DriverStation, Notifier, RobotController
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.geometry import Pose2d, Rotation2d
 
-from constants.swerve_tuner import TunerSwerveDrivetrain
+from subsystems.drivetrain.swerve_tuner import TunerSwerveDrivetrain
 
 
 class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
