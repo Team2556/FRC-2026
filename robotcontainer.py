@@ -47,16 +47,16 @@ class RobotContainer:
         # )
 
         self.spindex_motor = controlled_motor.ControlledTalonMotor(
-            "Spindex", 27, 0.1, 0.05, 0, -20
+            "Spindex", 27, 0.1, 5.0, 0, 100
         )
         self.transfer_motor1 = controlled_motor.ControlledTalonMotor(
-            "Transfer 1", 20, 0, 5, 0, -50
+            "Transfer 1", 20, 0.1, 5, 0, -100
         )
         self.transfer_motor2 = controlled_motor.ControlledTalonMotor(
-            "Transfer 2", 21, 0, 5, 0, -50
+            "Transfer 2", 21, 0.1, 5, 0, -100
         )
         self.shooter_motor = controlled_motor.ControlledTalonMotor(
-            "Shooter", 24, 0.1, 0.15, 0, -50
+            "Shooter", 24, 0.1, 0.15, 0, -37.000000
         )
 
         self.configureButtonBindings()
@@ -65,32 +65,6 @@ class RobotContainer:
         self._drivetrain.setDefaultCommand(
             drive_commands.ControllerDrive(self._drivetrain, self._controller_1)
         )
-
-        # run_spindex_command = spin_motor.SpinMotor(self.spindex_motor)
-        # run_transfer_command = ParallelCommandGroup(
-        #     spin_motor.SpinMotor(self.transfer_motor1),
-        #     spin_motor.SpinMotor(self.transfer_motor2),
-        # )
-        # run_shooter_command = spin_motor.SpinMotor(self.shooter_motor)
-
-        # self._controller_1.rightTrigger().whileTrue(
-        #     ParallelCommandGroup(run_transfer_command, run_spindex_command)
-        # )
-        # self._controller_1.rightBumper().whileTrue(run_spindex_command)
-        # self._controller_1.leftTrigger().whileTrue(run_shooter_command)
-
-        # auto_align_drive = auto_align.HubAlign(self._drivetrain, self._controller_1)
-        # self._controller_1.b().whileTrue(
-        #     ParallelCommandGroup(auto_align_drive, run_shooter_command)
-        # )
-        
-        run_spindex_command = spin_motor.SpinMotor(self.spindex_motor)
-        run_transfer_command = ParallelCommandGroup(
-            spin_motor.SpinMotor(self.transfer_motor1),
-            spin_motor.SpinMotor(self.transfer_motor2),
-            spin_motor.SpinMotor(self.spindex_motor)
-        )
-        run_shooter_command = spin_motor.SpinMotor(self.shooter_motor)
 
         self._controller_1.rightTrigger().whileTrue(
             ParallelCommandGroup(
@@ -103,7 +77,7 @@ class RobotContainer:
         self._controller_1.rightBumper().whileTrue(
             spin_motor.SpinMotor(self.spindex_motor)
         )
-        
+
         self._controller_1.leftTrigger().whileTrue(
             spin_motor.SpinMotor(self.shooter_motor)
         )
