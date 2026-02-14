@@ -1,18 +1,12 @@
 from typing import Callable, List
 from commands2 import Subsystem
 
-from subsystems.vision.visionio import VisionSubsystemIO
+from subsystems.vision.visionio import VisionSubsystemIO, VisionObservation
 
 from constants.vision import (
-    kApriltagFieldLayout,
-    kMaxVisionZError,
-    kMaxVisionAmbiguity,
-    kXyStdDevCoeff,
-    kThetaStdDevCoeff,
+    kAprilTag,
+    kOdometry,
 )
-
-from _utils.math_helpers import pose3dFromTransform3d
-from _utils.robotposeestimator import VisionObservation
 
 
 class VisionSubsystem(Subsystem):
@@ -50,7 +44,7 @@ class VisionSubsystem(Subsystem):
             turretedTransformsRejected = []
 
             for tagId in camera.tagIds:
-                tagPose = kApriltagFieldLayout.getTagPose(tagId)
+                tagPose = kAprilTag.FIELD_LAYOUT.getTagPose(tagId)
                 if tagPose is not None:
                     tagPoses.append(tagPose)
 
@@ -59,13 +53,13 @@ class VisionSubsystem(Subsystem):
                     observation.tagCount == 0
                     or (
                         observation.tagCount == 1
-                        and observation.ambiguity > kMaxVisionAmbiguity
+                        and observation.ambiguity > kOdometry.MAX_VISION_AMBIGUITY
                     )
-                    or abs(observation.pose.Z()) > kMaxVisionZError
+                    or abs(observation.pose.Z()) > kOdometry.MAX_VISION_Z_ERROR
                     or observation.pose.X() < 0.0
-                    or observation.pose.X() > kApriltagFieldLayout.getFieldLength()
+                    or observation.pose.X() > kAprilTag.FIELD_LAYOUT.getFieldLength()
                     or observation.pose.Y() < 0.0
-                    or observation.pose.Y() > kApriltagFieldLayout.getFieldWidth()
+                    or observation.pose.Y() > kAprilTag.FIELD_LAYOUT.getFieldWidth()
                 )
 
                 robotPoses.append(observation.pose)
@@ -80,10 +74,8 @@ class VisionSubsystem(Subsystem):
                 stdDevFactor = (
                     pow(observation.averageTagDistance, 2.0) / observation.tagCount
                 )
-                linearStdDev = kXyStdDevCoeff * stdDevFactor
-                angularStdDev = kThetaStdDevCoeff * stdDevFactor
-
-                # here you can also factor in per-camera weighting
+                linearStdDev = kOdometry.XY_SD_COEFF * stdDevFactor
+                angularStdDev = kOdometry.THETA_SD_COEFF * stdDevFactor
 
                 self.consumer(
                     VisionObservation(
@@ -92,7 +84,7 @@ class VisionSubsystem(Subsystem):
                         [linearStdDev, linearStdDev, angularStdDev],
                     )
                 )
-        
+
             allTagPoses.extend(tagPoses)
             allRobotPoses.extend(robotPoses)
             allRobotPosesAccepted.extend(robotPosesAccepted)

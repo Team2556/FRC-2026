@@ -3,9 +3,11 @@ import commands2
 from subsystems import controlled_motor
 
 class SpinMotor(commands2.Command):
-    def __init__(self, subsystem: controlled_motor.ControlledMotor):
+    def __init__(self, subsystem: controlled_motor.ControlledTalonMotor):
         super().__init__()
         self._subsystem = subsystem
+        
+        self.addRequirements(subsystem)
         
     def initialize(self):
         # This function is called when the command is first scheduled.

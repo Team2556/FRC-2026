@@ -3,9 +3,9 @@ from wpimath import units
 
 from phoenix6.swerve.swerve_drivetrain import SwerveDrivetrain
 
-from constants.tuners import kVisionOdometry
+from constants.vision import kOdometry
 
-from _utils import limelight_helpers
+from util import limelight_helpers
 
 
 class Vision(commands2.Subsystem):
@@ -27,7 +27,7 @@ class Vision(commands2.Subsystem):
 
         headingDeg = drive_state.pose.rotation().degrees()
         omegaRPS = units.radiansToRotations(drive_state.speeds.omega)
-        if kVisionOdometry.MAX_RPS < abs(omegaRPS):
+        if kOdometry.MAX_RPS < abs(omegaRPS):
             return None
 
         if use_megatag2:
@@ -42,4 +42,3 @@ class Vision(commands2.Subsystem):
             limelight_name, entry_name, use_megatag2
         )
         return limelight_measurement
-

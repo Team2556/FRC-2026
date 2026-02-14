@@ -1,5 +1,5 @@
-from constants.swerve_tuner import TunerConstants
-from _utils.telemetry import Telemetry
+from subsystems.drivetrain.swerve_tuner import TunerConstants
+from subsystems.drivetrain.telemetry import Telemetry
 from subsystems.vision.visionsubsystem import VisionObservation
 from phoenix6.swerve.swerve_drivetrain import SwerveDrivetrain
 import commands2
@@ -42,9 +42,13 @@ class SwerveDriveTrain(commands2.Subsystem):
 
         self._field = wpilib.Field2d()
         wpilib.SmartDashboard.putData("Field", self._field)
-        
+
         self.odoStdDevs = (0.1, 0.1, 0.1)
-        
+
+        self._drivetrain.register_telemetry(
+            lambda state: self._logger.telemeterize(state)
+        )
+
     def add_odometry_measurement(self, timestamp, pose: Pose2d):
         self.poseBuffer.addSample(timestamp, pose)
 
@@ -135,14 +139,14 @@ class SwerveDriveTrain(commands2.Subsystem):
         self._drivetrain.add_vision_measurement(
             vision_robot_pose=estimatedPose, timestamp=measurement.timestamp
         )
-
+    
     def get_robot_state(self) -> SwerveDrivetrain.SwerveDriveState:
         return self._drivetrain.get_state()
 
     def get_robot_pose(self) -> Pose2d:
         robot_state = self.get_robot_state()
         return robot_state.pose
-    
+
     def get_robot_rotation(self) -> Rotation2d:
         return self.get_robot_pose().rotation()
 
