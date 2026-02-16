@@ -25,7 +25,11 @@ class ControlledTalonMotor(commands2.Subsystem):
         self._RPS = target_rpm / 60
 
         self.enable_smartdashboard = enable_smartdashboard
+        
         if self.enable_smartdashboard:
+            SmartDashboard.putNumber(f"{self.name} k_p", self.cfg.slot0.k_p)
+            SmartDashboard.putNumber(f"{self.name} k_i", self.cfg.slot0.k_i)
+            SmartDashboard.putNumber(f"{self.name} k_d", self.cfg.slot0.k_d)
             SmartDashboard.putNumber(f"{self.name} Target RPM", target_rpm)
             SmartDashboard.putBoolean(f"{self.name} Working", False)
 

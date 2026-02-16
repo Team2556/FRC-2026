@@ -52,25 +52,37 @@ class HubAlign(commands2.Command):
 
         robot_state = self._drivetrain._drivetrain.get_state()
         robot_pose = robot_state.pose
-        robot_velocity = robot_state.speeds
-
-        distance_to_hub = self.hub_pos.distance(robot_pose.translation())
-        distance_mult = distance_to_hub * self.correction_mult
-        distance_mult = math_helpers.clamp(distance_mult, 0, 0.25)
-
-        estimate_pos_change = (
-            Translation2d(robot_velocity.vx, robot_velocity.vy) * distance_mult
-        )
-        robot_pose += estimate_pos_change
-
         robot_rotation = robot_pose.rotation()
         robot_heading = robot_rotation.degrees()
+        robot_velocity = robot_state.speeds
+
+
+        distance_mult = self.correction_mult
+        estimate_pos_change = Translation2d(
+            robot_velocity.vx * distance_mult, robot_velocity.vy * distance_mult
+        )
+        
+        SmartDashboard.putNumber("Pose change x", estimate_pos_change.x)
+        SmartDashboard.putNumber("Pose change y", estimate_pos_change.y)
+        estimated_pos = robot_pose.transformBy(Transform2d(estimate_pos_change, Rotation2d()))
+        
+        SmartDashboard.putNumber("estimated_pos x", estimated_pos.y),
+        SmartDashboard.putNumber("estimated_pos y", estimated_pos.x),
+
         shooter_offset = self.shooter_offset.rotateBy(robot_rotation)
+        SmartDashboard.putNumber("Shooter Offset With Rotation Y", shooter_offset.y),
+        SmartDashboard.putNumber("Shooter Offset With Rotation X", shooter_offset.x),
 
         shooter_transform = Transform2d(shooter_offset, Rotation2d())
-        robot_pose += shooter_transform
+        shooter_pose = estimated_pos.transformBy(shooter_transform)
 
-        target_heading = self.calculate_target_yaw(robot_pose) - self.shooter_direction
+        target_heading = self.calculate_target_yaw(shooter_pose) - self.shooter_direction
+        
+        SmartDashboard.getNumber("Shoot Heading X", shooter_pose.x),
+        SmartDashboard.getNumber("Shoot Heading Y", shooter_pose.y),
+        
+        distance_to_hub = self.hub_pos.distance(shooter_pose.translation())
+        SmartDashboard.putNumber("Distance to Hub", distance_to_hub)
 
         rotation_rate = self.rotation_PID.calculate(robot_heading, target_heading)
         rotation_rate = math_helpers.clamp(rotation_rate, -1.0, 1.0)
