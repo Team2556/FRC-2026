@@ -77,16 +77,11 @@ class SwerveDriveTrain(commands2.Subsystem):
         )
 
     def drive_with_values(self, velocity_x=0, velocity_y=0, rotation_rate=0):
+        # This version of drive_with_values is the better version (if you're merging right now)
         self._drivetrain.set_control(
-            self._drive.with_velocity_x(
-                -velocity_x * self._max_speed
-            )  # Drive forward with negative Y (forward)
-            .with_velocity_y(
-                -velocity_y * self._max_speed
-            )  # Drive left with negative X (left)
-            .with_rotational_rate(
-                -rotation_rate * self._max_angular_rate
-            )  # Drive counterclockwise with negative X (left)
+            self._drive.with_velocity_x(velocity_x)
+            .with_velocity_y(velocity_y)
+            .with_rotational_rate(rotation_rate)
         )
 
     def _stop(self):

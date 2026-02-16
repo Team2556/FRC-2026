@@ -7,6 +7,7 @@
 from util.custom_controller import XboxController
 
 from commands import auto_align, drive_commands, spin_motor, vision_odometry
+from commands.path_commands import go_back_with_path
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
@@ -20,11 +21,10 @@ from subsystems.controlled_motor import ControlledTalonMotor
 
 from commands2 import button, ParallelCommandGroup
 
-
 class RobotContainer:
     def __init__(self) -> None:
         self._controller_1 = (
-            XboxController(port=0).with_deadband(0.05).with_smoothing(1)
+            XboxController(port=0).with_deadband(0.05).with_smoothing(0.1)
         )
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
@@ -88,6 +88,10 @@ class RobotContainer:
 
         self.mono_vision.setDefaultCommand(
             vision_odometry.UpdateOdometry(self.mono_vision, self._drivetrain)
+        )
+        
+        self._controller_1.x().whileTrue(
+            go_back_with_path.GoBackWithPath(self._drivetrain)
         )
 
     def getAutonomousCommand(self):
