@@ -1,6 +1,5 @@
 from subsystems.drivetrain.swerve_tuner import TunerConstants
 from subsystems.drivetrain.telemetry import Telemetry
-from subsystems.vision.visionsubsystem import VisionObservation
 from phoenix6.swerve.swerve_drivetrain import SwerveDrivetrain
 import commands2
 from wpimath.units import rotationsToRadians
@@ -93,52 +92,52 @@ class SwerveDriveTrain(commands2.Subsystem):
     def _stop(self):
         self.drive_with_values(velocity_x=0, velocity_y=0, rotation_rate=0)
 
-    def _add_vision_measurements(self, measurement: VisionObservation):
-        if self.poseBuffer.getInternalBuffer()[-1][0] - 2.0 > measurement.timestamp:
-            return
+    # def _add_vision_measurements(self, measurement: VisionObservation):
+    #     if self.poseBuffer.getInternalBuffer()[-1][0] - 2.0 > measurement.timestamp:
+    #         return
 
-        sample = self.poseBuffer.sample(measurement.timestamp)
-        if sample is None:
-            return
+    #     sample = self.poseBuffer.sample(measurement.timestamp)
+    #     if sample is None:
+    #         return
 
-        odometry_pose = self.get_robot_pose()
+    #     odometry_pose = self.get_robot_pose()
 
-        sampleToOdometryTransform = Transform2d(sample, odometry_pose)
-        odometryToSampleTransform = Transform2d(odometry_pose, sample)
+    #     sampleToOdometryTransform = Transform2d(sample, odometry_pose)
+    #     odometryToSampleTransform = Transform2d(odometry_pose, sample)
 
-        estimateAtTime = odometry_pose + odometryToSampleTransform
+    #     estimateAtTime = odometry_pose + odometryToSampleTransform
 
-        # new vision matrix
-        r = [i * i for i in measurement.std]
+    #     # new vision matrix
+    #     r = [i * i for i in measurement.std]
 
-        # Solve for closed form Kalman gain for continuous Kalman filter with A = 0
-        # and C = I. See wpimath/algorithms.md.
-        visionK = [0.0, 0.0, 0.0]
+    #     # Solve for closed form Kalman gain for continuous Kalman filter with A = 0
+    #     # and C = I. See wpimath/algorithms.md.
+    #     visionK = [0.0, 0.0, 0.0]
 
-        for i in range(3):
-            stdDev = self.odoStdDevs[i]
-            if stdDev == 0.0:
-                visionK[i] = 0.0
-            else:
-                visionK[i] = stdDev / (stdDev + sqrt(stdDev * r[i]))
+    #     for i in range(3):
+    #         stdDev = self.odoStdDevs[i]
+    #         if stdDev == 0.0:
+    #             visionK[i] = 0.0
+    #         else:
+    #             visionK[i] = stdDev / (stdDev + sqrt(stdDev * r[i]))
 
-        transform = Transform2d(estimateAtTime, measurement.visionPose)
-        kTimesTransform = [
-            visionK[i] * k
-            for i, k in enumerate(
-                [transform.X(), transform.Y(), transform.rotation().radians()]
-            )
-        ]
+    #     transform = Transform2d(estimateAtTime, measurement.visionPose)
+    #     kTimesTransform = [
+    #         visionK[i] * k
+    #         for i, k in enumerate(
+    #             [transform.X(), transform.Y(), transform.rotation().radians()]
+    #         )
+    #     ]
 
-        scaledTransform = Transform2d(
-            kTimesTransform[0], kTimesTransform[1], kTimesTransform[2]
-        )
+    #     scaledTransform = Transform2d(
+    #         kTimesTransform[0], kTimesTransform[1], kTimesTransform[2]
+    #     )
 
-        estimatedPose = estimateAtTime + scaledTransform + sampleToOdometryTransform
+    #     estimatedPose = estimateAtTime + scaledTransform + sampleToOdometryTransform
 
-        self._drivetrain.add_vision_measurement(
-            vision_robot_pose=estimatedPose, timestamp=measurement.timestamp
-        )
+    #     self._drivetrain.add_vision_measurement(
+    #         vision_robot_pose=estimatedPose, timestamp=measurement.timestamp
+    #     )
     
     def get_robot_state(self) -> SwerveDrivetrain.SwerveDriveState:
         return self._drivetrain.get_state()

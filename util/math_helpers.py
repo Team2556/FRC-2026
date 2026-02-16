@@ -132,3 +132,7 @@ def pointInRectangle(
 
 def pointInCircle(p1: Translation2d, c: Translation2d, r: float) -> bool:
     return (p1 - c).norm() <= r
+
+
+def distanceFromPose2dtoPose2d(pose1: Pose2d, pose2: Pose2d) -> float:
+    return pose1.translation().distance(pose2.translation())
