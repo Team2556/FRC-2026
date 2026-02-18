@@ -6,11 +6,12 @@
 
 from util.custom_controller import XboxController
 
-from commands import auto_align, drive_commands, spin_motor, vision_odometry
+from commands import auto_align, drive_commands, spin_motor, vision_odometry, intake_commands
 from commands.path_commands import go_back_with_path
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
+from constants.intake import kIntakeDeployer, kIntakeSpinner
 
 # from pathplannerlib.auto import NamedCommands
 
@@ -18,6 +19,8 @@ from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
 
 from subsystems.controlled_motor import ControlledTalonMotor
+
+from subsystems.intake import IntakeSubsystem
 
 from commands2 import button, ParallelCommandGroup
 
@@ -51,6 +54,8 @@ class RobotContainer:
             kTrasnfer.motor_2.TARGET_RPM,
             enable_smartdashboard=True,
         )
+        
+        self.intake_subsystem = IntakeSubsystem()
 
         # self.shooter_motor = ControlledTalonMotor(
         #     "Shooter", 24, 0.1, 0.15, 0, -37.000000, enable_smartdashboard=True
@@ -74,11 +79,7 @@ class RobotContainer:
         self._controller_1.rightBumper().whileTrue(
             spin_motor.SpinMotor(self.spindex_motor)
         )
-
-        # self._controller_1.leftTrigger().whileTrue(
-        #     spin_motor.SpinMotor(self.shooter_motor)
-        # )
-
+        
         self._controller_1.b().whileTrue(
             ParallelCommandGroup(
                 auto_align.HubAlign(self._drivetrain, self._controller_1),
@@ -92,6 +93,10 @@ class RobotContainer:
         
         self._controller_1.x().whileTrue(
             go_back_with_path.GoBackWithPath(self._drivetrain)
+        )
+        
+        self._controller_1.y().whileTrue(
+            intake_commands.IntakeCommand(self.intake_subsystem)
         )
 
     def getAutonomousCommand(self):

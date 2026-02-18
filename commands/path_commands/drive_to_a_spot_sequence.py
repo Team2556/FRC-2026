@@ -6,7 +6,7 @@ from wpilib import Timer
 from constants import key_poses
 
 class DriveToASpotSequence(commands2.SequentialCommandGroup):
-    def __init__(self, *commands: DriveToASpot, smoothing_radius = 0.6, smoothing_time = 0.2) -> None:
+    def __init__(self, *commands: DriveToASpot, smoothing_radius = 0.4, smoothing_time = 0.2) -> None:
         """
         Sequential command group specialized for DriveToASpot commands that have cool things like 
         pose smoothing and flipping the whole thing
@@ -26,8 +26,7 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         for command in self._commands:
             command.max_speed = key_poses.kPath.general_path_speed
             if command == self._commands[-1] or self.smoothing_radius == 0: break
-            command.end_tolerance = 0
-            command.slow_distance = 0
+            command = command.with_sequence_pose_values()
     
     def initialize(self):
         super().initialize()

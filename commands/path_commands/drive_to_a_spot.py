@@ -212,10 +212,18 @@ class DriveToASpot(commands2.Command):
     def with_slow_distance(self, value): self.slow_distance = value; return self
     
     def with_precise_values(self):
-        self.max_speed = 1.0, 
-        self.max_rps = 0.5, 
-        self.end_tolerance = 0.03,
-        self.end_rotation_tolerance = 0.02,
-        self.goal_end_velocity = 0.,
+        self.max_speed = 1.0
+        self.max_rps = 0.5
+        self.end_tolerance = 0.03
+        self.end_rotation_tolerance = 0.02
+        self.goal_end_velocity = 0.0
+        self.slow_distance = 1.0
+        return self
+
+    def with_sequence_pose_values(self):
+        self.max_rps = 0.5
+        self.end_tolerance = 0.0
+        self.end_rotation_tolerance = 0.0
+        self.goal_end_velocity = self.max_speed * 0.5
         self.slow_distance = 1.0
         return self
