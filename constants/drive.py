@@ -1,4 +1,5 @@
 from wpimath.controller import PIDController
+from wpimath.units import rotationsToDegrees
 
 
 class kAutoAlign:
@@ -7,3 +8,8 @@ class kAutoAlign:
     SHOOTER_ACCURACY = 2
     ROBOT_VELOCITY_MULT = 0.5
     CORRECTION_MULT = 0.1
+
+class kDriveConfig:
+    MAX_SPEED = 1.0
+    '''Speed at 12v'''
+    MAX_ANGULAR_RATE = rotationsToDegrees(0.75)

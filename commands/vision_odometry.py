@@ -15,7 +15,7 @@ class UpdateOdometry(commands2.Command):
         self.addRequirements(vision)
 
     def execute(self):
-        drive_state = self._drivetrain.get_robot_state()
+        drive_state = self._drivetrain.get_state().robot_state
         ll_measurement = self._vision.get_vision_odometry(drive_state, False)
         if ll_measurement != None:
             self._drivetrain._drivetrain.add_vision_measurement(

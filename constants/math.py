@@ -1,43 +1,30 @@
 import math
 
-# Basic units
-kInchesPerFoot = 12
-"""inches / foot"""
 
-kCentimetersPerInch = 2.54
-"""centimeters / inch"""
-
-kCentimetersPerMeter = 100
-"""centimeters / meter"""
-
-kMetersPerInch = kCentimetersPerInch / kCentimetersPerMeter
-"""meters / inch"""
-
-kMetersPerFoot = kMetersPerInch * kInchesPerFoot
-"""meters / foot"""
-
-kRadiansPerRevolution = 2 * math.pi
-"""radians / revolution"""
-
-kDegeersPerRevolution = 360
-"""degrees / revolution"""
-
-kRadiansPerDegree = kRadiansPerRevolution / kDegeersPerRevolution
-"""radians / degree"""
-
-kMillisecondsPerSecond = 1000 / 1
-"""milliseconds / second"""
-
-kSecondsPerMinute = 60 / 1
-"""seconds / minute"""
-
-k100MillisecondsPerSecond = 10 / 1
-
-kRPMPerAngularVelocity = (1 / kRadiansPerRevolution) * kSecondsPerMinute
-"""RPM / (radians / second)"""
-
-kGravity = 9.802  # new york gravity
-"""m / s / s"""
-
-kKilogramToLbs = 0.454
-"""kg/lb"""
+class kMath:
+    INCH_FT = 12
+    """inches / foot"""
+    CM_INCH = 2.54
+    """centimeters / inch"""
+    CM_M = 100
+    """centimeters / meter"""
+    M_INCH = CM_INCH / CM_M
+    """meters / inch"""
+    M_FT = M_INCH * INCH_FT
+    """meters / foot"""
+    RAD_REV = 2 * math.pi
+    """radians / revolution"""
+    DEG_REV = 360
+    """degrees / revolution"""
+    RAD_DEG = RAD_REV / DEG_REV
+    """radians / degree"""
+    mS_S = 1000 / 1
+    """milliseconds / second"""
+    S_MIN = 60 / 1
+    """seconds / minute"""
+    RPM_ANGULARVEL = (1 / RAD_REV) * S_MIN
+    """RPM / (radians / second)"""
+    GRAVITY = 9.802
+    """m / s / s"""
+    KG_LB = 0.454
+    """kg/lb"""
