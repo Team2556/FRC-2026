@@ -24,7 +24,7 @@ class SwerveDriveTrain(commands2.Subsystem):
 
         # Setting up bindings for necessary control of the swerve drive platform
         self._drive = (
-            swerve.requests.FieldCentric().with_deadband(self._max_speed * 0.1)
+            swerve.requests.FieldCentric()# NO CHASE DONT DO THIS .with_deadband(self._max_speed * 0.1)
             # .with_rotational_deadband(
             #     self._max_angular_rate * 0.1
             # )  # Add a 10% deadband
@@ -77,16 +77,11 @@ class SwerveDriveTrain(commands2.Subsystem):
         )
 
     def drive_with_values(self, velocity_x=0, velocity_y=0, rotation_rate=0):
+        # This version of drive_with_values is the better version (if you're merging right now)
         self._drivetrain.set_control(
-            self._drive.with_velocity_x(
-                -velocity_x * self._max_speed
-            )  # Drive forward with negative Y (forward)
-            .with_velocity_y(
-                -velocity_y * self._max_speed
-            )  # Drive left with negative X (left)
-            .with_rotational_rate(
-                -rotation_rate * self._max_angular_rate
-            )  # Drive counterclockwise with negative X (left)
+            self._drive.with_velocity_x(velocity_x)
+            .with_velocity_y(velocity_y)
+            .with_rotational_rate(rotation_rate)
         )
 
     def _stop(self):

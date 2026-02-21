@@ -3,7 +3,6 @@ import phoenix6
 
 from wpilib import SmartDashboard
 
-
 class ControlledTalonMotor(commands2.Subsystem):
     def __init__(
         self,
