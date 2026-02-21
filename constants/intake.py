@@ -18,9 +18,10 @@ class kIntakeDeployer:
 
 class kIntakeSpinner:
     _CONFIG = TalonFXConfiguration()
-    _CONFIG.slot0.k_p = 0.1
-    _CONFIG.slot0.k_i = 5
+    _CONFIG.slot0.k_p = 0
+    _CONFIG.slot0.k_i = 6
     _CONFIG.slot0.k_d = 0
 
-    CAN_ID = 0
+    CAN_ID = 22
     TARGET_RPS = 1
+    TARGET_RPM = -3600

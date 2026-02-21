@@ -6,7 +6,7 @@ from wpimath.geometry import Pose2d, Rotation2d
 from math import pi
 
 class kPath:
-    general_path_speed = 4.25
+    general_path_speed = 1
 
 class kPoses:
     behind_trench_bottom = Pose2d(6.0, 0.65, Rotation2d(0))
