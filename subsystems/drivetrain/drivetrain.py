@@ -24,7 +24,7 @@ class SwerveDriveTrain(commands2.Subsystem):
 
         # Setting up bindings for necessary control of the swerve drive platform
         self._drive = (
-            swerve.requests.FieldCentric().with_deadband(self._max_speed * 0.1)
+            swerve.requests.FieldCentric()# NO CHASE DONT DO THIS .with_deadband(self._max_speed * 0.1)
             # .with_rotational_deadband(
             #     self._max_angular_rate * 0.1
             # )  # Add a 10% deadband

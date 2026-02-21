@@ -17,3 +17,7 @@ class kPoses:
     
     opposing_zone_bottom = Pose2d(13.2, 0.65, Rotation2d(0))
     opposing_zone_top = Pose2d(13.2, 7.35, Rotation2d(0))
+    
+    start_shooting_point = Pose2d(2.345, 2.330, Rotation2d(0.279))
+    bottom_climb_test = Pose2d(0.841, 2.747, Rotation2d(0))
+    

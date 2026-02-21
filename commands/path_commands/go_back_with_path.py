@@ -42,21 +42,21 @@ class GoBackWithPath(commands2.Command):
             "red_top": DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_top),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_top).with_goal_end_velocity(0)
-            ).with_flipped_poses(),
+            ).with_red_alliance_poses(),
             "red_bottom": DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_bottom),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_bottom).with_goal_end_velocity(0)
-            ).with_flipped_poses(),
+            ).with_red_alliance_poses(),
             "red_top_far": DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_zone_top),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_top),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_top).with_goal_end_velocity(0)
-            ).with_flipped_poses(),
+            ).with_red_alliance_poses(),
             "red_bottom_far": DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_zone_bottom),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_bottom),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_bottom).with_goal_end_velocity(0)
-            ).with_flipped_poses(),
+            ).with_red_alliance_poses(),
         }
         
         for key in self.poseCommands:

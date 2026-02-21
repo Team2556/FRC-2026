@@ -12,14 +12,15 @@ from wpimath.units import rotationsToRadians
 
 class DriveToASpot(commands2.Command):
     def __init__(
+        # MAKE THIS WORK BETTER TODO (for auto stuff)
         self, 
         subsystem: drivetrain.SwerveDriveTrain, 
         target_pose : Pose2d = Pose2d(),
         max_speed : float = 1.0, 
-        max_rps : float = 0.75, 
+        max_rps : float = 0.5, 
         end_tolerance : float = 0.1,
         end_rotation_tolerance : float = 0.1,
-        goal_end_velocity : float = 3.0,
+        goal_end_velocity : float = 0.0,
         slow_distance : float = 0.5
     ) -> None:
         """
@@ -185,6 +186,7 @@ class DriveToASpot(commands2.Command):
     def end(self, interrupted):
         # This function is called after the command ends
         # the interrupted variable stores whether or not the command was interuppted or canceled.
+        self.drivetrain._stop()
         pass
     
     def get_distance_progress(self):
@@ -194,11 +196,22 @@ class DriveToASpot(commands2.Command):
             self.pose_estimate.Y() - self.target_pose.Y()
         ).norm()
     
-    def with_flipped_pose(self):
+    def with_red_alliance_pose(self):
         '''Makes new pose relative to the other alliance (reflects pose across the midline of the field)'''
         self.target_pose = Pose2d(
             16.54 - self.target_pose.X(),
-            self.target_pose.Y(), # height = 8.07; not doing an "8.07 - nbydbgyub" because im not flipping y
+            self.target_pose.Y(),
+            # This mirror math equasion might work
+            self.target_pose.rotation().rotateBy(Rotation2d(((math.pi/2) - self.target_pose.rotation().radians()) * 2))
+            # self.target_pose.rotation().rotateBy(Rotation2d(math.pi))
+        )
+        return self
+    
+    def with_reflected_red_alliance_pose(self):
+        '''Makes new pose relative to the other alliance (reflects pose across the midline of the field)'''
+        self.target_pose = Pose2d(
+            16.54 - self.target_pose.X(),
+            8.07 - self.target_pose.Y(),
             self.target_pose.rotation().rotateBy(Rotation2d(rotationsToRadians(0.5)))
         )
         return self

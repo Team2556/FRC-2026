@@ -6,7 +6,7 @@ from wpilib import Timer
 from constants import key_poses
 
 class DriveToASpotSequence(commands2.SequentialCommandGroup):
-    def __init__(self, *commands: DriveToASpot, smoothing_radius = 0.4, smoothing_time = 0.2) -> None:
+    def __init__(self, *commands: DriveToASpot, max_speed = key_poses.kPath.general_path_speed, smoothing_radius = 0.4, smoothing_time = 0.2) -> None:
         """
         Sequential command group specialized for DriveToASpot commands that have cool things like 
         pose smoothing and flipping the whole thing
@@ -24,7 +24,7 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         self._commands : list[DriveToASpot]
         
         for command in self._commands:
-            command.max_speed = key_poses.kPath.general_path_speed
+            command.max_speed = max_speed
             if command == self._commands[-1] or self.smoothing_radius == 0: break
             command = command.with_sequence_pose_values()
     
@@ -46,16 +46,6 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         if self._currentCommandIndex < len(self._commands):
             self._commands[self._currentCommandIndex].initialize()
         
-        # if self._currentCommandIndex < len(self._commands) - 1:
-        #     currentCommand : DriveToASpot = self._commands[self._currentCommandIndex]
-        #     next_command : DriveToASpot = self._commands[self._currentCommandIndex + 1]
-        #     angle_difference = (
-        #         currentCommand.calculate_velocity().rotation().radians()
-        #         - next_command.calculate_velocity().rotation().radians()
-        #     )
-        #     # angle_difference = 0: make smoothing_time low
-        #     # angle_difference = math.pi: make smoothing_time high
-    
     def add_smoothing(self):
         
         if self.smoothing_radius == 0: return
@@ -86,9 +76,14 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
             self.timer.reset()
             self.timer.start()
     
-    def with_flipped_poses(self):
+    def with_red_alliance_poses(self):
         for command in self._commands:
-            command = command.with_flipped_pose()
+            command = command.with_red_alliance_pose()
+        return self
+    
+    def with_reflected_red_alliance_poses(self):
+        for command in self._commands:
+            command = command.with_reflected_red_alliance_pose()
         return self
     
     def end(self, interrupted):
