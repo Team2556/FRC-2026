@@ -134,7 +134,9 @@ class DriveToASpot(commands2.Command):
         else:
             self.is_within_slow_distance = False
         
-        return Translation2d(target_speed, distance.angle())
+        # This magically worked after a bug that's who it looks wiers
+        x = Translation2d(target_speed * math.cos(distance.angle().radians()), target_speed * math.sin(distance.angle().radians()), )
+        return x
     
     def calcutate_angular_velocity(self) -> Rotation2d:
         
@@ -237,6 +239,6 @@ class DriveToASpot(commands2.Command):
         self.max_rps = 0.5
         self.end_tolerance = 0.0
         self.end_rotation_tolerance = 0.0
+        self.slow_distance = self.max_speed * 0.25
         self.goal_end_velocity = self.max_speed * 0.5
-        self.slow_distance = 1.0
         return self

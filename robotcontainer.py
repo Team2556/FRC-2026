@@ -12,6 +12,7 @@ from commands.path_commands import go_back_with_path, drive_to_a_spot, drive_to_
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
 from constants.key_poses import kPoses
+from constants.intake import kIntakeSpinner
 
 # from pathplannerlib.auto import NamedCommands
 
@@ -55,7 +56,26 @@ class RobotContainer:
             enable_smartdashboard=True,
         )
         
-        self.intake_subsystem = IntakeSubsystem()
+        self.intake_spinny = ControlledTalonMotor(
+            "Intake Spinny",
+            kIntakeSpinner.CAN_ID,
+            kIntakeSpinner._CONFIG,
+            kIntakeSpinner.TARGET_RPM,
+            enable_smartdashboard=True,
+        )
+        
+        # VERY TEMPORARY THING
+        import phoenix6
+        cfg = phoenix6.configs.TalonFXConfiguration()
+        self.shooter = ControlledTalonMotor(
+            "Shooter",
+            24,
+            cfg,
+            -4000,
+            enable_smartdashboard=True,
+        )
+        
+        # self.intake_subsystem = IntakeSubsystem()
 
         # self.shooter_motor = ControlledTalonMotor(
         #     "Shooter", 24, 0.1, 0.15, 0, -37.000000, enable_smartdashboard=True
@@ -64,6 +84,10 @@ class RobotContainer:
         self.configureButtonBindings()
 
     def configureButtonBindings(self) -> None:
+        self._controller_1.leftStick().onTrue(
+            self._drivetrain.runOnce(lambda: self._drivetrain._drivetrain.seed_field_centric())
+        )
+        
         self._drivetrain.setDefaultCommand(
             drive_commands.ControllerDrive(self._drivetrain, self._controller_1)
         )
@@ -73,6 +97,7 @@ class RobotContainer:
                 spin_motor.SpinMotor(self.transfer_motor1),
                 spin_motor.SpinMotor(self.transfer_motor2),
                 spin_motor.SpinMotor(self.spindex_motor),
+                spin_motor.SpinMotor(self.shooter),
             )
         )
 
@@ -96,8 +121,12 @@ class RobotContainer:
             go_back_with_path.GoBackWithPath(self._drivetrain)
         )
         
+        # self._controller_1.y().whileTrue(
+        #     intake_commands.IntakeCommand(self.intake_subsystem)
+        # )
+        
         self._controller_1.y().whileTrue(
-            intake_commands.IntakeCommand(self.intake_subsystem)
+            spin_motor.SpinMotor(self.intake_spinny)
         )
 
     def getAutonomousCommand(self):

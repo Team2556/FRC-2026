@@ -16,7 +16,7 @@ class IntakeSubsystem(commands2.Subsystem):
         self.spinny_motor = phoenix6.hardware.TalonFX(kIntakeSpinner.CAN_ID, "rio")
         
         self.deployer_cfg = kIntakeDeployer._CONFIG
-        self.spinny_cfg = kIntakeSpinner._CONFIG
+        self.spinny_cfg = kIntakeSpinner._CONFIG 
         self.spinny_cfg.motor_output.neutral_mode = signals.NeutralModeValue.COAST
 
         self.left_deployer.configurator.apply(self.deployer_cfg)
