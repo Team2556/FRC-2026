@@ -6,13 +6,15 @@
 
 from util.custom_controller import XboxController
 
-from commands import auto_align, drive_commands, spin_motor, vision_odometry, intake_commands
+from commands import auto_align, drive_commands, vision_odometry, intake_commands
 from commands.path_commands import go_back_with_path, drive_to_a_spot, drive_to_a_spot_sequence
+from commands.spin_motor import SpinMotor
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
 from constants.key_poses import kPoses
-from constants.intake import kIntakeSpinner
+from constants.shooter import kShooterMotor
+from constants.intake import kIntakeMotor
 
 # from pathplannerlib.auto import NamedCommands
 
@@ -20,6 +22,7 @@ from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
 
 from subsystems.controlled_motor import ControlledTalonMotor
+from commands2.button import CommandXboxController
 
 from subsystems.intake import IntakeSubsystem
 
@@ -30,6 +33,9 @@ class RobotContainer:
         self._controller_1 = (
             XboxController(port=0).with_deadband(0.05).with_smoothing(0.1)
         )
+        self._controller_2 = (
+            XboxController(port=1).with_deadband(0.05).with_smoothing(0.1)
+        )
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
         self.mono_vision = mono_limelight.Vision(kCamera.llFront.NAME)
@@ -39,47 +45,33 @@ class RobotContainer:
             kSpindexer.CAN_ID,
             kSpindexer._CONFIG,
             kSpindexer.TARGET_RPM,
-            enable_smartdashboard=True,
         )
         self.transfer_motor1 = ControlledTalonMotor(
             "Transfer 1",
             kTrasnfer.motor_1.CAN_ID,
             kTrasnfer.motor_1._CONFIG,
             kTrasnfer.motor_1.TARGET_RPM,
-            enable_smartdashboard=True,
         )
         self.transfer_motor2 = ControlledTalonMotor(
             "Transfer 2",
             kTrasnfer.motor_2.CAN_ID,
             kTrasnfer.motor_2._CONFIG,
             kTrasnfer.motor_2.TARGET_RPM,
+        )
+        self.intake_motor = ControlledTalonMotor(
+            "Intake Motor",
+            kIntakeMotor.CAN_ID,
+            kIntakeMotor._CONFIG,
+            kIntakeMotor.TARGET_RPM,
             enable_smartdashboard=True,
         )
-        
-        self.intake_spinny = ControlledTalonMotor(
-            "Intake Spinny",
-            kIntakeSpinner.CAN_ID,
-            kIntakeSpinner._CONFIG,
-            kIntakeSpinner.TARGET_RPM,
-            enable_smartdashboard=True,
-        )
-        
-        # VERY TEMPORARY THING
-        import phoenix6
-        cfg = phoenix6.configs.TalonFXConfiguration()
-        self.shooter = ControlledTalonMotor(
+        self.shooter_motor = ControlledTalonMotor(
             "Shooter",
-            24,
-            cfg,
-            -4000,
-            enable_smartdashboard=True,
+            kShooterMotor.CAN_ID,
+            kShooterMotor._CONFIG,
+            kShooterMotor.TARGET_RPM,
+            enable_smartdashboard=True
         )
-        
-        # self.intake_subsystem = IntakeSubsystem()
-
-        # self.shooter_motor = ControlledTalonMotor(
-        #     "Shooter", 24, 0.1, 0.15, 0, -37.000000, enable_smartdashboard=True
-        # )
 
         self.configureButtonBindings()
 
@@ -94,24 +86,25 @@ class RobotContainer:
 
         self._controller_1.rightTrigger().whileTrue(
             ParallelCommandGroup(
-                spin_motor.SpinMotor(self.transfer_motor1),
-                spin_motor.SpinMotor(self.transfer_motor2),
-                spin_motor.SpinMotor(self.spindex_motor),
-                spin_motor.SpinMotor(self.shooter),
+                SpinMotor(self.transfer_motor1),
+                SpinMotor(self.transfer_motor2),
+                SpinMotor(self.spindex_motor),
             )
         )
 
-        self._controller_1.rightBumper().whileTrue(
-            spin_motor.SpinMotor(self.spindex_motor)
+        self._controller_1.rightBumper().whileTrue(SpinMotor(self.spindex_motor))
+
+        self._controller_1.leftTrigger().whileTrue(SpinMotor(self.shooter_motor))
+
+        self._controller_1.b().whileTrue(
+            ParallelCommandGroup(
+                auto_align.HubAlign(self._drivetrain, self._controller_1),
+                SpinMotor(self.shooter_motor),
+            )
         )
-        
-        # uncomment this when merging pls
-        # self._controller_1.b().whileTrue(
-        #     ParallelCommandGroup(
-        #         auto_align.HubAlign(self._drivetrain, self._controller_1),
-        #         spin_motor.SpinMotor(self.shooter_motor),
-        #     )
-        # )
+        self._controller_1.a().whileTrue(
+            auto_align.HubAlign(self._drivetrain, self._controller_1),
+        )
 
         self.mono_vision.setDefaultCommand(
             vision_odometry.UpdateOdometry(self.mono_vision, self._drivetrain)
@@ -120,13 +113,10 @@ class RobotContainer:
         self._controller_1.x().whileTrue(
             go_back_with_path.GoBackWithPath(self._drivetrain)
         )
+
         
-        # self._controller_1.y().whileTrue(
-        #     intake_commands.IntakeCommand(self.intake_subsystem)
-        # )
-        
-        self._controller_1.y().whileTrue(
-            spin_motor.SpinMotor(self.intake_spinny)
+        self._controller_2.rightTrigger().whileTrue(
+            SpinMotor(self.intake_motor)
         )
 
     def getAutonomousCommand(self):

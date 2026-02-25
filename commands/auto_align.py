@@ -3,8 +3,9 @@ from wpilib import SmartDashboard
 from wpimath.geometry import Translation2d, Transform2d, Rotation2d
 import math
 
-from constants._configs import kShooter, kField
-from constants.tuners import kAutoAlign
+from constants.field import kHub
+from constants.drive import kAutoAlign
+from constants.shooter import kShooterConfig
 
 from util import custom_controller, math_helpers
 from subsystems.drivetrain import drivetrain
@@ -19,19 +20,17 @@ class HubAlign(commands2.Command):
         self._drivetrain = drivetrain
         self._controller = controller
 
-        self.shooter_offset = kShooter.SHOOTER_OFFSET
+        self.shooter_offset = kShooterConfig.SHOOTER_OFFSET
         SmartDashboard.putNumber("Shooter Offset X", self.shooter_offset.x)
         SmartDashboard.putNumber("Shooter Offset Y", self.shooter_offset.y)
 
-        self.shooter_direction = kShooter.SHOOTER_DIRECTION
-
-        self.hub_pos = kField.RED_HUB_POS  # Translation2d
+        self.shooter_direction = kShooterConfig.SHOOTER_DIRECTION
 
         self.rotation_PID = kAutoAlign.ROTATIONAL_PID
         self.rotation_PID.enableContinuousInput(-180.0, 180.0)
 
-        self.correction_mult = kAutoAlign.CORRECTION_MULT
-        SmartDashboard.putNumber("Auto Align Correction Mult", self.correction_mult)
+        self.distance_mult = kAutoAlign.CORRECTION_MULT
+        SmartDashboard.putNumber("Auto Align Correction Mult", self.distance_mult)
 
         self.addRequirements(drivetrain)
 
@@ -39,7 +38,7 @@ class HubAlign(commands2.Command):
         shooter_field_pos = robot_pose.translation() + self.shooter_offset.rotateBy(
             robot_pose.rotation()
         )
-        to_hub = self.hub_pos - shooter_field_pos
+        to_hub = kHub.POS - shooter_field_pos
 
         return math.degrees(math.atan2(to_hub.Y(), to_hub.X()))
 
@@ -48,31 +47,27 @@ class HubAlign(commands2.Command):
             SmartDashboard.getNumber("Shooter Offset Y", self.shooter_offset.y),
             SmartDashboard.getNumber("Shooter Offset X", self.shooter_offset.x),
         )
-        self.correction_mult = SmartDashboard.getNumber("Auto Align Correction Mult", 0)
+        self.distance_mult = SmartDashboard.getNumber("Auto Align Distance Mult", 0)
+        self.distance_exp = SmartDashboard.getNumber("Auto Align DIstance Exponent", 0)
 
-        robot_state = self._drivetrain._drivetrain.get_state()
-        robot_pose = robot_state.pose
-        robot_velocity = robot_state.speeds
+        drive_state = self._drivetrain.get_state()
+        distance_to_hub = kHub.POS.distance(drive_state.pose.translation())
 
-        distance_to_hub = self.hub_pos.distance(robot_pose.translation())
-        distance_mult = distance_to_hub * self.correction_mult
-        distance_mult = math_helpers.clamp(distance_mult, 0, 0.25)
+        velocity_correction = self.distance_mult * (distance_to_hub**self.distance_exp)
 
-        estimate_pos_change = (
-            Translation2d(robot_velocity.vx, robot_velocity.vy) * distance_mult
+        estimated_pos = drive_state.pose.transformBy(
+            drive_state.velocity * velocity_correction
         )
-        robot_pose += estimate_pos_change
 
-        robot_rotation = robot_pose.rotation()
-        robot_heading = robot_rotation.degrees()
-        shooter_offset = self.shooter_offset.rotateBy(robot_rotation)
+        shooter_offset = self.shooter_offset.rotateBy(drive_state.rotation)
+        shooter_pose = estimated_pos.transformBy(
+            Transform2d(shooter_offset, Rotation2d())
+        )
 
-        shooter_transform = Transform2d(shooter_offset, Rotation2d())
-        robot_pose += shooter_transform
-
-        target_heading = self.calculate_target_yaw(robot_pose) - self.shooter_direction
-
-        rotation_rate = self.rotation_PID.calculate(robot_heading, target_heading)
+        target_heading = (
+            self.calculate_target_yaw(shooter_pose) - self.shooter_direction
+        )
+        rotation_rate = self.rotation_PID.calculate(drive_state.heading, target_heading)
         rotation_rate = math_helpers.clamp(rotation_rate, -1.0, 1.0)
 
         self._drivetrain.drive_with_controller(

@@ -2,15 +2,23 @@ import commands2
 from wpimath import units
 
 from phoenix6.swerve.swerve_drivetrain import SwerveDrivetrain
+from phoenix6.hardware.pigeon2 import Pigeon2
 
 from constants.vision import kOdometry
+from subsystems.drivetrain.swerve_tuner import TunerConstants
 
 from util import limelight_helpers
+
+from wpilib import SmartDashboard
+
+import math
 
 
 class Vision(commands2.Subsystem):
     def __init__(self, *camera_names):
         self._cameras = camera_names
+
+        self._pigeon = Pigeon2(TunerConstants._pigeon_id)
 
     def get_best_measurement(self, estimates: list[limelight_helpers.PoseEstimate]):
         if not estimates:
@@ -26,9 +34,16 @@ class Vision(commands2.Subsystem):
             estimates,
             key=lambda estimate: (
                 estimate.tagCount,
-                -estimate.avgTagDist if estimate.tagCount > 0 else float("-inf"),
+                (
+                    -estimate.avgTagDist
+                    if estimate.tagCount > kOdometry.MIN_APRILTAGS
+                    else float("-inf")
+                ),
             ),
         )
+        if measurement.tagCount < kOdometry.MIN_APRILTAGS:
+            return None
+        # if abs(self._pigeon.get_yaw()) >
 
         return measurement
 
@@ -57,3 +72,7 @@ class Vision(commands2.Subsystem):
 
         measurement = self.get_best_measurement(vision_estimates)
         return measurement
+
+    def periodic(self):
+        offset = math.sqrt(self._pigeon.get_pitch().value**2 + self._pigeon.get_roll().value**2)
+        SmartDashboard.putNumber("Robot Unflatness", offset)
