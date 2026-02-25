@@ -38,7 +38,7 @@ class HubAlign(commands2.Command):
         shooter_field_pos = robot_pose.translation() + self.shooter_offset.rotateBy(
             robot_pose.rotation()
         )
-        to_hub = kHub.RED.POS - shooter_field_pos
+        to_hub = kHub.POS - shooter_field_pos
 
         return math.degrees(math.atan2(to_hub.Y(), to_hub.X()))
 
@@ -51,7 +51,7 @@ class HubAlign(commands2.Command):
         self.distance_exp = SmartDashboard.getNumber("Auto Align DIstance Exponent", 0)
 
         drive_state = self._drivetrain.get_state()
-        distance_to_hub = kHub.POS.distance(shooter_pose.translation())
+        distance_to_hub = kHub.POS.distance(drive_state.pose.translation())
 
         velocity_correction = self.distance_mult * (distance_to_hub**self.distance_exp)
 

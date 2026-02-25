@@ -46,10 +46,10 @@ class SwerveDriveTrain(commands2.Subsystem):
 
         self._drivetrain.set_control(
             self._drive.with_velocity_x(
-                _velocity_x * kDriveConfig.MAX_SPEED * velocity_mult
+                _velocity_x * kDriveConfig.MAX_SPEED * velocity_mult * TunerConstants.speed_at_12_volts
             )  # Drive forward with negative Y (forward)
             .with_velocity_y(
-                _velocity_y * kDriveConfig.MAX_SPEED * velocity_mult
+                _velocity_y * kDriveConfig.MAX_SPEED * velocity_mult * TunerConstants.speed_at_12_volts
             )  # Drive left with negative X (left)
             .with_rotational_rate(
                 _rotational_rate * kDriveConfig.MAX_ANGULAR_RATE * rotation_mult

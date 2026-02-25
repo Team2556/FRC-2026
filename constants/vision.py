@@ -60,6 +60,9 @@ class kOdometry:
 
     MAX_RPS = 2  # m/s
     USE_MEGATAG_2 = False
+    
+    MIN_APRILTAGS = 1
+    MAX_PITCH_ERROR = 2
 
 
 class kAprilTag:

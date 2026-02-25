@@ -26,6 +26,3 @@ def AllianceConstant(red: TYPE, blue: TYPE) -> TYPE:
     It excepts any type and can have mismatch types'''
     _struct = AllianceConstantStruct(red, blue)
     return _struct.get
-
-
-test_constant = AllianceConstant(2, 1)

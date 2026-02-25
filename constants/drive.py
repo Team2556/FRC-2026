@@ -1,5 +1,5 @@
 from wpimath.controller import PIDController
-from wpimath.units import rotationsToDegrees
+from wpimath.units import rotationsToRadians
 
 
 class kAutoAlign:
@@ -12,4 +12,4 @@ class kAutoAlign:
 class kDriveConfig:
     MAX_SPEED = 1.0
     '''Speed at 12v'''
-    MAX_ANGULAR_RATE = rotationsToDegrees(0.75)
+    MAX_ANGULAR_RATE = rotationsToRadians(0.75)
