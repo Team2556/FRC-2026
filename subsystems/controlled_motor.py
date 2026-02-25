@@ -3,7 +3,6 @@ import phoenix6
 
 from wpilib import SmartDashboard
 
-
 class ControlledTalonMotor(commands2.Subsystem):
     def __init__(
         self,
@@ -19,7 +18,10 @@ class ControlledTalonMotor(commands2.Subsystem):
         self.name = name
         self.cfg = config
 
-        self._motor.configurator.apply(self.cfg)
+        for _ in range(5):
+            status = self._motor.configurator.apply(self.cfg)
+            if status.is_ok(): break
+            
         self.velocity_voltage = phoenix6.controls.VelocityVoltage(velocity=0, slot=0)
 
         self._RPS = target_rpm / 60
@@ -32,9 +34,12 @@ class ControlledTalonMotor(commands2.Subsystem):
             SmartDashboard.putNumber(f"{self.name} k_d", self.cfg.slot0.k_d)
             SmartDashboard.putNumber(f"{self.name} Target RPM", target_rpm)
             SmartDashboard.putBoolean(f"{self.name} Working", False)
+        
+        self._motor.setNeutralMode(phoenix6.signals.NeutralModeValue.COAST)
 
     def spin(self):
-        self._motor.set_control(self.velocity_voltage.with_velocity(self._RPS))
+        # self._motor.set_control(self.velocity_voltage.with_velocity(self._RPS))
+        self._motor.set(self._RPS / 100)
 
         if self.enable_smartdashboard:
             SmartDashboard.putBoolean(f"{self.name} Working", True)
@@ -45,6 +50,7 @@ class ControlledTalonMotor(commands2.Subsystem):
             SmartDashboard.putBoolean(f"{self.name} Working", False)
 
     def periodic(self):
+        
         SmartDashboard.putNumber(
             f"{self.name} RPM", self._motor.get_velocity().value * 60
         )

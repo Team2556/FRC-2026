@@ -6,11 +6,13 @@
 
 from util.custom_controller import XboxController
 
-from commands import auto_align, drive_commands, vision_odometry
+from commands import auto_align, drive_commands, vision_odometry, intake_commands
+from commands.path_commands import go_back_with_path, drive_to_a_spot, drive_to_a_spot_sequence
 from commands.spin_motor import SpinMotor
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
+from constants.key_poses import kPoses
 from constants.shooter import kShooterMotor
 from constants.intake import kIntakeMotor
 
@@ -22,8 +24,9 @@ from subsystems.vision import mono_limelight
 from subsystems.controlled_motor import ControlledTalonMotor
 from commands2.button import CommandXboxController
 
-from commands2 import button, ParallelCommandGroup
+from subsystems.intake import IntakeSubsystem
 
+from commands2 import button, ParallelCommandGroup, SequentialCommandGroup, WaitCommand
 
 class RobotContainer:
     def __init__(self) -> None:
@@ -73,6 +76,10 @@ class RobotContainer:
         self.configureButtonBindings()
 
     def configureButtonBindings(self) -> None:
+        self._controller_1.leftStick().onTrue(
+            self._drivetrain.runOnce(lambda: self._drivetrain._drivetrain.seed_field_centric())
+        )
+        
         self._drivetrain.setDefaultCommand(
             drive_commands.ControllerDrive(self._drivetrain, self._controller_1)
         )
@@ -103,9 +110,37 @@ class RobotContainer:
             vision_odometry.UpdateOdometry(self.mono_vision, self._drivetrain)
         )
         
+        self._controller_1.x().whileTrue(
+            go_back_with_path.GoBackWithPath(self._drivetrain)
+        )
+
+        
         self._controller_2.rightTrigger().whileTrue(
             SpinMotor(self.intake_motor)
         )
 
     def getAutonomousCommand(self):
-        return None
+        pass
+        
+        start_shooting_point_command = drive_to_a_spot.DriveToASpot(
+            self._drivetrain,
+            kPoses.start_shooting_point
+        ).with_reflected_red_alliance_pose()
+        
+        bottom_climb_test_command = drive_to_a_spot.DriveToASpot(
+            self._drivetrain,
+            kPoses.bottom_climb_test
+        ).with_reflected_red_alliance_pose().with_precise_values()
+        
+        autonomous_command = SequentialCommandGroup(
+            # Drive to a spot
+            start_shooting_point_command,
+            # Do some shooting
+            WaitCommand(2),
+            # Drive to the climber
+            bottom_climb_test_command,
+            # Do some climbing
+            WaitCommand(2)
+        )
+        
+        return autonomous_command
