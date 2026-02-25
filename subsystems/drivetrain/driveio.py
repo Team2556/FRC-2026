@@ -28,6 +28,6 @@ class CustomSwerve:
             heading=robot_state.pose.rotation().degrees(),
             velocity=Transform2d(
                 Translation2d(robot_state.speeds.vx, robot_state.speeds.vy),
-                Rotation2d(),
+                Rotation2d(robot_state.speeds.omega)
             ),
         )

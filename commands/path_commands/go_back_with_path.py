@@ -64,7 +64,7 @@ class GoBackWithPath(commands2.Command):
 
     def initialize(self):
         
-        current_pose = self.drivetrain.get_robot_state().pose
+        current_pose = self.drivetrain.get_state().pose
         if DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
             alliance = "blue"
         else:

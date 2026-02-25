@@ -12,7 +12,6 @@ from wpimath.units import rotationsToRadians
 
 class DriveToASpot(commands2.Command):
     def __init__(
-        # MAKE THIS WORK BETTER TODO (for auto stuff)
         self, 
         subsystem: drivetrain.SwerveDriveTrain, 
         target_pose : Pose2d = Pose2d(),
@@ -92,13 +91,13 @@ class DriveToASpot(commands2.Command):
     def update_pose_estimate(self):
         # NOTE: change self.drivetrain.get_state().pose to the actual 
         # pose estimating function once I can use better pose estimate
-        self.pose_estimate = self.drivetrain.get_robot_pose()
+        self.pose_estimate = self.drivetrain.get_state().pose
     
     def get_robot_velocity(self):
         return Pose2d(
-            self.drivetrain.get_robot_state().speeds.vx,
-            self.drivetrain.get_robot_state().speeds.vy,
-            self.drivetrain.get_robot_state().speeds.omega
+            self.drivetrain.get_state().velocity.X(),
+            self.drivetrain.get_state().velocity.Y(),
+            self.drivetrain.get_state().velocity.rotation()
         )
     
     def calculate_velocity(self) -> Pose2d:

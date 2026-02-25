@@ -43,7 +43,10 @@ class Vision(commands2.Subsystem):
         )
         if measurement.tagCount < kOdometry.MIN_APRILTAGS:
             return None
-        # if abs(self._pigeon.get_yaw()) >
+        
+        robot_angle_error = math.sqrt(self._pigeon.get_pitch().value**2 + self._pigeon.get_roll().value**2)
+        if abs(robot_angle_error) > kOdometry.MAX_ROTATIONAL_ERROR:
+            return None
 
         return measurement
 
