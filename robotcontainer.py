@@ -12,6 +12,7 @@ from commands.spin_motor import SpinMotor
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
 from constants.shooter import kShooterMotor
+from constants.intake import kIntakeMotor
 
 # from pathplannerlib.auto import NamedCommands
 
@@ -27,6 +28,9 @@ class RobotContainer:
     def __init__(self) -> None:
         self._controller_1 = (
             XboxController(port=0).with_deadband(0.05).with_smoothing(0.1)
+        )
+        self._controller_2 = (
+            XboxController(port=1).with_deadband(0.05).with_smoothing(0.1)
         )
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
@@ -50,7 +54,13 @@ class RobotContainer:
             kTrasnfer.motor_2._CONFIG,
             kTrasnfer.motor_2.TARGET_RPM,
         )
-
+        self.intake_motor = ControlledTalonMotor(
+            "Intake Motor",
+            kIntakeMotor.CAN_ID,
+            kIntakeMotor._CONFIG,
+            kIntakeMotor.TARGET_RPM,
+            enable_smartdashboard=True,
+        )
         self.shooter_motor = ControlledTalonMotor(
             "Shooter",
             kShooterMotor.CAN_ID,
@@ -90,6 +100,10 @@ class RobotContainer:
 
         self.mono_vision.setDefaultCommand(
             vision_odometry.UpdateOdometry(self.mono_vision, self._drivetrain)
+        )
+        
+        self._controller_2.rightTrigger().whileTrue(
+            SpinMotor(self.intake_motor)
         )
 
     def getAutonomousCommand(self):

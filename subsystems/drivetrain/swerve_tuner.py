@@ -79,15 +79,15 @@ class TunerConstants:
 
     # Theoretical free speed (m/s) at 12 V applied output;
     # This needs to be tuned to your individual robot
-    speed_at_12_volts: units.meters_per_second = 4.58
+    speed_at_12_volts: units.meters_per_second = 5.69
 
     # Every 1 rotation of the azimuth results in _couple_ratio drive motor turns;
     # This may need to be tuned to your individual robot
     _couple_ratio = 3.5714285714285716
 
-    _drive_gear_ratio = 6.746031746031747
+    _drive_gear_ratio = 8.142857142857142
     _steer_gear_ratio = 12.8
-    _wheel_radius: units.meter = inchesToMeters(2)
+    _wheel_radius: units.meter = inchesToMeters(3)
 
     _invert_left_side = False
     _invert_right_side = True
@@ -138,10 +138,10 @@ class TunerConstants:
 
 
     # Front Left
-    _front_left_drive_motor_id = 10
-    _front_left_steer_motor_id = 11
-    _front_left_encoder_id = 12
-    _front_left_encoder_offset: units.rotation = -0.20849609375
+    _front_left_drive_motor_id = 4
+    _front_left_steer_motor_id = 5
+    _front_left_encoder_id = 6
+    _front_left_encoder_offset: units.rotation = -0.056884765625
     _front_left_steer_motor_inverted = False
     _front_left_encoder_inverted = False
 
@@ -152,7 +152,7 @@ class TunerConstants:
     _front_right_drive_motor_id = 1
     _front_right_steer_motor_id = 2
     _front_right_encoder_id = 3
-    _front_right_encoder_offset: units.rotation = -0.389404296875
+    _front_right_encoder_offset: units.rotation = -0.39501953125
     _front_right_steer_motor_inverted = False
     _front_right_encoder_inverted = False
 
@@ -160,10 +160,10 @@ class TunerConstants:
     _front_right_y_pos: units.meter = inchesToMeters(-10)
 
     # Back Left
-    _back_left_drive_motor_id = 4
-    _back_left_steer_motor_id = 5
-    _back_left_encoder_id = 6
-    _back_left_encoder_offset: units.rotation = 0.194580078125
+    _back_left_drive_motor_id = 10
+    _back_left_steer_motor_id = 11
+    _back_left_encoder_id = 12
+    _back_left_encoder_offset: units.rotation = -0.2998046875
     _back_left_steer_motor_inverted = False
     _back_left_encoder_inverted = False
 
@@ -174,7 +174,7 @@ class TunerConstants:
     _back_right_drive_motor_id = 7
     _back_right_steer_motor_id = 8
     _back_right_encoder_id = 9
-    _back_right_encoder_offset: units.rotation = 0.19091796875
+    _back_right_encoder_offset: units.rotation = 0.189697265625
     _back_right_steer_motor_inverted = False
     _back_right_encoder_inverted = False
 
