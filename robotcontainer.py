@@ -76,9 +76,6 @@ class RobotContainer:
         self.configureButtonBindings()
 
     def configureButtonBindings(self) -> None:
-        self._controller_1.leftStick().onTrue(
-            self._drivetrain.runOnce(lambda: self._drivetrain._drivetrain.seed_field_centric())
-        )
         
         self._drivetrain.setDefaultCommand(
             drive_commands.ControllerDrive(self._drivetrain, self._controller_1)
