@@ -82,14 +82,14 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
             self.timer.reset()
             self.timer.start()
     
-    def with_red_alliance_poses(self):
+    def with_mirrored_poses_on_red_alliance(self):
         for command in self._commands:
-            command = command.with_red_alliance_pose()
+            command = command.with_mirror_on_red_alliance()
         return self
     
-    def with_reflected_red_alliance_poses(self):
+    def with_inverse_poses_on_red_alliance(self):
         for command in self._commands:
-            command = command.with_reflected_red_alliance_pose()
+            command = command.with_inverse_on_red_alliance()
         return self
     
     def end(self, interrupted):
