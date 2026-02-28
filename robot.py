@@ -67,3 +67,8 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def testInit(self) -> None:
         commands2.CommandScheduler.getInstance().cancelAll()
+
+        # Schedule the system test command
+        test_command = self.container.getSystemTestCommand()
+        if test_command:
+            test_command.schedule()

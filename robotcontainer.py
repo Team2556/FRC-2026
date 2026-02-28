@@ -9,6 +9,7 @@ from util.custom_controller import XboxController
 from commands import auto_align, drive_commands, vision_odometry
 from commands.path_commands import go_back_with_path, drive_to_a_spot, drive_to_a_spot_sequence
 from commands.spin_motor import SpinMotor
+from commands.system_test import SystemTestCommand
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
@@ -118,17 +119,17 @@ class RobotContainer:
 
     def getAutonomousCommand(self):
         pass
-        
+
         start_shooting_point_command = drive_to_a_spot.DriveToASpot(
             self._drivetrain,
             kPoses.start_shooting_point
         ).with_reflected_red_alliance_pose()
-        
+
         bottom_climb_test_command = drive_to_a_spot.DriveToASpot(
             self._drivetrain,
             kPoses.bottom_climb_test
         ).with_reflected_red_alliance_pose().with_precise_values()
-        
+
         autonomous_command = SequentialCommandGroup(
             # Drive to a spot
             start_shooting_point_command,
@@ -139,5 +140,16 @@ class RobotContainer:
             # Do some climbing
             WaitCommand(2)
         )
-        
+
         return autonomous_command
+
+    def getSystemTestCommand(self):
+        """Returns a command that tests all subsystems sequentially for pit testing."""
+        return SystemTestCommand(
+            self.intake_motor,
+            self.shooter_motor,
+            self.spindex_motor,
+            self.transfer_motor1,
+            self.transfer_motor2,
+            self.mono_vision,
+        )
