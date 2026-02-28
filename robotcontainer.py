@@ -9,22 +9,22 @@ from util.custom_controller import XboxController
 from commands import auto_align, drive_commands, vision_odometry
 from commands.path_commands import go_back_with_path, drive_to_a_spot, drive_to_a_spot_sequence
 from commands.spin_motor import SpinMotor
+from commands.intake_commands import IntakeCommandDeploy, IntakeCommandUndeploy
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
 from constants.key_poses import kPoses
 from constants.shooter import kShooterMotor
-from constants.intake import kIntakeMotor
+from constants.intake import kIntakeSpinner
 
 # from pathplannerlib.auto import NamedCommands
 
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
-
 from subsystems.controlled_motor import ControlledTalonMotor
-from commands2.button import CommandXboxController
+from subsystems.intake import IntakeSubsystem
 
-# from subsystems.intake import IntakeSubsystem
+from commands2.button import CommandXboxController
 
 from commands2 import button, ParallelCommandGroup, SequentialCommandGroup, WaitCommand
 
@@ -39,6 +39,8 @@ class RobotContainer:
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
         self.mono_vision = mono_limelight.Vision(kCamera.llFront.NAME)
+        
+        self.intake_subsystem = IntakeSubsystem()
 
         self.spindex_motor = ControlledTalonMotor(
             "Spindex",
@@ -58,13 +60,13 @@ class RobotContainer:
             kTrasnfer.motor_2._CONFIG,
             kTrasnfer.motor_2.TARGET_RPM,
         )
-        self.intake_motor = ControlledTalonMotor(
-            "Intake Motor",
-            kIntakeMotor.CAN_ID,
-            kIntakeMotor._CONFIG,
-            kIntakeMotor.TARGET_RPM,
-            enable_smartdashboard=True,
-        )
+        # self.intake_motor = ControlledTalonMotor(
+        #     "Intake Motor",
+        #     kIntakeSpinner.CAN_ID,
+        #     kIntakeSpinner._CONFIG,
+        #     kIntakeSpinner.TARGET_RPM,
+        #     enable_smartdashboard=True,
+        # )
         self.shooter_motor = ControlledTalonMotor(
             "Shooter",
             kShooterMotor.CAN_ID,
@@ -111,11 +113,11 @@ class RobotContainer:
             go_back_with_path.GoBackWithPath(self._drivetrain)
         )
 
-        
-        self._controller_2.rightTrigger().whileTrue(
-            SpinMotor(self.intake_motor)
+        self.intake_deploy_command = IntakeCommandDeploy(self.intake_subsystem)
+        self._controller_2.rightBumper().onTrue(
+            self.intake_deploy_command
         )
-
+        
     def getAutonomousCommand(self):
         pass
         
