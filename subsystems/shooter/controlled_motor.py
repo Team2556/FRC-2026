@@ -29,6 +29,11 @@ class ControlledMotor(commands2.Subsystem):
 
     def stop_motor(self):
         self._motor.set(0)
+    
+    def get_rpm(self):
+        '''Returns the RPM of the mtor'''
+        motor_rps = self._motor.get_velocity().value
+        return motor_rps * 60
 
     def periodic(self):
         SmartDashboard.putNumber("Motor RPS", self._motor.get_velocity().value)

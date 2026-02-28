@@ -95,12 +95,12 @@ class RobotContainer:
 
         self._controller_1.b().whileTrue(
             ParallelCommandGroup(
-                auto_align.HubAlign(self._drivetrain, self._controller_1),
+                auto_align.HubAlign(self._drivetrain, self._controller_1, self.shooter_motor, None),
                 SpinMotor(self.shooter_motor),
             )
         )
         self._controller_1.a().whileTrue(
-            auto_align.HubAlign(self._drivetrain, self._controller_1),
+            auto_align.HubAlign(self._drivetrain, self._controller_1, self.shooter_motor, None),
         )
 
         self.mono_vision.setDefaultCommand(

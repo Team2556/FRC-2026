@@ -1,5 +1,8 @@
 from phoenix6.configs import TalonFXConfiguration
-from wpimath.geometry import Transform2d, Rotation2d
+from wpimath.geometry import Transform2d, Rotation2d, Translation2d
+
+from constants.math import kMath
+
 
 class kShooterMotor:
     CAN_ID = 24
@@ -9,7 +12,8 @@ class kShooterMotor:
     _CONFIG.slot0.k_d = 0
     TARGET_RPM = -2500
 
+
 class kShooterConfig:
-    SHOOTER_OFFSET = Transform2d(-0.029566, -0.212725, Rotation2d())  # Meters
-    SHOOTER_DIRECTION = 0 # 180 for Reverse
-    
+    SHOOTER_OFFSET = Translation2d(-0.029566, -0.212725)  # Meters
+    SHOOTER_DIRECTION = 0  # 180 for Reverse
+    WHEEL_RADIUS = 4 * kMath.MetersPerInch
