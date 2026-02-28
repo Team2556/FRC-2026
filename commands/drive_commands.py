@@ -24,4 +24,4 @@ class ResetFieldCentric(commands2.Command):
         self._drivetrain = drivetrain
 
     def initialize(self):
-        self._drivetrain._drivetrain.seed_field_centric()
+        self._drivetrain.seed_field_centric()

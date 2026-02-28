@@ -64,7 +64,6 @@ class DriveToASpot(commands2.Command):
         self.opposite_alliance_setting = opposite_alliance_setting
         
         self.addRequirements(self.drivetrain)
-        self.InterruptionBehavior = commands2.InterruptionBehavior.kCancelIncoming
         
         # Cool driving structure that allows me to move robot
         self._drive = (
