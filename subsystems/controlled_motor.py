@@ -38,8 +38,8 @@ class ControlledTalonMotor(commands2.Subsystem):
         self._motor.setNeutralMode(phoenix6.signals.NeutralModeValue.COAST)
 
     def spin(self):
-        # self._motor.set_control(self.velocity_voltage.with_velocity(self._RPS))
-        self._motor.set(self._RPS / 100)
+        self._motor.set_control(self.velocity_voltage.with_velocity(self._RPS))
+        # self._motor.set(self._RPS / 100)
 
         if self.enable_smartdashboard:
             SmartDashboard.putBoolean(f"{self.name} Working", True)
@@ -48,6 +48,11 @@ class ControlledTalonMotor(commands2.Subsystem):
         self._motor.set(0)
         if self.enable_smartdashboard:
             SmartDashboard.putBoolean(f"{self.name} Working", False)
+    
+    def get_rpm(self):
+        '''Returns the RPM of the mtor'''
+        motor_rps = self._motor.get_velocity().value
+        return motor_rps * 60
 
     def periodic(self):
         

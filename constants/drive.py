@@ -9,7 +9,7 @@ class kAutoAlign:
     DIRECTION_TUNING = 0.0
     SHOOTER_ACCURACY = 2
     ROBOT_VELOCITY_MULT = 0.5
-    CORRECTION_MULT = 0.1
+    FLIGHT_TIME_SCALAR: float = 1.25
 
 
 class kDriveConfig:

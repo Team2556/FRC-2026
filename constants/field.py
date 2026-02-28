@@ -8,8 +8,8 @@ from util.alliance_constant import AllianceConstant
 
 
 class kHub:
-    POS = Pose2d(4.0, 4.0)
+    POS = Pose2d(4.0, 4.0, 0)
 
 class kField:
-    WIDTH = 8.07
-    LENGTH = 16.54
+    WIDTH = 8
+    LENGTH = 16

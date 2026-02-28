@@ -24,6 +24,8 @@ class kMath:
     """seconds / minute"""
     RPMPerAngularVelocity = (1 / RadiansPerRevolution) * SecondPerMinute
     """RPM / (radians / second)"""
+    AngularVelocityPerRPS = RadiansPerRevolution
+    """(radians / second) / RPS"""
     GRAVITY = 9.802
     """m / s / s"""
     KilogramsToPounds = 0.454
