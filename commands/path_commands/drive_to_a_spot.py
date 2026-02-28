@@ -159,7 +159,7 @@ class DriveToASpot(commands2.Command):
         else:
             self.is_within_slow_distance = False
         
-        # This magically worked after a bug that's who it looks wiers
+        # This magically worked after a bug that's who it looks wierd
         x = Translation2d(target_speed * math.cos(distance.angle().radians()), target_speed * math.sin(distance.angle().radians()), )
         return x
     
@@ -255,5 +255,6 @@ class DriveToASpot(commands2.Command):
         self.end_tolerance = 0.0
         self.end_rotation_tolerance = 0.0
         self.slow_distance = self.max_speed * 0.25
-        self.goal_end_velocity = self.max_speed * 0.5
+        # Decrease this value so robot slows down even more when transitioning between straight paths
+        self.goal_end_velocity = self.max_speed * 0.3
         return self

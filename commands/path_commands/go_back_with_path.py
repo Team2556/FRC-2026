@@ -45,7 +45,6 @@ class GoBackWithPath(commands2.Command):
             self.poseCommands[key].addRequirements(self.drivetrain)
 
     def initialize(self):
-        
         current_pose = self.drivetrain.get_state().pose
         if DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
             alliance = "blue"

@@ -39,6 +39,8 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         self.timer.stop()
         self.timer.reset()
         self.is_during_smoothing = False
+        for command in self._commands:
+            command.reset_variables()
     
     def execute(self):
         self.add_smoothing()

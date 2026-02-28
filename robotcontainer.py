@@ -12,7 +12,7 @@ from commands.spin_motor import SpinMotor
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
-from constants.key_poses import kPoses
+from constants.key_poses import kPoses, kTranslations
 from constants.shooter import kShooterMotor
 from constants.intake import kIntakeMotor
 
@@ -31,10 +31,10 @@ from commands2 import button, ParallelCommandGroup, SequentialCommandGroup, Wait
 class RobotContainer:
     def __init__(self) -> None:
         self._controller_1 = (
-            XboxController(port=0).with_deadband(0.05).with_smoothing(0.1)
+            XboxController(port=0).with_deadband(0.1).with_smoothing(0.1)
         )
         self._controller_2 = (
-            XboxController(port=1).with_deadband(0.05).with_smoothing(0.1)
+            XboxController(port=1).with_deadband(0.1).with_smoothing(0.1)
         )
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
@@ -107,10 +107,43 @@ class RobotContainer:
             vision_odometry.UpdateOdometry(self.mono_vision, self._drivetrain)
         )
         
+        # from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
+        # from commands.path_commands.drive_to_a_spot import DriveToASpot
+        # self._controller_1.x().whileTrue(
+        #     DriveToASpotSequence(
+        #         DriveToASpot(self._drivetrain, target_pose = kPoses.test_start_spot),
+        #         DriveToASpot(self._drivetrain, target_pose = kPoses.test_end_spot).with_goal_end_velocity(0),
+        #     )
+        # )
+        
+        # from commands.path_commands.drive_to_a_spot import DriveToASpot
+        # from commands.path_commands.conditional_path_sequence import ConditionalPathSequence, SequenceChooser, TranslationCondition
+        # self._controller_1.x().whileTrue(
+        #     SequenceChooser(
+        #         ConditionalPathSequence(
+        #             DriveToASpot(self._drivetrain, target_pose = kPoses.behind_trench_bottom),
+        #             DriveToASpot(self._drivetrain, target_pose = kPoses.alliance_zone_bottom).with_goal_end_velocity(0)
+        #         ).with_condition(TranslationCondition(self._drivetrain, kTranslations.bottom_left_neutral_zone, kTranslations.opposing_alliance_hub)),
+        #         ConditionalPathSequence(
+        #             DriveToASpot(self._drivetrain, target_pose = kPoses.behind_trench_top),
+        #             DriveToASpot(self._drivetrain, target_pose = kPoses.alliance_zone_top).with_goal_end_velocity(0)
+        #         ).with_condition(TranslationCondition(self._drivetrain, kTranslations.alliance_hub, kTranslations.top_right_neutral_zone)),
+        #         ConditionalPathSequence(
+        #             DriveToASpot(self._drivetrain, target_pose = kPoses.opposing_zone_bottom),
+        #             DriveToASpot(self._drivetrain, target_pose = kPoses.behind_trench_bottom),
+        #             DriveToASpot(self._drivetrain, target_pose = kPoses.alliance_zone_bottom).with_goal_end_velocity(0)
+        #         ).with_condition(TranslationCondition(self._drivetrain, kTranslations.bottom_right_neutral_zone, kTranslations.middle_right)),
+        #         ConditionalPathSequence(
+        #             DriveToASpot(self._drivetrain, target_pose = kPoses.opposing_zone_top),
+        #             DriveToASpot(self._drivetrain, target_pose = kPoses.behind_trench_top),
+        #             DriveToASpot(self._drivetrain, target_pose = kPoses.alliance_zone_top).with_goal_end_velocity(0)
+        #         ).with_condition(TranslationCondition(self._drivetrain, kTranslations.opposing_alliance_hub, kTranslations.top_right)),
+        #     ).with_mirrored_poses_on_red_alliance()
+        # )
+        
         self._controller_1.x().whileTrue(
             go_back_with_path.GoBackWithPath(self._drivetrain)
         )
-
         
         self._controller_2.rightTrigger().whileTrue(
             SpinMotor(self.intake_motor)
