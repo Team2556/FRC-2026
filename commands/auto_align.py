@@ -1,6 +1,7 @@
 import commands2
 from wpilib import SmartDashboard
 from wpimath.geometry import Translation2d, Transform2d, Rotation2d
+from wpimath.controller import PIDController
 import math
 
 from constants.field import kHub
@@ -26,7 +27,11 @@ class HubAlign(commands2.Command):
 
         self.shooter_direction = kShooterConfig.SHOOTER_DIRECTION
 
-        self.rotation_PID = kAutoAlign.ROTATIONAL_PID
+        self.rotation_PID = PIDController(
+            kAutoAlign.ROTATION_PID.p,
+            kAutoAlign.ROTATION_PID.i,
+            kAutoAlign.ROTATION_PID.d,
+        )
         self.rotation_PID.enableContinuousInput(-180.0, 180.0)
 
         self.distance_mult = kAutoAlign.CORRECTION_MULT
