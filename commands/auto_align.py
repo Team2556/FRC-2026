@@ -104,7 +104,7 @@ class HubAlign(TurretToPose):
             self.estimate_flight_time(distance_to_hub, shooter_rpm, hood_angle)
             * self.flight_time_scalar
         )
-        print(ball_flight_time)
+
         lead_ball_offset = drive_state.velocity * ball_flight_time
         target_pose = self.target.transformBy(lead_ball_offset)
 
