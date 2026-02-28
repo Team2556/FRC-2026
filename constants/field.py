@@ -8,5 +8,8 @@ from util.alliance_constant import AllianceConstant
 
 
 class kHub:
-    # POS = AllianceConstant(Translation2d(12.0, 4.0), Translation2d(4.0, 4.0))
-    POS = Translation2d(12.0, 4.0)
+    POS = Translation2d(4.0, 4.0)
+
+class kField:
+    WIDTH = 8.07
+    LENGTH = 16.54
