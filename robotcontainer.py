@@ -12,7 +12,7 @@ from commands.spin_motor import SpinMotor
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
-from constants.key_poses import kPoses
+from constants.key_poses import kPoses, kTranslations
 from constants.shooter import kShooterMotor
 from constants.intake import kIntakeMotor
 
@@ -31,10 +31,10 @@ from commands2 import button, ParallelCommandGroup, SequentialCommandGroup, Wait
 class RobotContainer:
     def __init__(self) -> None:
         self._controller_1 = (
-            XboxController(port=0).with_deadband(0.05).with_smoothing(0.1)
+            XboxController(port=0).with_deadband(0.1).with_smoothing(0.1)
         )
         self._controller_2 = (
-            XboxController(port=1).with_deadband(0.05).with_smoothing(0.1)
+            XboxController(port=1).with_deadband(0.1).with_smoothing(0.1)
         )
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
@@ -110,7 +110,6 @@ class RobotContainer:
         self._controller_1.x().whileTrue(
             go_back_with_path.GoBackWithPath(self._drivetrain)
         )
-
         
         self._controller_2.rightTrigger().whileTrue(
             SpinMotor(self.intake_motor)

@@ -21,49 +21,30 @@ class GoBackWithPath(commands2.Command):
         self.drivetrain : SwerveDriveTrain = subsystem
         
         self.poseCommands : dict[str, DriveToASpotSequence] = {
-            "blue_top": DriveToASpotSequence(
+            "top": DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_top),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_top).with_goal_end_velocity(0)
-            ),
-            "blue_bottom": DriveToASpotSequence(
+            ).with_mirrored_poses_on_red_alliance(),
+            "bottom": DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_bottom),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_bottom).with_goal_end_velocity(0)
-            ),
-            "blue_top_far": DriveToASpotSequence(
+            ).with_mirrored_poses_on_red_alliance(),
+            "top_far": DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_zone_top),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_top),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_top).with_goal_end_velocity(0)
-            ),
-            "blue_bottom_far": DriveToASpotSequence(
+            ).with_mirrored_poses_on_red_alliance(),
+            "bottom_far": DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_zone_bottom),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_bottom),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_bottom).with_goal_end_velocity(0)
-            ),
-            "red_top": DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_top),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_top).with_goal_end_velocity(0)
-            ).with_red_alliance_poses(),
-            "red_bottom": DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_bottom),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_bottom).with_goal_end_velocity(0)
-            ).with_red_alliance_poses(),
-            "red_top_far": DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_zone_top),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_top),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_top).with_goal_end_velocity(0)
-            ).with_red_alliance_poses(),
-            "red_bottom_far": DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_zone_bottom),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_bottom),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_bottom).with_goal_end_velocity(0)
-            ).with_red_alliance_poses(),
+            ).with_mirrored_poses_on_red_alliance(),
         }
         
         for key in self.poseCommands:
             self.poseCommands[key].addRequirements(self.drivetrain)
 
     def initialize(self):
-        
         current_pose = self.drivetrain.get_state().pose
         if DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
             alliance = "blue"
@@ -75,12 +56,12 @@ class GoBackWithPath(commands2.Command):
         if current_pose.X() >= 11.5 and alliance == "red":
             return
         
-        target_command_string : str = alliance
+        target_command_string : str = ""
         
         if current_pose.Y() >= 4:
-            target_command_string += "_top"
+            target_command_string += "top"
         else:
-            target_command_string += "_bottom"
+            target_command_string += "bottom"
         
         if alliance == "blue" and current_pose.X() >= 12.5:
             target_command_string += "_far"

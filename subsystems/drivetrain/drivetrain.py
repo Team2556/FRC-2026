@@ -69,3 +69,6 @@ class SwerveDriveTrain(commands2.Subsystem):
 
     def get_state(self) -> CustomSwerve.DriveState:
         return CustomSwerve.BuildDriveState(self._drivetrain.get_state())
+    
+    def seed_field_centric(self):
+        return self._drivetrain.seed_field_centric()
