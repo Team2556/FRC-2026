@@ -18,6 +18,7 @@ class HubAlign(commands2.Command):
         drivetrain: drivetrain.SwerveDriveTrain,
         controller: custom_controller.XboxController,
     ):
+        super.__init__()
         self._drivetrain = drivetrain
         self._controller = controller
 
