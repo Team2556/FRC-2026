@@ -2,7 +2,7 @@
 All poses that are important for now
 '''
 
-from wpimath.geometry import Pose2d, Rotation2d, Translation2d
+from wpimath.geometry import Pose2d, Rotation2d
 from math import pi
 
 class kPath:
@@ -11,19 +11,25 @@ class kPath:
     default_smoothing_radius = 0.5 * default_path_speed * default_smoothing_time
 
 class kPoses:
-    behind_trench_bottom = Pose2d(6.0, 0.7, Rotation2d(0))
-    behind_trench_top = Pose2d(6.0, 7.3, Rotation2d(0))
+    alliance_zone_left_trench = Pose2d(3.0, 7.45, Rotation2d(pi/2))
+    neutral_zone_left_trench = Pose2d(6.0, 7.3, Rotation2d(pi/2))
     
-    alliance_zone_bottom = Pose2d(3.0, 0.55, Rotation2d(0))
-    alliance_zone_top = Pose2d(3.0, 7.45, Rotation2d(0))
+    alliance_zone_right_trench = Pose2d(3.0, 0.55, Rotation2d(-pi/2))
+    neutral_zone_right_trench = Pose2d(6.0, 0.7, Rotation2d(-pi/2))
     
-    opposing_zone_bottom = Pose2d(13.2, 0.7, Rotation2d(0))
-    opposing_zone_top = Pose2d(13.2, 7.3, Rotation2d(0))
+    alliance_zone_right_bump = Pose2d(3, 2.5, Rotation2d(-pi/2))
+    neutral_zone_right_bump = Pose2d(6, 2.5, Rotation2d(-pi/2))
+    
+    alliance_zone_left_bump = Pose2d(6, 5.52, Rotation2d(pi/2))
+    neutral_zone_left_bump = Pose2d(3, 5.52, Rotation2d(pi/2))
+    
+    opposing_zone_left_trench = Pose2d(13.2, 7.3, Rotation2d(pi/2))
+    opposing_zone_right_trench = Pose2d(13.2, 0.7, Rotation2d(-pi/2))
     
     
+    # Temporary Poses
     start_shooting_point = Pose2d(2.345, 2.330, Rotation2d(0.279))
     bottom_climb_test = Pose2d(0.841, 2.747, Rotation2d(0))
-    
     
     test_start_spot = Pose2d(8.328, 5.974, Rotation2d(pi))
     test_end_spot = Pose2d(9.677, 5.874, Rotation2d(pi))

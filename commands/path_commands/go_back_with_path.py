@@ -21,24 +21,24 @@ class GoBackWithPath(commands2.Command):
         self.drivetrain : SwerveDriveTrain = subsystem
         
         self.poseCommands : dict[str, DriveToASpotSequence] = {
-            "top": DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_top),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_top).with_goal_end_velocity(0)
-            ).with_mirrored_poses_on_red_alliance(),
-            "bottom": DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_bottom),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_bottom).with_goal_end_velocity(0)
-            ).with_mirrored_poses_on_red_alliance(),
-            "top_far": DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_zone_top),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_top),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_top).with_goal_end_velocity(0)
-            ).with_mirrored_poses_on_red_alliance(),
-            "bottom_far": DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_zone_bottom),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.behind_trench_bottom),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_bottom).with_goal_end_velocity(0)
-            ).with_mirrored_poses_on_red_alliance(),
+            "left": DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_left_trench),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_left_trench).with_goal_end_velocity(0)
+            ),
+            "right": DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_right_trench),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_right_trench).with_goal_end_velocity(0)
+            ),
+            "left_far": DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_zone_left_trench),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_left_trench),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_left_trench).with_goal_end_velocity(0)
+            ),
+            "right_far": DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_zone_right_trench),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_right_trench),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_right_trench).with_goal_end_velocity(0)
+            ),
         }
         
         for key in self.poseCommands:
@@ -58,10 +58,14 @@ class GoBackWithPath(commands2.Command):
         
         target_command_string : str = ""
         
-        if current_pose.Y() >= 4:
-            target_command_string += "top"
+        do_top_path = current_pose.Y() >= 4
+        if alliance == "red":
+            do_top_path = not do_top_path
+        
+        if do_top_path:
+            target_command_string += "left"
         else:
-            target_command_string += "bottom"
+            target_command_string += "right"
         
         if alliance == "blue" and current_pose.X() >= 12.5:
             target_command_string += "_far"

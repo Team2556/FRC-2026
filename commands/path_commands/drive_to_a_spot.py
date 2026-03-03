@@ -3,10 +3,8 @@ import commands2
 from phoenix6 import swerve
 from subsystems.drivetrain import drivetrain
 from wpimath.geometry import Pose2d, Translation2d, Rotation2d
-from pathplannerlib.path import PathPlannerPath, PathConstraints, GoalEndState
-from pathplannerlib.auto import AutoBuilder
 import math
-from wpilib import DriverStation
+from util.flip_util import FlipUtil
 
 from wpimath.units import rotationsToRadians
 
@@ -20,8 +18,7 @@ class DriveToASpot(commands2.Command):
         end_tolerance : float = 0.1,
         end_rotation_tolerance : float = 0.1,
         goal_end_velocity : float = 0.0,
-        slow_distance : float = 0.5,
-        opposite_alliance_setting : str = "normal"
+        slow_distance : float = 0.5
     ) -> None:
         """
         Command that makes the robot go to a location. Ignores the fact that walls exist
@@ -54,14 +51,12 @@ class DriveToASpot(commands2.Command):
         self.max_speed = max_speed
         self.max_radians_per_second = rotationsToRadians(max_rps)
         
-        self.make_target_poses(target_pose)
+        self.blue_alliance_target_pose = target_pose
         
         self.end_tolerance : float = end_tolerance
         self.end_rotation_tolerance : float = end_rotation_tolerance
         self.goal_end_velocity : float = goal_end_velocity
         self.slow_distance: float = slow_distance
-        
-        self.opposite_alliance_setting = opposite_alliance_setting
         
         self.addRequirements(self.drivetrain)
         
@@ -91,27 +86,7 @@ class DriveToASpot(commands2.Command):
         self.command_weight = 1.0
         self.next_command_velocity : Pose2d = Pose2d()
         
-        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            self.target_pose = self.target_poses[self.opposite_alliance_setting]
-        else:
-            self.target_pose = self.target_poses["normal"]
-    
-    def make_target_poses(self, target_pose : Pose2d):
-        self.target_poses = {
-            "normal": target_pose,
-            "mirrored": Pose2d(
-                16.54 - target_pose.X(),
-                target_pose.Y(),
-                # This mirror math equation might work
-                target_pose.rotation().rotateBy(Rotation2d(((math.pi/2) - target_pose.rotation().radians()) * 2))
-                # target_pose.rotation().rotateBy(Rotation2d(math.pi))
-            ),
-            "inversed": Pose2d(
-                16.54 - target_pose.X(),
-                8.07 - target_pose.Y(),
-                target_pose.rotation().rotateBy(Rotation2d(rotationsToRadians(0.5)))
-            )
-        }
+        self.target_pose = FlipUtil.fieldPose(self.blue_alliance_target_pose)
         
     def update_pose_estimate(self):
         # NOTE: change self.drivetrain.get_state().pose to the actual 
@@ -221,16 +196,6 @@ class DriveToASpot(commands2.Command):
             self.pose_estimate.X() - self.target_pose.X(),
             self.pose_estimate.Y() - self.target_pose.Y()
         ).norm()
-    
-    def with_mirror_on_red_alliance(self):
-        '''Setting so pose mirrors on red alliance'''
-        self.opposite_alliance_setting = "mirrored"
-        return self
-    
-    def with_inverse_on_red_alliance(self):
-        '''Makes new pose relative to the other alliance (reflects pose across the midline of the field)'''
-        self.opposite_alliance_setting = "inversed"
-        return self
     
     def with_target_pose(self, value): self.target_pose = value; return self
     def with_max_speed(self, value): self.max_speed = value; return self
