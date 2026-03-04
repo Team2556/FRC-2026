@@ -11,17 +11,19 @@ class kPath:
     default_smoothing_radius = 0.5 * default_path_speed * default_smoothing_time
 
 class kPoses:
+    '''Locations of every pose that has to do with drive_to_a_spot pathfinding'''
+    
     alliance_zone_left_trench = Pose2d(3.0, 7.45, Rotation2d(pi/2))
     neutral_zone_left_trench = Pose2d(6.0, 7.3, Rotation2d(pi/2))
     
     alliance_zone_right_trench = Pose2d(3.0, 0.55, Rotation2d(-pi/2))
     neutral_zone_right_trench = Pose2d(6.0, 0.7, Rotation2d(-pi/2))
     
-    alliance_zone_right_bump = Pose2d(3, 2.5, Rotation2d(-pi/2))
-    neutral_zone_right_bump = Pose2d(6, 2.5, Rotation2d(-pi/2))
+    alliance_zone_right_bump = Pose2d(3.0, 2.5, Rotation2d(-pi/2))
+    neutral_zone_right_bump = Pose2d(6.0, 2.5, Rotation2d(-pi/2))
     
-    alliance_zone_left_bump = Pose2d(6, 5.52, Rotation2d(pi/2))
-    neutral_zone_left_bump = Pose2d(3, 5.52, Rotation2d(pi/2))
+    alliance_zone_left_bump = Pose2d(3.0, 5.52, Rotation2d(pi/2))
+    neutral_zone_left_bump = Pose2d(6.0, 5.52, Rotation2d(pi/2))
     
     opposing_zone_left_trench = Pose2d(13.2, 7.3, Rotation2d(pi/2))
     opposing_zone_right_trench = Pose2d(13.2, 0.7, Rotation2d(-pi/2))

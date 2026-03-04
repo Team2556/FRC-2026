@@ -19,11 +19,10 @@ from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
 
 from subsystems.controlled_motor import ControlledTalonMotor
-from commands2.button import CommandXboxController
 
 # from subsystems.intake import IntakeSubsystem
 
-from commands2 import button, ParallelCommandGroup, SequentialCommandGroup, WaitCommand, ConditionalCommand, cmd
+from commands2 import ParallelCommandGroup
 
 class RobotContainer:
     def __init__(self) -> None:
@@ -109,6 +108,11 @@ class RobotContainer:
         self._controller_1.x().whileTrue(
             go_back_with_path.GoBackWithPath(self._drivetrain)
         )
+        
+        self._controller_2.povLeft().whileTrue(self.conditional_path_commands.left_trench_advance)
+        self._controller_2.povDown().whileTrue(self.conditional_path_commands.left_bump_advance)
+        self._controller_2.povUp().whileTrue(self.conditional_path_commands.right_bump_advance)
+        self._controller_2.povRight().whileTrue(self.conditional_path_commands.right_trench_advance)
         
         self._controller_2.x().whileTrue(self.conditional_path_commands.left_trench_retreat)
         self._controller_2.a().whileTrue(self.conditional_path_commands.left_bump_retreat)
