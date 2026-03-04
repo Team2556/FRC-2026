@@ -54,9 +54,13 @@ class IntakeSubsystem(commands2.Subsystem):
     def set_deployer_positon(self, pos):
         self.left_deployer.set_control(self.deployer_position_voltage.with_position(pos))
     
-    def deploy(self):
+    def spin_up_motor(self):
         self.spinny_motor.set_control(self.velocity_voltage.with_velocity(kIntakeSpinner.TARGET_RPS))
         
+    def halten_sie_du_unhoflisch_kuhe(self):
+        self.spinny_motor.set_control(self.velocity_voltage.with_velocity(0))
+        
+    def deploy(self):    
         self.left_deployer.set_control(
             self.deployer_position_voltage
             .with_position(kIntakeDeployer.DEPLOYED_POSITION)
@@ -78,8 +82,8 @@ class IntakeSubsystem(commands2.Subsystem):
         # This only detects left limit switches for now but it still should work ideally
             
         SmartDashboard.putString("Intake/State", self.state)
-        kIntakeDeployer.INITIAL_POSITION = SmartDashboard.getNumber("Intake/Deploy Initial Position", kIntakeDeployer.INITIAL_POSITION)
         kIntakeDeployer.DEPLOYED_POSITION = SmartDashboard.getNumber("Intake/Deploy Active Position", kIntakeDeployer.DEPLOYED_POSITION)
+        kIntakeDeployer.INITIAL_POSITION = SmartDashboard.getNumber("Intake/Deploy Initial Position", kIntakeDeployer.INITIAL_POSITION)
         kIntakeSpinner.TARGET_RPS = SmartDashboard.getNumber("Intake/Spinny Speed", kIntakeSpinner.TARGET_RPS)
         
         self.deploy_editable_pid.periodic()

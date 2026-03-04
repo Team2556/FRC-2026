@@ -1,6 +1,8 @@
 from subsystems.intake import IntakeSubsystem
 from commands2 import Command
 from phoenix6 import signals
+from constants.intake import kIntakeDeployer, kIntakeSpinner
+from wpilib import SmartDashboard
 
 class IntakeCommandDeploy(Command):
     def __init__(self, intake_subsystem : IntakeSubsystem):
@@ -8,8 +10,9 @@ class IntakeCommandDeploy(Command):
         self.intake_subsystem.set_deployer_positon(1)
         self.forward_limit = self.intake_subsystem.left_deployer.get_forward_limit()
     def initialize(self):
-        self.intake_subsystem.deploy()
-        print("hello")
+        self.intake_subsystem.set_deployer_positon(kIntakeDeployer.DEPLOYED_POSITION)
+        
+        
     
     def execute(self):
         if self.forward_limit.value is signals.ForwardLimitValue.CLOSED_TO_GROUND and self.state == "deploying":
@@ -19,7 +22,6 @@ class IntakeCommandDeploy(Command):
         return super().execute()
     
     def isFinished(self):
-        return True
         return super().isFinished()
     
     def end(self, interrupted):
