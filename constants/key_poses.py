@@ -7,7 +7,7 @@ from math import pi
 
 class kPath:
     default_path_speed = 3
-    default_smoothing_time = 0.5 # Try 15-20% of path speed maybe
+    default_smoothing_time = 0.5 # Try 15-20% of path speed
     default_smoothing_radius = 0.5 * default_path_speed * default_smoothing_time
 
 class kPoses:
@@ -27,6 +27,7 @@ class kPoses:
     
     opposing_zone_left_trench = Pose2d(13.2, 7.3, Rotation2d(pi/2))
     opposing_zone_right_trench = Pose2d(13.2, 0.7, Rotation2d(-pi/2))
+    
     
     # Temporary Poses
     start_shooting_point = Pose2d(2.345, 2.330, Rotation2d(0.279))
