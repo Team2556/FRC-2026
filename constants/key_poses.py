@@ -7,7 +7,7 @@ from math import pi
 
 class kPath:
     default_path_speed = 3
-    default_smoothing_time = 0.5 # Try 15-20% of path speed
+    default_smoothing_time = 0.5 # Try 15-20% of path speed maybe
     default_smoothing_radius = 0.5 * default_path_speed * default_smoothing_time
 
 class kPoses:
