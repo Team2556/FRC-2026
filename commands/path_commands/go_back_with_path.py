@@ -24,12 +24,10 @@ class GoBackWithPath(commands2.Command):
             ),
             "left_far": DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_zone_left_trench),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_left_trench),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_left_trench).with_goal_end_velocity(0)
             ),
             "right_far": DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_zone_right_trench),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_right_trench),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_right_trench).with_goal_end_velocity(0)
             ),
         }

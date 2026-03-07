@@ -12,7 +12,6 @@ class kShooterMotor:
     _CONFIG.slot0.k_d = 0
     TARGET_RPM = -2500
 
-
 class kShooterConfig:
     SHOOTER_OFFSET = Translation2d(-0.029566, -0.212725)  # Meters
     SHOOTER_DIRECTION = 0  # 180 for Reverse

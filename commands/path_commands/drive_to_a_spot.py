@@ -5,6 +5,7 @@ from subsystems.drivetrain import drivetrain
 from wpimath.geometry import Pose2d, Translation2d, Rotation2d
 import math
 from util.flip_util import FlipUtil
+from constants.key_poses import kPath
 
 from wpimath.units import rotationsToRadians
 
@@ -69,12 +70,15 @@ class DriveToASpot(commands2.Command):
         )
         
         self.pose_estimate = Pose2d()
+        
         self.do_override_speed = False
+        self.parallel_command = None
         
         self.reset_variables()
         
     def initialize(self):
-        # This function is called when the command is first scheduled.
+        if self.parallel_command:
+            self.parallel_command.schedule()
         self.reset_variables()
     
     def reset_variables(self):
@@ -134,7 +138,7 @@ class DriveToASpot(commands2.Command):
         else:
             self.is_within_slow_distance = False
         
-        # This magically worked after a bug that's who it looks wierd
+        # This magically worked after a bug that's who it looks weird
         x = Translation2d(target_speed * math.cos(distance.angle().radians()), target_speed * math.sin(distance.angle().radians()), )
         return x
     
@@ -198,6 +202,14 @@ class DriveToASpot(commands2.Command):
             self.pose_estimate.Y() - self.target_pose.Y()
         ).norm()
     
+    def with_parallel_command(self, command : commands2.Command):
+        '''
+        If you give DriveToASpot a parallel command with this function, said parallel command 
+        will be scheduled at the same time this command is scheduled
+        '''
+        self.parallel_command = command
+        return self
+    
     def with_target_pose(self, value): self.target_pose = value; return self
     def with_max_speed(self, value): self.max_speed = value; return self
     def with_max_rps(self, value): self.max_rps = value; return self
@@ -219,9 +231,8 @@ class DriveToASpot(commands2.Command):
         self.max_rps = 0.5
         self.end_tolerance = 0.0
         self.end_rotation_tolerance = 0.0
-        self.slow_distance = self.max_speed * 0.25
-        # Decrease this value so robot slows down even more when transitioning between straight paths
-        self.goal_end_velocity = self.max_speed * 0.3
+        self.slow_distance = self.max_speed * kPath.percent_slow_distance_proportional_to_max_speed_for_sequence_path
+        self.goal_end_velocity = self.max_speed * kPath.path_transition_slow_multiplier
         return self
 
     def with_override_speed(self, new_speed):

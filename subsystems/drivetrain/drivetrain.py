@@ -12,7 +12,6 @@ from constants.drive import kDriveConfig
 
 from .driveio import CustomSwerve
 
-
 class SwerveDriveTrain(commands2.Subsystem):
     def __init__(self):
         self._drivetrain = TunerConstants.create_drivetrain()

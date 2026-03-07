@@ -7,7 +7,7 @@
 from util.custom_controller import XboxController
 
 from commands import auto_align, drive_commands, vision_odometry
-from commands.path_commands import go_back_with_path, conditional_path_commands, drive_to_a_spot_sequence
+from commands.path_commands import custom_path_commands, go_back_with_path
 from commands.spin_motor import SpinMotor
 
 from constants.vision import kCamera
@@ -69,7 +69,7 @@ class RobotContainer:
             enable_smartdashboard=True
         )
         
-        self.conditional_path_commands = conditional_path_commands.ConditionalPathCommands(self._drivetrain)
+        self.custom_path_commands = custom_path_commands.CustomPathCommands(self._drivetrain)
 
         self.configureButtonBindings()
 
@@ -109,18 +109,22 @@ class RobotContainer:
             go_back_with_path.GoBackWithPath(self._drivetrain)
         )
         
-        self._controller_2.povLeft().whileTrue(self.conditional_path_commands.left_trench_advance)
-        self._controller_2.povDown().whileTrue(self.conditional_path_commands.left_bump_advance)
-        self._controller_2.povUp().whileTrue(self.conditional_path_commands.right_bump_advance)
-        self._controller_2.povRight().whileTrue(self.conditional_path_commands.right_trench_advance)
+        self._controller_2.povLeft().whileTrue(self.custom_path_commands.left_trench_advance)
+        self._controller_2.povDown().whileTrue(self.custom_path_commands.left_bump_advance)
+        self._controller_2.povUp().whileTrue(self.custom_path_commands.right_bump_advance)
+        self._controller_2.povRight().whileTrue(self.custom_path_commands.right_trench_advance)
         
-        self._controller_2.x().whileTrue(self.conditional_path_commands.left_trench_retreat)
-        self._controller_2.a().whileTrue(self.conditional_path_commands.left_bump_retreat)
-        self._controller_2.y().whileTrue(self.conditional_path_commands.right_bump_retreat)
-        self._controller_2.b().whileTrue(self.conditional_path_commands.right_trench_retreat)
+        self._controller_2.x().whileTrue(self.custom_path_commands.left_trench_retreat)
+        self._controller_2.a().whileTrue(self.custom_path_commands.left_bump_retreat)
+        self._controller_2.y().whileTrue(self.custom_path_commands.right_bump_retreat)
+        self._controller_2.b().whileTrue(self.custom_path_commands.right_trench_retreat)
         
         self._controller_2.rightTrigger().whileTrue(
             SpinMotor(self.intake_motor)
+        )
+        
+        self._controller_1.povUp().whileTrue(
+            self.custom_path_commands.back_up_to_outpost
         )
 
     def getAutonomousCommand(self):
@@ -139,7 +143,7 @@ class RobotContainer:
                 DriveToASpot(self._drivetrain, target_pose = kPoses.auto5).with_goal_end_velocity(0),
             ),
             WaitCommand(2),
-            DriveToASpot(self._drivetrain, target_pose = kPoses.auto6).with_end_tolerance(2).with_goal_end_velocity(0),
+            DriveToASpot(self._drivetrain, target_pose = kPoses.auto6).with_end_tolerance(0.25).with_goal_end_velocity(0),
             DriveToASpot(self._drivetrain, target_pose = kPoses.auto6).with_precise_values()
         )
 
