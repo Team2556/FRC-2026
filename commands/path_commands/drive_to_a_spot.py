@@ -6,6 +6,7 @@ from wpimath.geometry import Pose2d, Translation2d, Rotation2d
 import math
 from util.flip_util import FlipUtil
 from constants.key_poses import kPath
+from wpilib import DriverStation
 
 from wpimath.units import rotationsToRadians
 
@@ -138,9 +139,10 @@ class DriveToASpot(commands2.Command):
         else:
             self.is_within_slow_distance = False
         
-        # This magically worked after a bug that's who it looks weird
-        x = Translation2d(target_speed * math.cos(distance.angle().radians()), target_speed * math.sin(distance.angle().radians()), )
-        return x
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            return Translation2d(target_speed, 0).rotateBy(distance.angle())
+        else:
+            return Translation2d(target_speed, 0).rotateBy(distance.angle() + Rotation2d(math.pi))
     
     def calcutate_angular_velocity(self) -> Rotation2d:
         
