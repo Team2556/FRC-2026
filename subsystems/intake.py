@@ -53,14 +53,10 @@ class IntakeSubsystem(commands2.Subsystem):
         
     def set_deployer_positon(self, pos):
         self.left_deployer.set_control(self.deployer_position_voltage.with_position(pos))
-    
-    def spin_up_motor(self):
+        
+    def deploy(self):   
         self.spinny_motor.set_control(self.velocity_voltage.with_velocity(kIntakeSpinner.TARGET_RPS))
-        
-    def halten_sie_du_unhoflisch_kuhe(self):
-        self.spinny_motor.set_control(self.velocity_voltage.with_velocity(0))
-        
-    def deploy(self):    
+         
         self.left_deployer.set_control(
             self.deployer_position_voltage
             .with_position(kIntakeDeployer.DEPLOYED_POSITION)

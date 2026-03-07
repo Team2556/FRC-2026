@@ -112,7 +112,12 @@ class RobotContainer:
         self._controller_1.x().whileTrue(
             go_back_with_path.GoBackWithPath(self._drivetrain)
         )
-
+        
+        self.intake_undeploy_command = IntakeCommandUndeploy(self.intake_subsystem)
+        self._controller_2.leftBumper().onTrue(
+            self.intake_undeploy_command
+        )
+        
         self.intake_deploy_command = IntakeCommandDeploy(self.intake_subsystem)
         self._controller_2.rightBumper().onTrue(
             self.intake_deploy_command

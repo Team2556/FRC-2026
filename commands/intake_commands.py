@@ -4,15 +4,21 @@ from phoenix6 import signals
 from constants.intake import kIntakeDeployer, kIntakeSpinner
 from wpilib import SmartDashboard
 
+class spindex_on(Command):
+    def _init_(self, intake_subsystem : IntakeSubsystem):
+        self.intake_subsystem = intake_subsystem
+        self.intake_subsystem.spinny_motor.set_control(self.intake_subsystem.velocity_voltage.with_velocity(kIntakeSpinner.TARGET_RPS))
+    
+    def execute(self):
+        return super().execute()
 class IntakeCommandDeploy(Command):
     def __init__(self, intake_subsystem : IntakeSubsystem):
         self.intake_subsystem = intake_subsystem
         self.intake_subsystem.set_deployer_positon(1)
         self.forward_limit = self.intake_subsystem.left_deployer.get_forward_limit()
+        
     def initialize(self):
-        self.intake_subsystem.set_deployer_positon(kIntakeDeployer.DEPLOYED_POSITION)
-        
-        
+        self.intake_subsystem.set_deployer_positon(kIntakeDeployer.DEPLOYED_POSITION)        
     
     def execute(self):
         if self.forward_limit.value is signals.ForwardLimitValue.CLOSED_TO_GROUND and self.state == "deploying":
@@ -34,6 +40,7 @@ class IntakeCommandUndeploy(Command):
         self.reverse_limit = self.intake_subsystem.left_deployer.get_reverse_limit()
     def initialize(self):
         self.intake_subsystem.deploy()
+        
     
     def execute(self):
         if self.reverse_limit.value is signals.ForwardLimitValue.CLOSED_TO_GROUND and self.state == "undeploying":
