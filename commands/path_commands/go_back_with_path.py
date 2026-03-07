@@ -1,15 +1,8 @@
 import commands2
 
-from ntcore import NetworkTableInstance
-from phoenix6 import swerve
 from subsystems.drivetrain.drivetrain import SwerveDriveTrain
-from wpimath.geometry import Pose2d, Translation2d, Rotation2d
-from pathplannerlib.path import PathPlannerPath, PathConstraints, GoalEndState
-from pathplannerlib.auto import AutoBuilder
-import math
 from wpilib import DriverStation
 
-from wpimath.units import rotationsToRadians
 from commands.path_commands.drive_to_a_spot import DriveToASpot
 from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
 from constants.key_poses import kPoses

@@ -44,7 +44,10 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         self.smoothing_time = SmartDashboard.getNumber("Sequence Path Smoothing Time", kPath.default_smoothing_time)
         
         for command in self._commands:
-            command.max_speed = self.max_speed
+            if command.do_override_speed:
+                command.max_speed = command.better_max_speed
+            else:
+                command.max_speed = self.max_speed
             command.reset_variables()
     
     def execute(self):

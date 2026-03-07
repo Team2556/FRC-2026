@@ -7,7 +7,7 @@
 from util.custom_controller import XboxController
 
 from commands import auto_align, drive_commands, vision_odometry
-from commands.path_commands import go_back_with_path, conditional_path_commands
+from commands.path_commands import go_back_with_path, conditional_path_commands, drive_to_a_spot_sequence
 from commands.spin_motor import SpinMotor
 
 from constants.vision import kCamera
@@ -124,4 +124,23 @@ class RobotContainer:
         )
 
     def getAutonomousCommand(self):
-        pass
+        from commands2 import SequentialCommandGroup, WaitCommand
+        from commands.path_commands.drive_to_a_spot import DriveToASpot
+        from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
+        from constants.key_poses import kPoses
+        
+        # ok so I've figured out how to make a good auto you just need to have fun with commands
+        auto_command = SequentialCommandGroup(
+            DriveToASpotSequence(
+                DriveToASpot(self._drivetrain, target_pose = kPoses.auto1),
+                DriveToASpot(self._drivetrain, target_pose = kPoses.auto2),
+                DriveToASpot(self._drivetrain, target_pose = kPoses.auto3).with_override_speed(1),
+                DriveToASpot(self._drivetrain, target_pose = kPoses.auto4),
+                DriveToASpot(self._drivetrain, target_pose = kPoses.auto5).with_goal_end_velocity(0),
+            ),
+            WaitCommand(2),
+            DriveToASpot(self._drivetrain, target_pose = kPoses.auto6).with_end_tolerance(2).with_goal_end_velocity(0),
+            DriveToASpot(self._drivetrain, target_pose = kPoses.auto6).with_precise_values()
+        )
+
+        return auto_command

@@ -16,8 +16,8 @@ class kPoses:
     alliance_zone_left_trench = Pose2d(3.0, 7.45, Rotation2d(pi/2))
     neutral_zone_left_trench = Pose2d(6.0, 7.3, Rotation2d(pi/2))
     
-    alliance_zone_right_trench = Pose2d(3.0, 0.55, Rotation2d(-pi/2))
-    neutral_zone_right_trench = Pose2d(6.0, 0.7, Rotation2d(-pi/2))
+    alliance_zone_right_trench = Pose2d(3.0, 0.6, Rotation2d(-pi/2))
+    neutral_zone_right_trench = Pose2d(6.0, 0.75, Rotation2d(-pi/2))
     
     alliance_zone_right_bump = Pose2d(3.0, 2.5, Rotation2d(-pi/2))
     neutral_zone_right_bump = Pose2d(6.0, 2.5, Rotation2d(-pi/2))
@@ -28,10 +28,14 @@ class kPoses:
     opposing_zone_left_trench = Pose2d(13.2, 7.3, Rotation2d(pi/2))
     opposing_zone_right_trench = Pose2d(13.2, 0.7, Rotation2d(-pi/2))
     
-    
     # Temporary Poses
-    start_shooting_point = Pose2d(2.345, 2.330, Rotation2d(0.279))
-    bottom_climb_test = Pose2d(0.841, 2.747, Rotation2d(0))
+    auto1 = Pose2d(6, 0.6, Rotation2d())
+    auto2 = Pose2d(7.81, 1.5, Rotation2d(pi))
+    auto3 = Pose2d(7.81, 5.3, Rotation2d(pi))
+    auto4 = Pose2d(5.8, 5.5, Rotation2d())
+    auto5 = Pose2d(2.3, 5.4, Rotation2d(3*pi/4))
+    auto6 = Pose2d(0.9, 4.66, Rotation2d())
     
     test_start_spot = Pose2d(8.328, 5.974, Rotation2d(pi))
     test_end_spot = Pose2d(9.677, 5.874, Rotation2d(pi))
+

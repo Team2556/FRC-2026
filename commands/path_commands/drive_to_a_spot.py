@@ -69,6 +69,7 @@ class DriveToASpot(commands2.Command):
         )
         
         self.pose_estimate = Pose2d()
+        self.do_override_speed = False
         
         self.reset_variables()
         
@@ -221,4 +222,9 @@ class DriveToASpot(commands2.Command):
         self.slow_distance = self.max_speed * 0.25
         # Decrease this value so robot slows down even more when transitioning between straight paths
         self.goal_end_velocity = self.max_speed * 0.3
+        return self
+
+    def with_override_speed(self, new_speed):
+        self.do_override_speed = True
+        self.better_max_speed = new_speed
         return self
