@@ -12,7 +12,7 @@ from commands.spin_motor import SpinMotor
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
-from constants.key_poses import kPoses, kTranslations
+from constants.key_poses import kPoses
 from constants.shooter import kShooterMotor
 from constants.intake import kIntakeMotor
 
