@@ -1,14 +1,16 @@
 '''
-All poses that are important for now
+All poses that are important for all the paths.
+These aren't known locations and should be tuned a bunch (unlike field.py)
 '''
 
 from wpimath.geometry import Pose2d, Rotation2d
 from math import pi
+from constants.field import kField
 
 class kPath:
     default_path_speed = 3
     default_smoothing_time = 0.5 # Try 15-20% of path speed maybe
-    default_smoothing_radius = 0.5 * default_path_speed * default_smoothing_time
+    default_smoothing_radius = 0.6 * default_path_speed * default_smoothing_time
     
     # High quality variable name
     percent_slow_distance_proportional_to_max_speed_for_sequence_path = 0.25
@@ -17,20 +19,19 @@ class kPath:
 class kPoses:
     '''Locations of every pose that has to do with drive_to_a_spot pathfinding'''
     
-    alliance_zone_left_trench = Pose2d(3.0, 7.45, Rotation2d(pi/2))
-    neutral_zone_left_trench = Pose2d(6.0, 7.3, Rotation2d(pi/2))
+    alliance_zone_left_trench = Pose2d(3.0, kField.WIDTH - 0.6, Rotation2d(pi/2))
+    neutral_zone_left_trench = Pose2d(6.0, kField.WIDTH - 0.7, Rotation2d(pi/2))
+    opposing_zone_left_trench = Pose2d(13.2, kField.WIDTH - 0.65, Rotation2d(pi/2))
     
     alliance_zone_right_trench = Pose2d(3.0, 0.6, Rotation2d(-pi/2))
-    neutral_zone_right_trench = Pose2d(6.0, 0.75, Rotation2d(-pi/2))
+    neutral_zone_right_trench = Pose2d(6.0, 0.7, Rotation2d(-pi/2))
+    opposing_zone_right_trench = Pose2d(13.2, 0.65, Rotation2d(-pi/2))
     
     alliance_zone_right_bump = Pose2d(3.0, 2.5, Rotation2d(-pi/2))
     neutral_zone_right_bump = Pose2d(6.0, 2.5, Rotation2d(-pi/2))
     
-    alliance_zone_left_bump = Pose2d(3.0, 5.52, Rotation2d(pi/2))
-    neutral_zone_left_bump = Pose2d(6.0, 5.52, Rotation2d(pi/2))
-    
-    opposing_zone_left_trench = Pose2d(13.2, 7.35, Rotation2d(pi/2))
-    opposing_zone_right_trench = Pose2d(13.2, 0.65, Rotation2d(-pi/2))
+    alliance_zone_left_bump = Pose2d(3.0, kField.WIDTH - 2.5, Rotation2d(pi/2))
+    neutral_zone_left_bump = Pose2d(6.0, kField.WIDTH - 2.5, Rotation2d(pi/2))
     
     # Temporary Poses
     auto1 = Pose2d(6, 0.6, Rotation2d())
