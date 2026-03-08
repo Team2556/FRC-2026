@@ -4,7 +4,6 @@ This is not for tuning but for known values, such as a position of a field eleme
 """
 
 from wpimath.geometry import Translation2d, Pose2d
-from util.alliance_constant import AllianceConstant
 
 
 class kHub:

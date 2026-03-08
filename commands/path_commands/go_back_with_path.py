@@ -8,12 +8,14 @@ from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
 from constants.key_poses import kPoses
 
 class GoBackWithPath(commands2.Command):
-    def __init__(self, subsystem: SwerveDriveTrain):
+    def __init__(self, subsystem: SwerveDriveTrain, use_bump : bool = False):
         super().__init__()
         
         self.drivetrain : SwerveDriveTrain = subsystem
         
-        self.poseCommands : dict[str, DriveToASpotSequence] = {
+        self.use_bump = use_bump
+        
+        self.trench_pose_commands : dict[str, DriveToASpotSequence] = {
             "left": DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_left_trench),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_left_trench).with_goal_end_velocity(0)
@@ -32,8 +34,27 @@ class GoBackWithPath(commands2.Command):
             ),
         }
         
-        for key in self.poseCommands:
-            self.poseCommands[key].addRequirements(self.drivetrain)
+        self.bump_pose_commands : dict[str, DriveToASpotSequence] = {
+            "left": DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_left_bump),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_left_bump).with_goal_end_velocity(0)
+            ),
+            "right": DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_right_bump),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_right_bump).with_goal_end_velocity(0)
+            ),
+            "left_far": DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_zone_left_bump),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_left_bump).with_goal_end_velocity(0)
+            ),
+            "right_far": DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_zone_right_bump),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_right_bump).with_goal_end_velocity(0)
+            ),
+        }
+        
+        for key in self.trench_pose_commands:
+            self.trench_pose_commands[key].addRequirements(self.drivetrain)
 
     def initialize(self):
         current_pose = self.drivetrain.get_state().pose
@@ -63,7 +84,10 @@ class GoBackWithPath(commands2.Command):
         if alliance == "red" and current_pose.X() <= 4.0:
             target_command_string += "_far"
         
-        self.poseCommands[target_command_string].schedule()
+        if self.use_bump:
+            self.bump_pose_commands[target_command_string].schedule()
+        else:
+            self.trench_pose_commands[target_command_string].schedule()
             
     def execute(self):
         pass
@@ -77,5 +101,8 @@ class GoBackWithPath(commands2.Command):
         # This function is called after the command ends
         # the interrupted variable stores whether or not the command was interuppted or canceled.
         
-        for key in self.poseCommands:
-            self.poseCommands[key].cancel()
+        for key in self.trench_pose_commands:
+            self.trench_pose_commands[key].cancel()
+        
+        for key in self.bump_pose_commands:
+            self.bump_pose_commands[key].cancel()

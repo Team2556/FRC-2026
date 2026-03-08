@@ -29,9 +29,11 @@ class kPoses:
     
     alliance_zone_right_bump = Pose2d(3.0, 2.5, Rotation2d(-pi/2))
     neutral_zone_right_bump = Pose2d(6.0, 2.5, Rotation2d(-pi/2))
+    opposing_zone_right_bump = Pose2d(13.2, 2.5, Rotation2d(-pi/2))
     
     alliance_zone_left_bump = Pose2d(3.0, kField.WIDTH - 2.5, Rotation2d(pi/2))
     neutral_zone_left_bump = Pose2d(6.0, kField.WIDTH - 2.5, Rotation2d(pi/2))
+    opposing_zone_left_bump = Pose2d(13.2, kField.WIDTH - 2.5, Rotation2d(pi/2))
     
     # Temporary Poses
     auto1 = Pose2d(6, 0.6, Rotation2d())

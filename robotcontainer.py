@@ -4,7 +4,7 @@
 # the WPILib BSD license file in the root directory of this project.
 #
 
-from commands.auto_align import with_controller
+from commands.auto_align import align_with_controller
 from util.custom_controller import XboxController
 
 from commands import drive_commands, vision_odometry
@@ -101,12 +101,12 @@ class RobotContainer:
 
         self._controller_1.b().whileTrue(
             ParallelCommandGroup(
-                with_controller.HubAlign(self._drivetrain, self._controller_1, self.shooter_motor, None),
+                align_with_controller.HubAlign(self._drivetrain, self._controller_1, self.shooter_motor, None),
                 SpinMotor(self.shooter_motor),
             )
         )
         self._controller_1.a().whileTrue(
-            with_controller.HubAlign(self._drivetrain, self._controller_1, self.shooter_motor, None),
+            align_with_controller.HubAlign(self._drivetrain, self._controller_1, self.shooter_motor, None),
         )
 
         self.mono_vision.setDefaultCommand(
@@ -115,6 +115,10 @@ class RobotContainer:
         
         self._controller_1.x().whileTrue(
             go_back_with_path.GoBackWithPath(self._drivetrain)
+        )
+        
+        self._controller_1.y().whileTrue(
+            go_back_with_path.GoBackWithPath(self._drivetrain, use_bump = True)
         )
         
         self._controller_2.povLeft().whileTrue(self.custom_path_commands.left_trench_advance)

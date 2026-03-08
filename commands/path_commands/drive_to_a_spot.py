@@ -221,7 +221,7 @@ class DriveToASpot(commands2.Command):
     def with_slow_distance(self, value): self.slow_distance = value; return self
     
     def with_precise_values(self):
-        self.max_speed = 1.0
+        self.max_speed = 0.65
         self.max_rps = 0.5
         self.end_tolerance = 0.01
         self.end_rotation_tolerance = 0.02
