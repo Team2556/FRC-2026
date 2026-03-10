@@ -50,7 +50,6 @@ class TurretTargetBase(commands2.Command):
         )
         return target_robot_yaw - self.shooter_direction
 
-
 class TurretTargeWithVelocity(TurretTargetBase):
     def __init__(
         self, drivetrain: SwerveDriveTrain, shooter: ControlledTalonMotor, hood: None, target: Pose2d
