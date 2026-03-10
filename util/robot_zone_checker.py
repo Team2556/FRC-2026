@@ -39,3 +39,19 @@ class RobotZoneChecker:
             FlipUtil.fieldPose(Pose2d(0, 0, Rotation2d())),
             FlipUtil.fieldPose(Pose2d(RobotZoneChecker.right_allianze_zone_x, RobotZoneChecker.field_height, Rotation2d())),
         )
+    
+    @staticmethod
+    def is_in_left_neutral_zone(pose : Pose2d):
+        return RobotZoneChecker.is_within_pose(
+            pose, 
+            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.left_neutral_zone_x, RobotZoneChecker.field_height / 2, Rotation2d())),
+            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.right_neutral_zone_x, RobotZoneChecker.field_height, Rotation2d())),
+        )
+    
+    @staticmethod
+    def is_in_right_neutral_zone(pose : Pose2d):
+        return RobotZoneChecker.is_within_pose(
+            pose, 
+            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.left_neutral_zone_x, 0, Rotation2d())),
+            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.right_neutral_zone_x, RobotZoneChecker.field_height / 2, Rotation2d())),
+        )

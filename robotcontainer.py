@@ -126,8 +126,17 @@ class RobotContainer:
                 SpinMotor(self.shooter_motor),
             )
         )
+        # self._controller_1.a().whileTrue(
+        #     align_with_controller.HubAlign(self._drivetrain, self._controller_1, self.shooter_motor, None),
+        # )
+        
         self._controller_1.a().whileTrue(
-            align_with_controller.HubAlign(self._drivetrain, self._controller_1, self.shooter_motor, None),
+            align_with_controller.ConditionalAlign(
+                self._drivetrain, 
+                self._controller_1, 
+                self.shooter_motor, 
+                self.hood_motor
+            )
         )
 
         self.mono_vision.setDefaultCommand(
