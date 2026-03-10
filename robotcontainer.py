@@ -10,17 +10,21 @@ from util.custom_controller import XboxController
 from commands import drive_commands, vision_odometry
 from commands.path_commands import custom_path_commands, go_back_with_path
 from commands.spin_motor import SpinMotor
+from commands.climb import ClimbDown, ClimbUp
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
+from constants.key_poses import kPoses
 from constants.shooter import kShooterMotor
 from constants.intake import kIntakeMotor
+from constants.climb import kClimb
 
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
 from subsystems.controlled_motor import ControlledTalonMotor
 from subsystems.shooter.shooter_hood import ShooterHood
 
+from subsystems.climbsubsystem import ClimbSubsystem
 # from subsystems.intake import IntakeSubsystem
 
 from commands2 import ParallelCommandGroup
@@ -69,6 +73,7 @@ class RobotContainer:
             kShooterMotor.TARGET_RPM,
             enable_smartdashboard=True
         )
+        self.climb_subsystem = ClimbSubsystem()
         
         self.hood_motor = ShooterHood()
         
@@ -120,7 +125,13 @@ class RobotContainer:
         self._controller_1.y().whileTrue(
             go_back_with_path.GoBackWithPath(self._drivetrain, use_bump = True)
         )
-        
+        self._controller_2.povUp().onTrue(
+            ClimbUp(self.climb_subsystem)
+        )
+        self._controller_2.povDown().onTrue(
+            ClimbDown(self.climb_subsystem)
+        )
+
         self._controller_2.povLeft().whileTrue(self.custom_path_commands.left_trench_advance)
         self._controller_2.povDown().whileTrue(self.custom_path_commands.left_bump_advance)
         self._controller_2.povUp().whileTrue(self.custom_path_commands.right_bump_advance)
