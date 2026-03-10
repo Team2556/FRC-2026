@@ -12,7 +12,6 @@ from constants.drive import kDriveConfig
 
 from .driveio import CustomSwerve
 
-
 class SwerveDriveTrain(commands2.Subsystem):
     def __init__(self):
         self._drivetrain = TunerConstants.create_drivetrain()
@@ -72,3 +71,6 @@ class SwerveDriveTrain(commands2.Subsystem):
     
     def seed_field_centric(self):
         return self._drivetrain.seed_field_centric()
+    
+    def periodic(self):
+        self._field.setRobotPose(self.get_state().pose)

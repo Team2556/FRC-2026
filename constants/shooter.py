@@ -3,7 +3,14 @@ from wpimath.geometry import Transform2d, Rotation2d, Translation2d
 
 from constants.math import kMath
 
-
+class kHoodMotor:
+    _CONFIG = TalonFXConfiguration()
+    _CONFIG.slot0.k_p = 0.2
+    _CONFIG.slot0.k_i = 0
+    _CONFIG.slot0.k_d = 0
+    
+    CAN_ID = 0
+    
 class kShooterMotor:
     CAN_ID = 24
     _CONFIG = TalonFXConfiguration()
@@ -11,7 +18,6 @@ class kShooterMotor:
     _CONFIG.slot0.k_i = 0.15
     _CONFIG.slot0.k_d = 0
     TARGET_RPM = -2500
-
 
 class kShooterConfig:
     SHOOTER_OFFSET = Translation2d(-0.029566, -0.212725)  # Meters

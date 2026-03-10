@@ -4,10 +4,11 @@
 # the WPILib BSD license file in the root directory of this project.
 #
 
+from commands.auto_align import align_with_controller
 from util.custom_controller import XboxController
 
-from commands import auto_align, drive_commands, vision_odometry
-from commands.path_commands import go_back_with_path, drive_to_a_spot, drive_to_a_spot_sequence
+from commands import drive_commands, vision_odometry
+from commands.path_commands import custom_path_commands, go_back_with_path
 from commands.spin_motor import SpinMotor
 from commands.climb import ClimbDown, ClimbUp
 
@@ -18,18 +19,15 @@ from constants.shooter import kShooterMotor
 from constants.intake import kIntakeMotor
 from constants.climb import kClimb
 
-# from pathplannerlib.auto import NamedCommands
-
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
-
 from subsystems.controlled_motor import ControlledTalonMotor
-from commands2.button import CommandXboxController
+from subsystems.shooter.shooter_hood import ShooterHood
 
 from subsystems.climbsubsystem import ClimbSubsystem
 # from subsystems.intake import IntakeSubsystem
 
-from commands2 import button, ParallelCommandGroup, SequentialCommandGroup, WaitCommand
+from commands2 import ParallelCommandGroup
 
 class RobotContainer:
     def __init__(self) -> None:
@@ -76,6 +74,15 @@ class RobotContainer:
             enable_smartdashboard=True
         )
         self.climb_subsystem = ClimbSubsystem()
+        
+        self.hood_motor = ShooterHood()
+        
+        self.custom_path_commands = custom_path_commands.CustomPathCommands(
+            self._drivetrain,
+            hood_subsystem = self.hood_motor,
+            shooter_subsystem = self.shooter_motor,
+            # climb_subsyetem = code=good
+        )
 
         self.configureButtonBindings()
 
@@ -99,12 +106,12 @@ class RobotContainer:
 
         self._controller_1.b().whileTrue(
             ParallelCommandGroup(
-                auto_align.HubAlign(self._drivetrain, self._controller_1, self.shooter_motor, None),
+                align_with_controller.HubAlign(self._drivetrain, self._controller_1, self.shooter_motor, None),
                 SpinMotor(self.shooter_motor),
             )
         )
         self._controller_1.a().whileTrue(
-            auto_align.HubAlign(self._drivetrain, self._controller_1, self.shooter_motor, None),
+            align_with_controller.HubAlign(self._drivetrain, self._controller_1, self.shooter_motor, None),
         )
 
         self.mono_vision.setDefaultCommand(
@@ -115,8 +122,8 @@ class RobotContainer:
             go_back_with_path.GoBackWithPath(self._drivetrain)
         )
         
-        self._controller_2.rightTrigger().whileTrue(
-            SpinMotor(self.intake_motor)
+        self._controller_1.y().whileTrue(
+            go_back_with_path.GoBackWithPath(self._drivetrain, use_bump = True)
         )
         self._controller_2.povUp().onTrue(
             ClimbUp(self.climb_subsystem)
@@ -125,28 +132,23 @@ class RobotContainer:
             ClimbDown(self.climb_subsystem)
         )
 
-    def getAutonomousCommand(self):
-        pass
+        self._controller_2.povLeft().whileTrue(self.custom_path_commands.left_trench_advance)
+        self._controller_2.povDown().whileTrue(self.custom_path_commands.left_bump_advance)
+        self._controller_2.povUp().whileTrue(self.custom_path_commands.right_bump_advance)
+        self._controller_2.povRight().whileTrue(self.custom_path_commands.right_trench_advance)
         
-        start_shooting_point_command = drive_to_a_spot.DriveToASpot(
-            self._drivetrain,
-            kPoses.start_shooting_point
-        ).with_reflected_red_alliance_pose()
+        self._controller_2.x().whileTrue(self.custom_path_commands.left_trench_retreat)
+        self._controller_2.a().whileTrue(self.custom_path_commands.left_bump_retreat)
+        self._controller_2.y().whileTrue(self.custom_path_commands.right_bump_retreat)
+        self._controller_2.b().whileTrue(self.custom_path_commands.right_trench_retreat)
         
-        bottom_climb_test_command = drive_to_a_spot.DriveToASpot(
-            self._drivetrain,
-            kPoses.bottom_climb_test
-        ).with_reflected_red_alliance_pose().with_precise_values()
-        
-        autonomous_command = SequentialCommandGroup(
-            # Drive to a spot
-            start_shooting_point_command,
-            # Do some shooting
-            WaitCommand(2),
-            # Drive to the climber
-            bottom_climb_test_command,
-            # Do some climbing
-            WaitCommand(2)
+        self._controller_2.rightTrigger().whileTrue(
+            SpinMotor(self.intake_motor)
         )
         
-        return autonomous_command
+        self._controller_1.povUp().whileTrue(
+            self.custom_path_commands.back_up_to_outpost
+        )
+
+    def getAutonomousCommand(self):
+        return self.custom_path_commands.test_auto
