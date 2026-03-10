@@ -83,6 +83,27 @@ class RobotContainer:
 
     def configureButtonBindings(self) -> None:
         
+        '''
+        ideal buttons idea
+        
+        Controller 1:
+            - Left Joystick: Move (field-centric)
+            - Right Joystick: Rotate
+            - Right Bumper: Auto drive toward fuel (Ben's magic button)
+            - Right Trigger: Shoot + Align to best spot
+            - Left Bumper: Magic Button
+            - Left Trigger: Move Slower
+            - Letter Buttons: Specific Paths
+            - POV Buttons: More Specific Paths
+        
+        Controller 2:
+            - Right Trigger (hold): Toggle Intake
+            - POV Up (press): Climb up
+            - POV Down (press): Climb Down
+            - further idea:
+                - Left Joystick: manually change an offset angle for hub shooting just in case
+        '''
+        
         self._drivetrain.setDefaultCommand(
             drive_commands.ControllerDrive(self._drivetrain, self._controller_1)
         )

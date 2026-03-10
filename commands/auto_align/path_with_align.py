@@ -9,7 +9,10 @@ from commands.auto_align import alignio
 
 
 class DriveWithAlign(DriveToASpot):
-    """DriveToASpot but with hub align rotation instead"""
+    """
+    DriveToASpot but with hub align rotation instead 
+    (functions as a better command for both a target_align command and drive_to_a_spot)
+    """
 
     def __init__(
         self,

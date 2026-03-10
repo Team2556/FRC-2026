@@ -47,7 +47,7 @@ class DriveToASpot(commands2.Command):
         """
         
         super().__init__()
-        
+         
         self.drivetrain : drivetrain.SwerveDriveTrain = subsystem
         
         self.max_speed = max_speed
@@ -61,14 +61,6 @@ class DriveToASpot(commands2.Command):
         self.slow_distance: float = slow_distance
         
         self.addRequirements(self.drivetrain)
-        
-        # Cool driving structure that allows me to move robot
-        self._drive = (
-            swerve.requests.FieldCentric()
-            .with_drive_request_type(
-                swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
-            )  # Use open-loop control for drive motors
-        )
         
         self.pose_estimate = Pose2d()
         
