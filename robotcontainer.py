@@ -9,13 +9,14 @@ from util.custom_controller import XboxController
 from commands import auto_align, drive_commands, vision_odometry
 from commands.path_commands import go_back_with_path, drive_to_a_spot, drive_to_a_spot_sequence
 from commands.spin_motor import SpinMotor
-from commands.climb import Climb
+from commands.climb import ClimbDown, ClimbUp
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
-from constants.key_poses import kPoses, kTranslations
+from constants.key_poses import kPoses #kTranslations
 from constants.shooter import kShooterMotor
 from constants.intake import kIntakeMotor
+from constants.climb import kClimb
 
 # from pathplannerlib.auto import NamedCommands
 
@@ -25,6 +26,7 @@ from subsystems.vision import mono_limelight
 from subsystems.controlled_motor import ControlledTalonMotor
 from commands2.button import CommandXboxController
 
+from subsystems.climbsubsystem import ClimbSubsystem
 # from subsystems.intake import IntakeSubsystem
 
 from commands2 import button, ParallelCommandGroup, SequentialCommandGroup, WaitCommand
@@ -73,6 +75,7 @@ class RobotContainer:
             kShooterMotor.TARGET_RPM,
             enable_smartdashboard=True
         )
+        self.climb_subsystem = ClimbSubsystem()
 
         self.configureButtonBindings()
 
@@ -114,6 +117,12 @@ class RobotContainer:
         
         self._controller_2.rightTrigger().whileTrue(
             SpinMotor(self.intake_motor)
+        )
+        self._controller_2.povUp().onTrue(
+            ClimbUp(self.climb_subsystem)
+        )
+        self._controller_2.povDown().onTrue(
+            ClimbDown(self.climb_subsystem)
         )
 
     def getAutonomousCommand(self):

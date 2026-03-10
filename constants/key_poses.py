@@ -5,6 +5,8 @@ All poses that are important for now
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from math import pi
 
+
+
 class kPath:
     default_path_speed = 3
     default_smoothing_time = 0.5 # Try 15-20% of path speed
@@ -27,3 +29,4 @@ class kPoses:
     
     test_start_spot = Pose2d(8.328, 5.974, Rotation2d(pi))
     test_end_spot = Pose2d(9.677, 5.874, Rotation2d(pi))
+    
