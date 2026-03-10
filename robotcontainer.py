@@ -9,6 +9,7 @@ from util.custom_controller import XboxController
 from commands import auto_align, drive_commands, vision_odometry
 from commands.path_commands import go_back_with_path, drive_to_a_spot, drive_to_a_spot_sequence
 from commands.spin_motor import SpinMotor
+from commands.climb import Climb
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
