@@ -76,7 +76,7 @@ class IntakeSubsystem(commands2.Subsystem):
     
     def periodic(self):
         # This only detects left limit switches for now but it still should work ideally
-            
+        
         SmartDashboard.putString("Intake/State", self.state)
         kIntakeDeployer.DEPLOYED_POSITION = SmartDashboard.getNumber("Intake/Deploy Active Position", kIntakeDeployer.DEPLOYED_POSITION)
         kIntakeDeployer.INITIAL_POSITION = SmartDashboard.getNumber("Intake/Deploy Initial Position", kIntakeDeployer.INITIAL_POSITION)
