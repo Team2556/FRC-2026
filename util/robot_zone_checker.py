@@ -8,10 +8,10 @@ class RobotZoneChecker:
     field_height = 8.07
     field_width = 16.54
     
-    right_allianze_zone_x = 4.00
+    right_allianze_zone_x = 3.75
     
-    left_neutral_zone_x = 5.244
-    right_neutral_zone_x = 11.385
+    left_neutral_zone_x = 5.40
+    right_neutral_zone_x = 11.30
     
     @staticmethod
     def is_between(value, num1, num2):

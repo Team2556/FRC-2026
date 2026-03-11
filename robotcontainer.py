@@ -67,7 +67,8 @@ class RobotContainer:
             kShooterMotor.CAN_ID,
             kShooterMotor._CONFIG,
             kShooterMotor.TARGET_RPM,
-            enable_smartdashboard=True
+            enable_smartdashboard=True,
+            coast_when_neutral=True
         )
         
         self.hood_motor = ShooterHood()
@@ -131,10 +132,13 @@ class RobotContainer:
         # )
         
         self._controller_1.a().whileTrue(
-            align_with_controller.ConditionalAlign(
+            align_with_controller.ConditionalAlignAndShoot(
                 self._drivetrain, 
                 self._controller_1, 
                 self.shooter_motor, 
+                self.spindex_motor,
+                self.transfer_motor1,
+                self.transfer_motor2,
                 self.hood_motor
             )
         )

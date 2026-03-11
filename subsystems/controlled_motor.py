@@ -11,6 +11,7 @@ class ControlledTalonMotor(commands2.Subsystem):
         config: phoenix6.configs.TalonFXConfiguration,
         target_rpm: float,
         enable_smartdashboard=False,
+        coast_when_neutral=False
     ):
         super().__init__()
 
@@ -35,7 +36,10 @@ class ControlledTalonMotor(commands2.Subsystem):
             SmartDashboard.putNumber(f"{self.name} Target RPM", target_rpm)
             SmartDashboard.putBoolean(f"{self.name} Working", False)
         
-        self._motor.setNeutralMode(phoenix6.signals.NeutralModeValue.COAST)
+        if coast_when_neutral:
+            self._motor.setNeutralMode(phoenix6.signals.NeutralModeValue.COAST)
+        else:
+            self._motor.setNeutralMode(phoenix6.signals.NeutralModeValue.BRAKE)
 
     def spin(self):
         self._motor.set_control(self.velocity_voltage.with_velocity(self._RPS))

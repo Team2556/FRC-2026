@@ -2,7 +2,7 @@ from wpimath.geometry import Rotation2d, Pose2d
 
 from constants.drive import kDriveConfig
 
-from subsystems.shooter.controlled_motor import ControlledMotor
+from subsystems.controlled_motor import ControlledTalonMotor
 
 from commands.path_commands.drive_to_a_spot import DriveToASpot
 from commands.auto_align import alignio
@@ -16,7 +16,7 @@ class DriveWithAlign(DriveToASpot):
 
     def __init__(
         self,
-        shooter: ControlledMotor,
+        shooter: ControlledTalonMotor,
         hood: None,
         alignment_target: Pose2d = Pose2d(),
         **args
