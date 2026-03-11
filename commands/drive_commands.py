@@ -2,7 +2,6 @@ import commands2
 
 from subsystems.drivetrain import drivetrain
 
-
 class ControllerDrive(commands2.Command):
     def __init__(self, drivetrain: drivetrain.SwerveDriveTrain, controller):
         super().__init__()

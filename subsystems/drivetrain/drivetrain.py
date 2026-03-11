@@ -8,7 +8,10 @@ from phoenix6 import swerve
 from subsystems.drivetrain.swerve_tuner import TunerConstants
 from subsystems.drivetrain.telemetry import Telemetry
 
+from util.custom_controller import CommandXboxController
+
 from constants.drive import kDriveConfig
+from constants.drive import kAutoAlign
 
 from .driveio import CustomSwerve
 
@@ -29,10 +32,13 @@ class SwerveDriveTrain(commands2.Subsystem):
 
         self._field = wpilib.Field2d()
         wpilib.SmartDashboard.putData("Field", self._field)
+        
+        self.target_align_rotation_rate = 0
+        self.do_target_align = False
 
     def drive_with_controller(
         self,
-        controller,
+        controller : CommandXboxController,
         velocity_x=None,
         velocity_y=None,
         rotation_rate=None,
@@ -43,6 +49,9 @@ class SwerveDriveTrain(commands2.Subsystem):
         _velocity_y = velocity_y if velocity_y else -controller.getLeftX()
         _rotational_rate = rotation_rate if rotation_rate else -controller.getRightX()
 
+        if self.do_target_align:
+            velocity_mult *= kAutoAlign.ROBOT_VELOCITY_MULT
+
         self._drivetrain.set_control(
             self._drive.with_velocity_x(
                 _velocity_x * kDriveConfig.MAX_SPEED * velocity_mult * TunerConstants.speed_at_12_volts
@@ -51,17 +60,24 @@ class SwerveDriveTrain(commands2.Subsystem):
                 _velocity_y * kDriveConfig.MAX_SPEED * velocity_mult * TunerConstants.speed_at_12_volts
             )  # Drive left with negative X (left)
             .with_rotational_rate(
-                _rotational_rate * kDriveConfig.MAX_ANGULAR_RATE * rotation_mult
+                self.target_align_rotation_rate if self.do_target_align else (
+                    _rotational_rate * kDriveConfig.MAX_ANGULAR_RATE * rotation_mult)
             )  # Drive counterclockwise with negative X (left)
         )
 
     def drive_with_values(self, velocity_x=0, velocity_y=0, rotation_rate=0):
-        # This version of drive_with_values is the better version (if you're merging right now)
         self._drivetrain.set_control(
             self._drive.with_velocity_x(velocity_x)
             .with_velocity_y(velocity_y)
-            .with_rotational_rate(rotation_rate)
+            .with_rotational_rate(self.target_align_rotation_rate if self.do_target_align else rotation_rate)
         )
+    
+    def set_target_align_rotation_rate(self, rotation_rate=0):
+        self.target_align_rotation_rate = rotation_rate
+        self.do_target_align = True
+    
+    def stop_target_align(self):
+        self.do_target_align = False
 
     def _stop(self):
         self.drive_with_values(velocity_x=0, velocity_y=0, rotation_rate=0)

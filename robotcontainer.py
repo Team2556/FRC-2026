@@ -71,7 +71,8 @@ class RobotContainer:
             kShooterMotor.CAN_ID,
             kShooterMotor._CONFIG,
             kShooterMotor.TARGET_RPM,
-            enable_smartdashboard=True
+            enable_smartdashboard=True,
+            coast_when_neutral=True
         )
         self.climb_subsystem = ClimbSubsystem()
         
@@ -87,6 +88,27 @@ class RobotContainer:
         self.configureButtonBindings()
 
     def configureButtonBindings(self) -> None:
+        
+        '''
+        ideal buttons idea
+        
+        Controller 1:
+            - Left Joystick: Move (field-centric)
+            - Right Joystick: Rotate
+            - Right Bumper: Auto drive toward fuel (Ben's magic button)
+            - Right Trigger: Shoot + Align to best spot
+            - Left Bumper: Magic Button
+            - Left Trigger: Move Slower
+            - Letter Buttons: Specific Paths
+            - POV Buttons: More Specific Paths
+        
+        Controller 2:
+            - Right Trigger (hold): Toggle Intake
+            - POV Up (press): Climb up
+            - POV Down (press): Climb Down
+            - idea:
+                - Left Joystick: manually change an offset angle for hub shooting just in case
+        '''
         
         self._drivetrain.setDefaultCommand(
             drive_commands.ControllerDrive(self._drivetrain, self._controller_1)
@@ -110,8 +132,17 @@ class RobotContainer:
                 SpinMotor(self.shooter_motor),
             )
         )
+        
         self._controller_1.a().whileTrue(
-            align_with_controller.HubAlign(self._drivetrain, self._controller_1, self.shooter_motor, None),
+            align_with_controller.ConditionalAlignAndShoot(
+                self._drivetrain, 
+                self._controller_1, 
+                self.shooter_motor, 
+                self.spindex_motor,
+                self.transfer_motor1,
+                self.transfer_motor2,
+                self.hood_motor
+            )
         )
 
         self.mono_vision.setDefaultCommand(
