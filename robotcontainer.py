@@ -101,7 +101,7 @@ class RobotContainer:
             - Right Trigger (hold): Toggle Intake
             - POV Up (press): Climb up
             - POV Down (press): Climb Down
-            - further idea:
+            - idea:
                 - Left Joystick: manually change an offset angle for hub shooting just in case
         '''
         
@@ -127,9 +127,6 @@ class RobotContainer:
                 SpinMotor(self.shooter_motor),
             )
         )
-        # self._controller_1.a().whileTrue(
-        #     align_with_controller.HubAlign(self._drivetrain, self._controller_1, self.shooter_motor, None),
-        # )
         
         self._controller_1.a().whileTrue(
             align_with_controller.ConditionalAlignAndShoot(
