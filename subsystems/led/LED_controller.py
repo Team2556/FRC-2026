@@ -1,6 +1,6 @@
 import commands2
 
-from ntcore import NetworkTableInstance, StringPublisher
+from util.nt_util import NTTable
 
 import phoenix6
 
@@ -38,12 +38,10 @@ class CANdleLEDController(commands2.Subsystem):
         # What NEEDs to be ran on the LED
         self.active_state_key: str | None = None
 
-        self.nt = NetworkTableInstance.getDefault().getTable("LED")
-        self.nt_sub: dict[str, StringPublisher] = {
-            "state": self.nt.getStringTopic("State").publish(),
-            "isValid": self.nt.getBooleanTopic("Valid").publish(),
-            "description": self.nt.getStringTopic("Status Description").publish(),
-        }
+        self.nt = NTTable("LED")
+        self.nt.string("State")
+        self.nt.string("Status Description")
+        self.nt.bool("Valid")
 
         default_color = CANdle_Color.RED if FlipUtil.shouldFlip() else CANdle_Color.BLUE
         self.create_state(
@@ -108,14 +106,14 @@ class CANdleLEDController(commands2.Subsystem):
         animation_request = self.get_animation(self.active_state_key)
         self.current_state_key = self.active_state_key
 
-        self.nt_sub["state"].set(self.current_state_key)
+        self.nt.set("State", self.current_state_key)
         if animation_request is None:
-            self.nt_sub["isValid"].set(False)
-            self.nt_sub["description"].set("Animation Request is None")
+            self.nt.set("Valid", False)
+            self.nt.set("Status Description", "Animation Request is None")
             return
 
         self._candle.set_control(phoenix6.controls.EmptyAnimation(0))
         STATUS_CODE = self._candle.set_control(animation_request)
 
-        self.nt_sub["isValid"].set(STATUS_CODE.is_ok())
-        self.nt_sub["description"].set(STATUS_CODE.description)
+        self.nt.set("Valid", STATUS_CODE.is_ok())
+        self.nt.set("Status Description", STATUS_CODE.description)
