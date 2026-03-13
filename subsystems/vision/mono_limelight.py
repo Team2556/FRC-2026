@@ -15,6 +15,9 @@ import math
 
 
 class Vision(commands2.Subsystem):
+    '''
+    Only uses measurments of 1 Limelight at a time. (Can take inputs from multiple)'''
+    
     def __init__(self, *camera_names):
         self._cameras = camera_names
 

@@ -15,7 +15,7 @@
             "height": 256.0,
             "type": "Match Time",
             "properties": {
-              "topic": "/SmartDashboard/Time/Time Remaining",
+              "topic": "/Time/Time Remaining",
               "period": 0.06,
               "data_type": "double",
               "time_display_mode": "Minutes and Seconds",
@@ -31,7 +31,7 @@
             "height": 256.0,
             "type": "Match Time",
             "properties": {
-              "topic": "/SmartDashboard/Time/Time Until Next Phase",
+              "topic": "/Time/Time Until Next Phase",
               "period": 0.06,
               "data_type": "double",
               "time_display_mode": "Minutes and Seconds",
