@@ -91,7 +91,7 @@ class RobotContainer:
             climb_subsyetem = self.climb_subsystem
         )
         
-        self.time_manager = TimeManager(self._controller_1, self._controller_2)
+        self.time_manager = TimeManager()
 
         self.configureButtonBindings()
 
