@@ -108,13 +108,16 @@ class RobotContainer:
             - Left Bumper: Magic Button
             - Left Trigger: Move Slower
             - Letter Buttons: Specific Paths
-            - POV Buttons: More Specific Paths
         
         Controller 2:
             - Right Trigger (hold): Toggle Intake
             - POV Up (press): Climb up
             - POV Down (press): Climb Down
-            - idea:
+            - B (hold): Spin Spindexer/Transfer
+            - Y (hold): Spin Shooter
+            - ideas:
+                - manually move the hood
+                - deploy but unintake button (in case something jams maybe)
                 - Left Joystick: manually change an offset angle for hub shooting just in case
         '''
         
@@ -171,6 +174,20 @@ class RobotContainer:
         self._controller_1.b().whileTrue(self.custom_path_commands.right_trench)
         
         # CONTROLLER 2
+        self._controller_2.b().onTrue(
+            ParallelCommandGroup(
+                SpinMotor(self.spindex_motor),
+                SpinMotor(self.transfer_motor1),
+                SpinMotor(self.transfer_motor2),
+            )
+        )
+        
+        self._controller_2.y().onTrue(
+            ParallelCommandGroup(
+                SpinMotor(self.shooter_motor),
+            )
+        )
+        
         self._controller_2.povUp().onTrue(
             ClimbUp(self.climb_subsystem)
         )
