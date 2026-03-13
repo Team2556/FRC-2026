@@ -11,6 +11,7 @@ class NTEntry(Generic[T]):
         self._publisher = publisher
         self._subscriber = subscriber
         self._default = default
+        self._publisher.set(default)
 
     def get(self) -> T:
         return self._subscriber.get(self._default)
