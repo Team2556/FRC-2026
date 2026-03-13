@@ -19,11 +19,13 @@ from constants.shooter import kShooterMotor
 from constants.intake import kIntakeMotor
 from constants.climb import kClimb
 from constants.drive import kDriveConfig
+from constants.led import kLED
 
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
 from subsystems.controlled_motor import ControlledTalonMotor
 from subsystems.shooter.shooter_hood import ShooterHood
+from subsystems.led.LED_controller import CANdleLEDController
 
 from subsystems.climbsubsystem import ClimbSubsystem
 # from subsystems.intake import IntakeSubsystem
@@ -42,6 +44,7 @@ class RobotContainer:
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
         self.mono_vision = mono_limelight.Vision(kCamera.llFront.NAME)
+        self.LED_controller = CANdleLEDController(kLED.CAN_ID)
 
         self.spindex_motor = ControlledTalonMotor(
             "Spindex",
@@ -141,7 +144,8 @@ class RobotContainer:
                 self.spindex_motor,
                 self.transfer_motor1,
                 self.transfer_motor2,
-                self.hood_motor
+                self.hood_motor,
+                self.LED_controller
             )
         )
         
