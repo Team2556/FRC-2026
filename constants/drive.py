@@ -18,6 +18,10 @@ class kAutoAlign:
     REQUIRED_SHOOT_ACCURACY_DEGREES = 5
 
 class kDriveConfig:
-    MAX_SPEED = 1.0
+    SLOW_SPEED_MULT = 0.3
+    SLOW_ROTATION_MULT = 0.3
+    
+    SPEED_MULT = 1.0
+    ROTATION_MULT = 1.0
     """Speed at 12v"""
     MAX_ANGULAR_RATE = rotationsToRadians(0.75)

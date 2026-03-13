@@ -29,9 +29,9 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
             if command == self._commands[-1] or self.smoothing_radius == 0: break
             command = command.with_sequence_pose_values()
         
-        SmartDashboard.putNumber("Sequence Path Max Speed", kPath.default_path_speed)
-        SmartDashboard.putNumber("Sequence Path Smoothing Radius", kPath.default_smoothing_radius)
-        SmartDashboard.putNumber("Sequence Path Smoothing Time", kPath.default_smoothing_time)
+        SmartDashboard.putNumber("Sequence Path/Max Speed", kPath.default_path_speed)
+        SmartDashboard.putNumber("Sequence Path/Smoothing Radius", kPath.default_smoothing_radius)
+        SmartDashboard.putNumber("Sequence Path/Smoothing Time", kPath.default_smoothing_time)
     
     def initialize(self):
         super().initialize()
@@ -39,9 +39,9 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         self.timer.reset()
         self.is_during_smoothing = False
         
-        self.max_speed = SmartDashboard.getNumber("Sequence Path Max Speed", kPath.default_path_speed)
-        self.smoothing_radius = SmartDashboard.getNumber("Sequence Path Smoothing Radius", kPath.default_smoothing_radius)
-        self.smoothing_time = SmartDashboard.getNumber("Sequence Path Smoothing Time", kPath.default_smoothing_time)
+        self.max_speed = SmartDashboard.getNumber("Sequence Path/Max Speed", kPath.default_path_speed)
+        self.smoothing_radius = SmartDashboard.getNumber("Sequence Path/Smoothing Radius", kPath.default_smoothing_radius)
+        self.smoothing_time = SmartDashboard.getNumber("Sequence Path/Smoothing Time", kPath.default_smoothing_time)
         
         for command in self._commands:
             if command.do_override_speed:
