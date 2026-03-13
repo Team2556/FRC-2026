@@ -42,8 +42,6 @@ class IntakeSubsystem(commands2.Subsystem):
         #
         self.velocity_voltage = phoenix6.controls.VelocityVoltage(velocity=0, slot=0)
         
-        self.state : str = "undeployed"
-        
         self.deploy_editable_pid = EditablePID("Intake/Deployer", self.left_deployer, self.deployer_cfg, use_slot1=True)
         self.spinny_editable_pid = EditablePID("Intake/Spinny", self.spinny_motor, self.spinny_cfg)
         SmartDashboard.putNumber("IntakeLeftDeployer position", self.left_deployer.get_position().value)
@@ -62,7 +60,6 @@ class IntakeSubsystem(commands2.Subsystem):
             .with_position(kIntakeDeployer.DEPLOYED_POSITION)
             .with_slot(0)
         )
-        self.state = "deploying"
     
     def undeploy(self):
         self.spinny_motor.disable()
@@ -72,12 +69,11 @@ class IntakeSubsystem(commands2.Subsystem):
             .with_position(kIntakeDeployer.INITIAL_POSITION)
             .with_slot(0)
         )
-        self.state = "undeployed"
     
     def periodic(self):
         # This only detects left limit switches for now but it still should work ideally
         
-        SmartDashboard.putString("Intake/State", self.state)
+        SmartDashboard.putString("Intake/State", kIntakeDeployer.STATE)
         kIntakeDeployer.DEPLOYED_POSITION = SmartDashboard.getNumber("Intake/Deploy Active Position", kIntakeDeployer.DEPLOYED_POSITION)
         kIntakeDeployer.INITIAL_POSITION = SmartDashboard.getNumber("Intake/Deploy Initial Position", kIntakeDeployer.INITIAL_POSITION)
         kIntakeSpinner.TARGET_RPS = SmartDashboard.getNumber("Intake/Spinny Speed", kIntakeSpinner.TARGET_RPS)
