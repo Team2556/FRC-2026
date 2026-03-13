@@ -11,6 +11,11 @@ class kHoodMotor:
     
     CAN_ID = 0
     
+    # Rotor position value/second when Driver 2 is manually moving it
+    INCREMENT_AMOUNT = 0.1
+    
+    # Put more hood constants here pls
+    
 class kShooterMotor:
     CAN_ID = 24
     _CONFIG = TalonFXConfiguration()

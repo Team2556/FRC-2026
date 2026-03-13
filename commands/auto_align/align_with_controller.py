@@ -38,7 +38,6 @@ class TurretToPose(alignio.TurretTargeWithVelocity):
     def end(self, interrupted):
         self._drivetrain.stop_target_align()
 
-
 class HubAlign(alignio.TurretTargeWithVelocity):
     def __init__(
         self,
