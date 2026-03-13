@@ -188,6 +188,8 @@ class RobotContainer:
             )
         )
         
+        cmd.run(lambda: self.hood_motor.increment(self._controller_2.getRightX()))
+        
         self._controller_2.povUp().onTrue(
             ClimbUp(self.climb_subsystem)
         )
