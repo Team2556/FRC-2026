@@ -6,6 +6,7 @@
 
 from commands.auto_align import align_with_controller
 from util.custom_controller import XboxController
+from util.time_manager import TimeManager
 
 from commands import drive_commands, vision_odometry
 from commands.path_commands import custom_path_commands, go_back_with_path
@@ -14,10 +15,10 @@ from commands.climb import ClimbDown, ClimbUp
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
-from constants.key_poses import kPoses
 from constants.shooter import kShooterMotor
 from constants.intake import kIntakeMotor
 from constants.climb import kClimb
+from constants.drive import kDriveConfig
 from constants.led import kLED
 
 from subsystems.drivetrain import drivetrain
@@ -29,10 +30,11 @@ from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.climbsubsystem import ClimbSubsystem
 # from subsystems.intake import IntakeSubsystem
 
-from commands2 import ParallelCommandGroup
+from commands2 import ParallelCommandGroup, cmd
 
 class RobotContainer:
     def __init__(self) -> None:
+        
         self._controller_1 = (
             XboxController(port=0).with_deadband(0.1).with_smoothing(0.1)
         )
@@ -77,6 +79,7 @@ class RobotContainer:
             enable_smartdashboard=True,
             coast_when_neutral=True
         )
+        
         self.climb_subsystem = ClimbSubsystem()
         
         self.hood_motor = ShooterHood()
@@ -85,8 +88,10 @@ class RobotContainer:
             self._drivetrain,
             hood_subsystem = self.hood_motor,
             shooter_subsystem = self.shooter_motor,
-            # climb_subsyetem = code=good
+            climb_subsyetem = self.climb_subsystem
         )
+        
+        self.time_manager = TimeManager(self._controller_1, self._controller_2)
 
         self.configureButtonBindings()
 
@@ -113,30 +118,25 @@ class RobotContainer:
                 - Left Joystick: manually change an offset angle for hub shooting just in case
         '''
         
+        self.mono_vision.setDefaultCommand(
+            vision_odometry.UpdateOdometry(self.mono_vision, self._drivetrain)
+        )
+        
+        # CONTROLLER 1
         self._drivetrain.setDefaultCommand(
             drive_commands.ControllerDrive(self._drivetrain, self._controller_1)
         )
 
-        self._controller_1.rightTrigger().whileTrue(
+        self._controller_1.rightBumper().whileTrue(
             ParallelCommandGroup(
                 SpinMotor(self.transfer_motor1),
                 SpinMotor(self.transfer_motor2),
                 SpinMotor(self.spindex_motor),
-            )
-        )
-
-        self._controller_1.rightBumper().whileTrue(SpinMotor(self.spindex_motor))
-
-        self._controller_1.leftTrigger().whileTrue(SpinMotor(self.shooter_motor))
-
-        self._controller_1.b().whileTrue(
-            ParallelCommandGroup(
-                align_with_controller.HubAlign(self._drivetrain, self._controller_1, self.shooter_motor, None),
                 SpinMotor(self.shooter_motor),
             )
         )
         
-        self._controller_1.a().whileTrue(
+        self._controller_1.rightTrigger().whileTrue(
             align_with_controller.ConditionalAlignAndShoot(
                 self._drivetrain, 
                 self._controller_1, 
@@ -148,41 +148,39 @@ class RobotContainer:
                 self.LED_controller
             )
         )
-
-        self.mono_vision.setDefaultCommand(
-            vision_odometry.UpdateOdometry(self.mono_vision, self._drivetrain)
-        )
         
-        self._controller_1.x().whileTrue(
+        self._controller_1.leftBumper().whileTrue(
             go_back_with_path.GoBackWithPath(self._drivetrain)
         )
         
-        self._controller_1.y().whileTrue(
-            go_back_with_path.GoBackWithPath(self._drivetrain, use_bump = True)
+        self._controller_1.leftTrigger().whileTrue(
+            cmd.runEnd(
+                lambda: self._drivetrain.change_speed_mult(kDriveConfig.SLOW_SPEED_MULT, kDriveConfig.SLOW_ROTATION_MULT),
+                lambda: self._drivetrain.change_speed_mult()
+            )
         )
+
+        # self._controller_1.povLeft().whileTrue(self.custom_path_commands.left_trench_advance)
+        # self._controller_1.povDown().whileTrue(self.custom_path_commands.left_bump_advance)
+        # self._controller_1.povUp().whileTrue(self.custom_path_commands.right_bump_advance)
+        # self._controller_1.povRight().whileTrue(self.custom_path_commands.right_trench_advance)
+    
+        self._controller_1.x().whileTrue(self.custom_path_commands.left_trench)
+        self._controller_1.a().whileTrue(self.custom_path_commands.left_bump)
+        self._controller_1.y().whileTrue(self.custom_path_commands.right_bump)
+        self._controller_1.b().whileTrue(self.custom_path_commands.right_trench)
+        
+        # CONTROLLER 2
         self._controller_2.povUp().onTrue(
             ClimbUp(self.climb_subsystem)
         )
+        
         self._controller_2.povDown().onTrue(
             ClimbDown(self.climb_subsystem)
         )
-
-        self._controller_2.povLeft().whileTrue(self.custom_path_commands.left_trench_advance)
-        self._controller_2.povDown().whileTrue(self.custom_path_commands.left_bump_advance)
-        self._controller_2.povUp().whileTrue(self.custom_path_commands.right_bump_advance)
-        self._controller_2.povRight().whileTrue(self.custom_path_commands.right_trench_advance)
-        
-        self._controller_2.x().whileTrue(self.custom_path_commands.left_trench_retreat)
-        self._controller_2.a().whileTrue(self.custom_path_commands.left_bump_retreat)
-        self._controller_2.y().whileTrue(self.custom_path_commands.right_bump_retreat)
-        self._controller_2.b().whileTrue(self.custom_path_commands.right_trench_retreat)
         
         self._controller_2.rightTrigger().whileTrue(
             SpinMotor(self.intake_motor)
-        )
-        
-        self._controller_1.povUp().whileTrue(
-            self.custom_path_commands.back_up_to_outpost
         )
 
     def getAutonomousCommand(self):

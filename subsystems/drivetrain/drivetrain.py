@@ -25,7 +25,7 @@ class SwerveDriveTrain(commands2.Subsystem):
         self._brake = swerve.requests.SwerveDriveBrake()
         self._point = swerve.requests.PointWheelsAt()
 
-        self._logger = Telemetry(kDriveConfig.MAX_SPEED)
+        self._logger = Telemetry(kDriveConfig.SPEED_MULT)
         self._drivetrain.register_telemetry(
             lambda state: self._logger.telemeterize(state)
         )
@@ -54,14 +54,14 @@ class SwerveDriveTrain(commands2.Subsystem):
 
         self._drivetrain.set_control(
             self._drive.with_velocity_x(
-                _velocity_x * kDriveConfig.MAX_SPEED * velocity_mult * TunerConstants.speed_at_12_volts
+                _velocity_x * kDriveConfig.SPEED_MULT * velocity_mult * TunerConstants.speed_at_12_volts
             )  # Drive forward with negative Y (forward)
             .with_velocity_y(
-                _velocity_y * kDriveConfig.MAX_SPEED * velocity_mult * TunerConstants.speed_at_12_volts
+                _velocity_y * kDriveConfig.SPEED_MULT * velocity_mult * TunerConstants.speed_at_12_volts
             )  # Drive left with negative X (left)
             .with_rotational_rate(
                 self.target_align_rotation_rate if self.do_target_align else (
-                    _rotational_rate * kDriveConfig.MAX_ANGULAR_RATE * rotation_mult)
+                    _rotational_rate * kDriveConfig.MAX_ANGULAR_RATE * kDriveConfig.ROTATION_MULT * rotation_mult)
             )  # Drive counterclockwise with negative X (left)
         )
 
@@ -71,6 +71,10 @@ class SwerveDriveTrain(commands2.Subsystem):
             .with_velocity_y(velocity_y)
             .with_rotational_rate(self.target_align_rotation_rate if self.do_target_align else rotation_rate)
         )
+    
+    def change_speed_mult(self, speed=1, rotation=1):
+        kDriveConfig.SPEED_MULT = speed
+        kDriveConfig.ROTATION_MULT = rotation
     
     def set_target_align_rotation_rate(self, rotation_rate=0):
         self.target_align_rotation_rate = rotation_rate

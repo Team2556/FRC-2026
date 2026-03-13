@@ -30,11 +30,11 @@ class ControlledTalonMotor(commands2.Subsystem):
         self.enable_smartdashboard = enable_smartdashboard
         
         if self.enable_smartdashboard:
-            SmartDashboard.putNumber(f"{self.name} k_p", self.cfg.slot0.k_p)
-            SmartDashboard.putNumber(f"{self.name} k_i", self.cfg.slot0.k_i)
-            SmartDashboard.putNumber(f"{self.name} k_d", self.cfg.slot0.k_d)
-            SmartDashboard.putNumber(f"{self.name} Target RPM", target_rpm)
-            SmartDashboard.putBoolean(f"{self.name} Working", False)
+            SmartDashboard.putNumber(f"Controlled Motors/{self.name}/ k_p", self.cfg.slot0.k_p)
+            SmartDashboard.putNumber(f"Controlled Motors/{self.name}/ k_i", self.cfg.slot0.k_i)
+            SmartDashboard.putNumber(f"Controlled Motors/{self.name}/ k_d", self.cfg.slot0.k_d)
+            SmartDashboard.putNumber(f"Controlled Motors/{self.name}/ Target RPM", target_rpm)
+            SmartDashboard.putBoolean(f"Controlled Motors/{self.name}/ Working", False)
         
         if coast_when_neutral:
             self._motor.setNeutralMode(phoenix6.signals.NeutralModeValue.COAST)
@@ -46,12 +46,12 @@ class ControlledTalonMotor(commands2.Subsystem):
         # self._motor.set(self._RPS / 100)
 
         if self.enable_smartdashboard:
-            SmartDashboard.putBoolean(f"{self.name} Working", True)
+            SmartDashboard.putBoolean(f"Controlled Motors/{self.name}/ Working", True)
 
     def stop_motor(self):
         self._motor.set(0)
         if self.enable_smartdashboard:
-            SmartDashboard.putBoolean(f"{self.name} Working", False)
+            SmartDashboard.putBoolean(f"Controlled Motors/{self.name}/ Working", False)
     
     def get_rpm(self):
         '''Returns the RPM of the mtor'''
@@ -61,26 +61,26 @@ class ControlledTalonMotor(commands2.Subsystem):
     def periodic(self):
         
         SmartDashboard.putNumber(
-            f"{self.name} RPM", self._motor.get_velocity().value * 60
+            f"Controlled Motors/{self.name}{"/" if self.enable_smartdashboard else ""} RPM", self._motor.get_velocity().value * 60
         )
 
         if self.enable_smartdashboard:
-            self._RPS = SmartDashboard.getNumber(f"{self.name} Target RPM", 0) / 60
+            self._RPS = SmartDashboard.getNumber(f"Controlled Motors/{self.name}/ Target RPM", 0) / 60
 
             value_changed = (
-                (self.cfg.slot0.k_p != SmartDashboard.getNumber(f"{self.name} k_p", 0))
+                (self.cfg.slot0.k_p != SmartDashboard.getNumber(f"Controlled Motors/{self.name} k_p", 0))
                 or (
                     self.cfg.slot0.k_i
-                    != SmartDashboard.getNumber(f"{self.name} k_i", 0)
+                    != SmartDashboard.getNumber(f"Controlled Motors/{self.name}/ k_i", 0)
                 )
                 or (
                     self.cfg.slot0.k_d
-                    != SmartDashboard.getNumber(f"{self.name} k_d", 0)
+                    != SmartDashboard.getNumber(f"Controlled Motors/{self.name}/ k_d", 0)
                 )
             )
 
             if value_changed:
-                self.cfg.slot0.k_p = SmartDashboard.getNumber(f"{self.name} k_p", 0)
-                self.cfg.slot0.k_i = SmartDashboard.getNumber(f"{self.name} k_i", 0)
-                self.cfg.slot0.k_d = SmartDashboard.getNumber(f"{self.name} k_d", 0)
+                self.cfg.slot0.k_p = SmartDashboard.getNumber(f"Controlled Motors/{self.name}/ k_p", 0)
+                self.cfg.slot0.k_i = SmartDashboard.getNumber(f"Controlled Motors/{self.name}/ k_i", 0)
+                self.cfg.slot0.k_d = SmartDashboard.getNumber(f"Controlled Motors/{self.name}/ k_d", 0)
                 self._motor.configurator.apply(self.cfg)
