@@ -9,6 +9,7 @@ from phoenix6.swerve.swerve_drivetrain import SwerveDrivetrain
 from phoenix6.hardware.pigeon2 import Pigeon2
 
 from util import limelight_helpers
+from util.nt_util import NTTable
 
 from subsystems.drivetrain.swerve_tuner import TunerConstants
 
@@ -21,8 +22,13 @@ class Vision(commands2.Subsystem):
 
     def __init__(self, *camera_names):
         self._cameras = camera_names
-
         self._pigeon = Pigeon2(TunerConstants._pigeon_id)
+
+        self.nt = NTTable("Vision")
+        self.nt.bool("Drive State Provided")
+        self.nt.float("Robot Tilt")
+        self.nt.float("Required April Tags", kOdometry.MIN_APRILTAGS)
+        self.nt.float("Maximum Tilt Error", kOdometry.MAX_TILT_ERROR)
 
     def get_best_measurement(self, estimates: list[limelight_helpers.PoseEstimate]):
         if not estimates:
@@ -48,24 +54,22 @@ class Vision(commands2.Subsystem):
         if measurement.tagCount < kOdometry.MIN_APRILTAGS:
             return None
 
-        robot_angle_error = math.sqrt(
-            self._pigeon.get_pitch().value ** 2 + self._pigeon.get_roll().value ** 2
-        )
-        if abs(robot_angle_error) > kOdometry.MAX_ROTATIONAL_ERROR:
-            return None
-
         return measurement
 
     def get_vision_odometry(
         self, drive_state: SwerveDrivetrain.SwerveDriveState = None, use_megatag2=False
     ):
         """Chooses the most accurate limelight and calculates the odometry"""
+
+        self.nt.set("Drive State Provided", drive_state is not None)
         if drive_state is None:
-            raise ("Drive state not provided for vision based odometry")
+            return
 
         headingDeg = drive_state.pose.rotation().degrees()
         omegaRPS = units.radiansToRotations(drive_state.speeds.omega)
         if kOdometry.MAX_RPS < abs(omegaRPS):
+            return None
+        if self.tilt > kOdometry.MAX_TILT_ERROR:
             return None
 
         entry_name = "botpose_orb_wpiblue" if use_megatag2 else "botpose_wpiblue"
@@ -83,7 +87,10 @@ class Vision(commands2.Subsystem):
         return measurement
 
     def periodic(self):
-        offset = math.sqrt(
+        self.tilt = math.sqrt(
             self._pigeon.get_pitch().value ** 2 + self._pigeon.get_roll().value ** 2
         )
-        SmartDashboard.putNumber("Robot Unflatness", offset)
+        self.nt.set("Robot Tilt", self.tilt)
+
+        kOdometry.MAX_TILT_ERROR = self.nt.get("Maximum Tilt Error")
+        kOdometry.MIN_APRILTAGS = self.nt.get("Required April Tags")
