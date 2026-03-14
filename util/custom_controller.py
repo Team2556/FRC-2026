@@ -15,7 +15,6 @@ class XboxController(CommandXboxController):
 
         self._deadband = 0
         self._mult = 1
-        self._smooth_factor = 0
 
         self.maxSmoothingExponent = 4.0
 
@@ -34,14 +33,6 @@ class XboxController(CommandXboxController):
         self._mult = mult
         return self
 
-    def with_smoothing(self, smooth_factor):
-        """
-        Smooths the controller to have a gradual increase in speed
-        (0: No smoothing, 1: Full Smoothing)
-        """
-        self._smooth_factor = smooth_factor
-        return self
-
     def _apply(self, val):
         """
         Applies the custom controller settings
@@ -57,9 +48,7 @@ class XboxController(CommandXboxController):
         )  # Remap the joystick values excluding deadband zone
 
         # Apply Smoothing
-        # smoothExp = 1.0 + self._smooth_factor * (self.maxSmoothingExponent - 1)
-        smoothExp = 3
-        _val = _sign * pow(abs(_val), smoothExp)
+        _val = _sign * 3
 
         # Apply Mult
         _val = _val * self._mult
