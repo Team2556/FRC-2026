@@ -78,7 +78,7 @@ class ShooterHood(Subsystem):
         if self.is_hard_stopped():
             self.hood_motor.set_position(0)
 
-        self.nt.set("Hood Angle", self.hood_motor.get())
+        self.nt.set("Hood Angle", self.hood_motor.get_position().value)
         kHoodMotor.RESET_HOME_SPEED = self.nt.get("Reset Home Speed")
         kHoodMotor.INCREMENT_AMOUNT = self.nt.get("Increment Amount")
 

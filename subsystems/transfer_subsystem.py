@@ -41,15 +41,15 @@ class TransferSubsystem(Subsystem):
     def activate(self):
         self.spindex_motor.set_control(self.spindex_velocity_voltage.with_velocity(kSpindexer.TARGET_RPM / 60))
         self.up_transfer_motor.set_control(self.up_transfer_velocity_voltage.with_velocity(kTransfer.TARGET_RPM / 60))
-        self.spindexer_nt.float("Ideal RPM", kSpindexer.TARGET_RPM / 60)
-        self.up_transfer_nt.float("Ideal RPM", kTransfer.TARGET_RPM / 60)
+        self.spindexer_nt.set("Ideal RPM", kSpindexer.TARGET_RPM / 60)
+        self.up_transfer_nt.set("Ideal RPM", kTransfer.TARGET_RPM / 60)
         self.nt.set("Active", True)
 
     def stop(self):
         self.spindex_motor.set_control(self.spindex_velocity_voltage.with_velocity(0))
         self.up_transfer_motor.set_control(self.up_transfer_velocity_voltage.with_velocity(0))
-        self.spindexer_nt.float("Ideal RPM", 0)
-        self.up_transfer_nt.float("Ideal RPM", 0)
+        self.spindexer_nt.set("Ideal RPM", 0)
+        self.up_transfer_nt.set("Ideal RPM", 0)
         self.nt.set("Active", False)
     
     def periodic(self):    
