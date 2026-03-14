@@ -7,8 +7,6 @@ from wpimath.geometry import Pose2d, Rotation2d
 from math import pi
 from constants.field import kField
 
-
-
 class kPath:
     default_path_speed = 3
     default_smoothing_time = 0.5 # Try 15-20% of path speed maybe
