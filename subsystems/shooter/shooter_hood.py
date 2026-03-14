@@ -38,7 +38,7 @@ class ShooterHood(Subsystem):
 
     def increment(self, mult):
         self.hood_motor.set_control(
-            self.hood_motor.get() + ((kHoodMotor.INCREMENT_AMOUNT / 20) * mult)
+            self.hood_motor.get_position().value + ((kHoodMotor.INCREMENT_AMOUNT / 20) * mult)
         )
 
     def set_position(self, position):
