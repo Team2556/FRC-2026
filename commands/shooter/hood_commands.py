@@ -4,6 +4,7 @@ from commands2 import Command
 
 from util.nt_util import NTTable
 from util.robot_zone_checker import RobotZoneChecker
+from util.custom_controller import XboxController
 
 from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.drivetrain.drivetrain import SwerveDriveTrain
@@ -33,3 +34,14 @@ class ResetShooterHood(Command):
         self.shooter_hood.set_speed(0)
 
         self.nt.set("Resetting", False)
+
+
+class ManualShooterHood(Command):
+    def __init__(self, shooter_hood: ShooterHood, _controller: XboxController):
+        self._shooter_hood = shooter_hood
+        self._controller = _controller
+        
+        self.addRequirements(self._shooter_hood)
+    
+    def execute(self):
+        self._shooter_hood.increment(self._controller.getRightX())

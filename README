@@ -1,59 +1,68 @@
+# FRC 2026 Rebuilt
+*Team 2556 Radioactive Roaches*
 
-< Current Button Bindings >
+---
 
-Controller 1:
-- Left Joystick: Move (field-centric)
-- Right Joystick: Rotate
-- Right Bumper: Auto drive toward fuel (Ben's magic button)
-- Right Trigger: Shoot + Align to best spot
-- Left Bumper: Magic Button
-- Left Trigger: Move Slower
-- Letter Buttons: Specific Paths
+## Button Bindings
 
-Controller 2:
-- Right Trigger (hold): Toggle Intake
-- POV Up (press): Climb up
-- POV Down (press): Climb Down
-- B (hold): Spin Spindexer/Transfer
-- Y (hold): Spin Shooter
-- ideas:
-    - manually move the hood
-    - deploy but unintake button (in case something jams maybe)
-    - Left Joystick: manually change an offset angle for hub shooting just in case
+### Controller 1
+- **Left Joystick** - Move (field-centric)
+- **Right Joystick** - Rotate
+- **Right Bumper** - Auto drive toward fuel (Ben's magic button)
+- **Right Trigger** - Shoot + align to best spot
+- **Left Bumper** - Magic button
+- **Left Trigger** - Move slower
+- **Letter Buttons** - Specific paths
 
-< Motor CAN ID's (If there's any confusion refer to constants/canbys.py as the more correct reference)>
+### Controller 2
+- **Right Trigger** *(hold)* - Toggle intake
+- **POV Up** *(press)* - Climb up
+- **POV Down** *(press)* - Climb down
+- **B** *(hold)* - Spin spindexer / transfer
+- **Y** *(hold)* - Spin shooter
 
-- RoboRIO: 0
+#### Controller 2 Ideas
+- Manually move the hood
+- Deploy but unintake button (jam recovery)
+- **Left Joystick** - Manually adjust offset angle for hub shooting
 
-Drive: 1-13
-- FL Drive: 1
-- FR Drive: 2
-- BL Drive: 3
-- BR Drive: 4
-- FL Steer: 5
-- FR Steer: 6
-- BL Steer: 7
-- BR Steer: 8
-- FL CANCoder: 9
-- FR CANCoder: 10
-- BL CANCoder: 11
-- BR CANCoder: 12
-- Pigeon: 13
+---
 
-Intake: 16-20
-- Spinny Intake Motor: 16
-- Left Intake Deploy: 17
-- Right Intake Deploy: 18
+## CAN IDs
+> For the authoritative reference, see `constants/canbus.py`
 
-Transfer: 21-25
-- Spindexer: 21
-- Up Transfer: 22
+### RoboRIO
+- **RoboRIO** - 0
 
-Shooter: 26-30
-- Shooter Bottom: 26
-- Shooter Top: 27
-- Hood Motor: 28
+### Drive (1-13)
+- **FL Drive** - 1
+- **FR Drive** - 2
+- **BL Drive** - 3
+- **BR Drive** - 4
+- **FL Steer** - 5
+- **FR Steer** - 6
+- **BL Steer** - 7
+- **BR Steer** - 8
+- **FL CANCoder** - 9
+- **FR CANCoder** - 10
+- **BL CANCoder** - 11
+- **BR CANCoder** - 12
+- **Pigeon** - 13
 
-Everything Else: 31+
-- REV Power Hub: 31
-- CANDle: 32
+### Intake (16-20)
+- **Spinny Intake Motor** - 16
+- **Left Intake Deploy** - 17
+- **Right Intake Deploy** - 18
+
+### Transfer (21-25)
+- **Spindexer** - 21
+- **Up Transfer** - 22
+
+### Shooter (26-30)
+- **Shooter Bottom** - 26
+- **Shooter Top** - 27
+- **Hood Motor** - 28
+
+### Everything Else (31+)
+- **REV Power Hub** - 31
+- **CANDle** - 32

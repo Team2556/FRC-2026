@@ -18,7 +18,7 @@ from subsystems.transfer_sybsystem import TransferSubsystem
 from commands.auto_align import alignio
 from commands.shooter.hood_commands import ResetShooterHood
 
-class TurretToPose(alignio.TurretTargeWithVelocity):
+class TurretToPose(alignio.TurretTargetWithVelocity):
     def __init__(
         self,
         drivetrain,
@@ -40,7 +40,7 @@ class TurretToPose(alignio.TurretTargeWithVelocity):
     def end(self, interrupted):
         self._drivetrain.stop_target_align()
 
-class HubAlign(alignio.TurretTargeWithVelocity):
+class HubAlign(alignio.TurretTargetWithVelocity):
     def __init__(
         self,
         drivetrain,
@@ -131,5 +131,6 @@ class ConditionalAlignAndShoot(HubAlign):
 
     def end(self, interrupted):
         super().end(interrupted)
+        
         ResetShooterHood(self._hood).schedule()
         self.transfer_subsystem.stop()
