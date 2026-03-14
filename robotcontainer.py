@@ -120,9 +120,6 @@ class RobotContainer:
                 self.LED_controller
             )
         )
-        self._controller_1.rightTrigger().onTrue(
-            ResetShooterHood(self.hood_motor)
-        )
         
         self._controller_1.leftBumper().whileTrue(
             go_back_with_path.GoBackWithPath(self._drivetrain)
