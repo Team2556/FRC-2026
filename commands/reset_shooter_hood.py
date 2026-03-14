@@ -20,5 +20,5 @@ class ResetShooterHood(Command):
     
     def end(self, interrupted):
         self.shooter_hood.set_speed(0)
-        self.shooter_hood.set_position(0)
+        self.shooter_hood.hood_motor.set_position(0) # Sets internal position to 0; doesn't move the motor
         SmartDashboard.putBoolean("Hood Motor Resetting", False)
