@@ -13,9 +13,7 @@ class kIntakeDeployer:
 
     LEFT_CAN_ID = 0
     RIGHT_CAN_ID = 0
-    # right follows left using Follower in intake.py subsystems line 27
     
-    STATE = "undeployed"
     DEPLOYED_POSITION = 0.5
 
 
