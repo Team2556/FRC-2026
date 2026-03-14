@@ -2,7 +2,6 @@ import commands2
 
 from subsystems.drivetrain import drivetrain
 
-
 class ControllerDrive(commands2.Command):
     def __init__(self, drivetrain: drivetrain.SwerveDriveTrain, controller):
         super().__init__()
@@ -24,4 +23,4 @@ class ResetFieldCentric(commands2.Command):
         self._drivetrain = drivetrain
 
     def initialize(self):
-        self._drivetrain._drivetrain.seed_field_centric()
+        self._drivetrain.seed_field_centric()

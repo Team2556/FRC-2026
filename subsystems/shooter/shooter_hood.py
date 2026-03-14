@@ -1,49 +1,44 @@
-import commands2
-import math
-import commands2
+from commands2 import Subsystem
+from constants.shooter import kHoodMotor
+from phoenix6.hardware import TalonFX
+from phoenix6.controls import PositionVoltage, DutyCycleOut
+from phoenix6.signals import NeutralModeValue, ForwardLimitValue
+from util.editable_pid import EditablePID
+from util.nt_util import NTTable
+import ntcore
 
-
-class ShooterHood(commands2.Subsystem):
+# Currently not tested yet. Also there is no "shooter hood" command as all the controlling for
+# this subsystem will be in the hub align command (eventually)
+class ShooterHood(Subsystem):
     def __init__(self):
-        super().__init__()
-
-        self._gravity = 9.81
-
-        self._hub_height = 1.8288
-        self._shooter_height = 0.3048
-        self._ball_weight = 0.215
-
-        self._min_angle = math.radians(10)
-        self._max_angle = math.radians(60)
-
-        self._effciency_factor = 0.9
-
-        self.with_RPS(60)
-
-    def with_RPS(self, RPS):
-        self._exit_velocity = RPS * (2 * math.pi) * self._effciency_factor
-        return self
-
-    def calculate_hood_angle(self, distance: float) -> float:
-        delta_h = self._hub_height - self._shooter_height
-        v = self._exit_velocity
-        d = distance
-        g = self._gravity
-
-        discriminant = v**4 - g * (g * d**2 + 2 * delta_h * v**2)
-
-        if discriminant < 0:
-            return self._max_angle
-
-        sqrt_term = math.sqrt(discriminant)
-
-        theta = math.atan((v**2 - sqrt_term) / (g * d))
-
-        return max(self._min_angle, min(self._max_angle, theta))
-
-    def angle_hood(self, distance: float):
-        target_angle = self.calculate_hood_angle(distance)
-        self.set_angle(target_angle)
-
-    def set_angle(self, angle):
-        print("Set Hood Angle to", angle)
+        self.hood_motor = TalonFX(kHoodMotor.CAN_ID, "rio")
+        self.hood_motor.configurator.apply(kHoodMotor._CONFIG)
+        self.hood_motor.setNeutralMode(NeutralModeValue.BRAKE)
+        
+        self.position_voltage = PositionVoltage(0)
+        self.home_voltage = DutyCycleOut(0)
+        
+        self.nt = NTTable("Hood")
+        self.nt.float("Hood Angle", 0.0)
+        self.nt.float("Reset Home Speed", kHoodMotor.RESET_HOME_SPEED)
+        self.editable_pid = EditablePID("Hood", self.hood_motor, kHoodMotor._CONFIG)
+    
+    def set_speed(self, speed):
+        self.hood_motor.set_control(self.home_voltage.with_output(speed))
+    
+    def increment(self, mult):
+        self.hood_motor.set_control(self.hood_motor.get() + ((kHoodMotor.INCREMENT_AMOUNT / 20) * mult))
+    
+    def set_position(self, position):
+        self.hood_motor.set_control(self.position_voltage.with_position(position))
+    
+    def is_hard_stopped(self):
+        return self.hood_motor.get_reverse_limit().value is ForwardLimitValue.CLOSED_TO_GROUND
+    
+    def reset(self):
+        self.set_position(0)
+        
+    def periodic(self):
+        self.nt.set("Hood Angle", self.hood_motor.get())
+        kHoodMotor.RESET_HOME_SPEED = self.nt.get("Reset Home Speed")
+        self.editable_pid.periodic()

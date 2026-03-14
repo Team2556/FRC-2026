@@ -1,12 +1,12 @@
 import commands2
 
-from ntcore import NetworkTableInstance
 from phoenix6 import swerve
 from subsystems.drivetrain import drivetrain
 from wpimath.geometry import Pose2d, Translation2d, Rotation2d
-from pathplannerlib.path import PathPlannerPath, PathConstraints, GoalEndState
-from pathplannerlib.auto import AutoBuilder
 import math
+from util.flip_util import FlipUtil
+from constants.key_poses import kPath
+from wpilib import DriverStation 
 
 from wpimath.units import rotationsToRadians
 
@@ -47,12 +47,13 @@ class DriveToASpot(commands2.Command):
         """
         
         super().__init__()
-        
+         
         self.drivetrain : drivetrain.SwerveDriveTrain = subsystem
         
         self.max_speed = max_speed
         self.max_radians_per_second = rotationsToRadians(max_rps)
-        self.target_pose : Pose2d = target_pose
+        
+        self.blue_alliance_target_pose = target_pose
         
         self.end_tolerance : float = end_tolerance
         self.end_rotation_tolerance : float = end_rotation_tolerance
@@ -60,22 +61,17 @@ class DriveToASpot(commands2.Command):
         self.slow_distance: float = slow_distance
         
         self.addRequirements(self.drivetrain)
-        self.InterruptionBehavior = commands2.InterruptionBehavior.kCancelIncoming
-        
-        # Cool driving structure that allows me to move robot
-        self._drive = (
-            swerve.requests.FieldCentric()
-            .with_drive_request_type(
-                swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
-            )  # Use open-loop control for drive motors
-        )
         
         self.pose_estimate = Pose2d()
+        
+        self.do_override_speed = False
+        self.parallel_command = None
         
         self.reset_variables()
         
     def initialize(self):
-        # This function is called when the command is first scheduled.
+        if self.parallel_command:
+            self.parallel_command.schedule()
         self.reset_variables()
     
     def reset_variables(self):
@@ -87,6 +83,8 @@ class DriveToASpot(commands2.Command):
         
         self.command_weight = 1.0
         self.next_command_velocity : Pose2d = Pose2d()
+        
+        self.target_pose = FlipUtil.fieldPose(self.blue_alliance_target_pose)
         
     def update_pose_estimate(self):
         # NOTE: change self.drivetrain.get_state().pose to the actual 
@@ -133,9 +131,10 @@ class DriveToASpot(commands2.Command):
         else:
             self.is_within_slow_distance = False
         
-        # This magically worked after a bug that's who it looks wiers
-        x = Translation2d(target_speed * math.cos(distance.angle().radians()), target_speed * math.sin(distance.angle().radians()), )
-        return x
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            return Translation2d(target_speed, 0).rotateBy(distance.angle())
+        else:
+            return Translation2d(target_speed, 0).rotateBy(distance.angle() + Rotation2d(math.pi))
     
     def calcutate_angular_velocity(self) -> Rotation2d:
         
@@ -197,24 +196,12 @@ class DriveToASpot(commands2.Command):
             self.pose_estimate.Y() - self.target_pose.Y()
         ).norm()
     
-    def with_red_alliance_pose(self):
-        '''Makes new pose relative to the other alliance (reflects pose across the midline of the field)'''
-        self.target_pose = Pose2d(
-            16.54 - self.target_pose.X(),
-            self.target_pose.Y(),
-            # This mirror math equasion might work
-            self.target_pose.rotation().rotateBy(Rotation2d(((math.pi/2) - self.target_pose.rotation().radians()) * 2))
-            # self.target_pose.rotation().rotateBy(Rotation2d(math.pi))
-        )
-        return self
-    
-    def with_reflected_red_alliance_pose(self):
-        '''Makes new pose relative to the other alliance (reflects pose across the midline of the field)'''
-        self.target_pose = Pose2d(
-            16.54 - self.target_pose.X(),
-            8.07 - self.target_pose.Y(),
-            self.target_pose.rotation().rotateBy(Rotation2d(rotationsToRadians(0.5)))
-        )
+    def with_parallel_command(self, command : commands2.Command):
+        '''
+        If you give DriveToASpot a parallel command with this function, said parallel command 
+        will be scheduled at the same time this command is scheduled
+        '''
+        self.parallel_command = command
         return self
     
     def with_target_pose(self, value): self.target_pose = value; return self
@@ -226,18 +213,23 @@ class DriveToASpot(commands2.Command):
     def with_slow_distance(self, value): self.slow_distance = value; return self
     
     def with_precise_values(self):
-        self.max_speed = 1.0
+        self.max_speed = 0.65
         self.max_rps = 0.5
-        self.end_tolerance = 0.03
+        self.end_tolerance = 0.01
         self.end_rotation_tolerance = 0.02
-        self.goal_end_velocity = 0.0
-        self.slow_distance = 1.0
+        self.goal_end_velocity = 0.1
+        self.slow_distance = 0.25
         return self
 
     def with_sequence_pose_values(self):
         self.max_rps = 0.5
         self.end_tolerance = 0.0
         self.end_rotation_tolerance = 0.0
-        self.slow_distance = self.max_speed * 0.25
-        self.goal_end_velocity = self.max_speed * 0.5
+        self.slow_distance = self.max_speed * kPath.percent_slow_distance_proportional_to_max_speed_for_sequence_path
+        self.goal_end_velocity = self.max_speed * kPath.path_transition_slow_multiplier
+        return self
+
+    def with_override_speed(self, new_speed):
+        self.do_override_speed = True
+        self.better_max_speed = new_speed
         return self

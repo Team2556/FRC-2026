@@ -37,5 +37,5 @@ class IntakeCommandUndeploy(Command):
 
     def end(self, interrupted):
         self.intake_subsystem.set_internal_deployer_position(0)
-        self.intake_subsystem.spinny_motor.set_control(self.intake_subsystem.velocity_voltage.with_velocity(0))
+        self.intake_subsystem.set_spinny_speed(0)
         kIntakeDeployer.STATE = "undeployed"

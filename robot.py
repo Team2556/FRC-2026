@@ -36,7 +36,7 @@ class MyRobot(commands2.TimedCommandRobot):
 
         This runs after the mode specific periodic functions, but before LiveWindow and
         SmartDashboard integrated updating."""
-        commands2.CommandScheduler.getInstance().run()
+        data = wpilib.DriverStation.getGameSpecificMessage()
 
     def disabledInit(self) -> None:
         """This function is called once each time the robot enters Disabled mode."""
@@ -63,7 +63,7 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def teleopPeriodic(self) -> None:
         """This function is called periodically during operator control"""
-        pass
+        commands2.CommandScheduler.getInstance().run()
 
     def testInit(self) -> None:
         commands2.CommandScheduler.getInstance().cancelAll()
