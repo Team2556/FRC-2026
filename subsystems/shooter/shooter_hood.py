@@ -24,8 +24,8 @@ class ShooterHood(Subsystem):
         self.hood_motor.configurator.apply(kHoodMotor._CONFIG)
         self.hood_motor.setNeutralMode(NeutralModeValue.BRAKE)
 
-        self.position_voltage = PositionVoltage(0)
-        self.home_voltage = DutyCycleOut(0)
+        self.position_request = PositionVoltage(0)
+        self.home_request = DutyCycleOut(0)
 
         self.nt = NTTable("Shooter").get_subtable("Hood")
         self.nt.float("Hood Position", 0.0)
@@ -37,16 +37,18 @@ class ShooterHood(Subsystem):
         )
 
     def set_speed(self, speed):
-        self.hood_motor.set_control(self.home_voltage.with_output(speed))
+        self.hood_motor.set_control(self.home_request.with_output(speed))
 
     def increment(self, mult):
-        self.hood_motor.set_control(
-            self.hood_motor.get_position().value
-            + ((kHoodMotor.INCREMENT_AMOUNT / 20) * mult)
+        self.set_position(
+            self.position_request.with_position(
+                self.hood_motor.get_position().value
+                + ((kHoodMotor.INCREMENT_AMOUNT / 20) * mult)
+            )
         )
 
     def set_position(self, position):
-        self.hood_motor.set_control(self.position_voltage.with_position(position))
+        self.hood_motor.set_control(self.position_request.with_position(position))
 
     def is_hard_stopped(self):
         return (
