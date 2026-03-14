@@ -10,11 +10,16 @@ from subsystems.drivetrain.telemetry import Telemetry
 
 from util.custom_controller import CommandXboxController
 from util.robot_zone_checker import RobotZoneChecker
+from util.nt_util import NTTable
+from util.flip_util import FlipUtil
+from util.math_helpers import distanceFromPose2dtoPose2d
 
 from constants.drive import kDriveConfig
 from constants.drive import kAutoAlign
+from constants.field import kHub
 
 from .driveio import CustomSwerve
+
 
 class SwerveDriveTrain(commands2.Subsystem):
     def __init__(self):
@@ -33,13 +38,20 @@ class SwerveDriveTrain(commands2.Subsystem):
 
         self._field = wpilib.Field2d()
         wpilib.SmartDashboard.putData("Field", self._field)
-        
+
+        self.hub_pos = FlipUtil.fieldPose(kHub.POS)
+
         self.target_align_rotation_rate = 0
         self.do_target_align = False
 
+        self.nt = NTTable("Drivetrain")
+        self.nt.bool("Do Target Align")
+        self.nt.float("Target Align Rotation Rate")
+        self.nt.float("Distance to Hub")
+
     def drive_with_controller(
         self,
-        controller : CommandXboxController,
+        controller: CommandXboxController,
         velocity_x=None,
         velocity_y=None,
         rotation_rate=None,
@@ -55,14 +67,26 @@ class SwerveDriveTrain(commands2.Subsystem):
 
         self._drivetrain.set_control(
             self._drive.with_velocity_x(
-                _velocity_x * kDriveConfig.SPEED_MULT * velocity_mult * TunerConstants.speed_at_12_volts
+                _velocity_x
+                * kDriveConfig.SPEED_MULT
+                * velocity_mult
+                * TunerConstants.speed_at_12_volts
             )  # Drive forward with negative Y (forward)
             .with_velocity_y(
-                _velocity_y * kDriveConfig.SPEED_MULT * velocity_mult * TunerConstants.speed_at_12_volts
+                _velocity_y
+                * kDriveConfig.SPEED_MULT
+                * velocity_mult
+                * TunerConstants.speed_at_12_volts
             )  # Drive left with negative X (left)
             .with_rotational_rate(
-                self.target_align_rotation_rate if self.do_target_align else (
-                    _rotational_rate * kDriveConfig.MAX_ANGULAR_RATE * kDriveConfig.ROTATION_MULT * rotation_mult)
+                self.target_align_rotation_rate
+                if self.do_target_align
+                else (
+                    _rotational_rate
+                    * kDriveConfig.MAX_ANGULAR_RATE
+                    * kDriveConfig.ROTATION_MULT
+                    * rotation_mult
+                )
             )  # Drive counterclockwise with negative X (left)
         )
 
@@ -70,37 +94,49 @@ class SwerveDriveTrain(commands2.Subsystem):
         self._drivetrain.set_control(
             self._drive.with_velocity_x(velocity_x)
             .with_velocity_y(velocity_y)
-            .with_rotational_rate(self.target_align_rotation_rate if self.do_target_align else rotation_rate)
+            .with_rotational_rate(
+                self.target_align_rotation_rate
+                if self.do_target_align
+                else rotation_rate
+            )
         )
-    
+
     def change_speed_mult(self, speed=1, rotation=1):
         kDriveConfig.SPEED_MULT = speed
         kDriveConfig.ROTATION_MULT = rotation
-    
+
     def set_target_align_rotation_rate(self, rotation_rate=0):
         self.target_align_rotation_rate = rotation_rate
         self.do_target_align = True
-    
+
     def stop_target_align(self):
         self.do_target_align = False
-    
+
     def should_stop_shooting(self):
-        '''Uses a bit of velocity projection to detect if robot should stop shooting to transition between bump/trench'''
-        projected_pose = self.get_state().pose.transformBy(self.get_state().velocity * kDriveConfig.LOOKAHEAD_SECONDS)
-        half_projected_pose = self.get_state().pose.transformBy(self.get_state().velocity * kDriveConfig.LOOKAHEAD_SECONDS * 0.5)
-        return (
-            RobotZoneChecker.is_near_transition_zone(projected_pose)
-            or RobotZoneChecker.is_near_transition_zone(half_projected_pose)
+        """Uses a bit of velocity projection to detect if robot should stop shooting to transition between bump/trench"""
+        projected_pose = self.get_state().pose.transformBy(
+            self.get_state().velocity * kDriveConfig.LOOKAHEAD_SECONDS
         )
+        half_projected_pose = self.get_state().pose.transformBy(
+            self.get_state().velocity * kDriveConfig.LOOKAHEAD_SECONDS * 0.5
+        )
+        return RobotZoneChecker.is_near_transition_zone(
+            projected_pose
+        ) or RobotZoneChecker.is_near_transition_zone(half_projected_pose)
 
     def _stop(self):
         self.drive_with_values(velocity_x=0, velocity_y=0, rotation_rate=0)
 
     def get_state(self) -> CustomSwerve.DriveState:
         return CustomSwerve.BuildDriveState(self._drivetrain.get_state())
-    
+
     def seed_field_centric(self):
         return self._drivetrain.seed_field_centric()
-    
+
     def periodic(self):
-        self._field.setRobotPose(self.get_state().pose)
+        pose = self.get_state().pose
+        self._field.setRobotPose(pose)
+
+        self.nt.set("Distance to Hub", distanceFromPose2dtoPose2d(pose, self.hub_pos))
+        self.nt.set("Do Target Align", self.do_target_align)
+        self.nt.set("Target Align Rotation Rate", self.target_align_rotation_rate)
