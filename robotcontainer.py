@@ -11,12 +11,16 @@ from util.send_fms_data import SendFMSData
 from commands import drive_commands, vision_odometry
 from commands.path_commands import custom_path_commands, go_back_with_path
 from commands.spin_motor import SpinMotor
+from commands.intake_commands import IntakeCommandDeploy, IntakeCommandUndeploy
 from commands.climb import ClimbDown, ClimbUp
 from commands.reset_shooter_hood import ResetShooterHood
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
 from constants.shooter import kShooterMotor
+from constants.intake import kIntakeSpinner
+
+# from pathplannerlib.auto import NamedCommands
 from constants.intake import kIntakeMotor
 from constants.climb import kClimb
 from constants.drive import kDriveConfig
@@ -25,6 +29,9 @@ from constants.led import kLED
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
 from subsystems.controlled_motor import ControlledTalonMotor
+from subsystems.intake import IntakeSubsystem
+
+from commands2.button import CommandXboxController
 from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.led.LED_controller import CANdleLEDController
 
@@ -45,6 +52,8 @@ class RobotContainer:
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
         self.mono_vision = mono_limelight.Vision(kCamera.llFront.NAME)
+        
+        self.intake_subsystem = IntakeSubsystem()
         self.LED_controller = CANdleLEDController(kLED.CAN_ID)
 
         self.spindex_motor = ControlledTalonMotor(
@@ -58,13 +67,6 @@ class RobotContainer:
             kTrasnfer.motor_1.CAN_ID,
             kTrasnfer.motor_1._CONFIG,
             kTrasnfer.motor_1.TARGET_RPM,
-        )
-        self.intake_motor = ControlledTalonMotor(
-            "Intake Motor",
-            kIntakeMotor.CAN_ID,
-            kIntakeMotor._CONFIG,
-            kIntakeMotor.TARGET_RPM,
-            enable_smartdashboard=True,
         )
         self.shooter_motor = ControlledTalonMotor(
             "Shooter",
@@ -161,9 +163,12 @@ class RobotContainer:
             ClimbDown(self.climb_subsystem)
         )
         
-        self._controller_2.rightTrigger().whileTrue(
-            SpinMotor(self.intake_motor)
+        self._controller_2.rightTrigger().onTrue(
+            IntakeCommandDeploy(self.intake_subsystem)
         )
-
+        self._controller_2.rightTrigger().onFalse(
+            IntakeCommandUndeploy(self.intake_subsystem)
+        )
+        
     def getAutonomousCommand(self):
         return self.custom_path_commands.test_auto

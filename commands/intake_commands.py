@@ -1,12 +1,41 @@
 from subsystems.intake import IntakeSubsystem
 from commands2 import Command
-
-class IntakeCommand(Command):
+from phoenix6 import signals
+from constants.intake import kIntakeDeployer, kIntakeSpinner
+from wpilib import SmartDashboard
+   
+class IntakeCommandDeploy(Command):
     def __init__(self, intake_subsystem : IntakeSubsystem):
         self.intake_subsystem = intake_subsystem
+        self.forward_limit = self.intake_subsystem.left_deployer.get_forward_limit()
         
     def initialize(self):
-        self.intake_subsystem.deploy()
+        self.intake_subsystem.set_deployer_positon(kIntakeDeployer.DEPLOYED_POSITION)
+        self.intake_subsystem.change_deployer_slot(0)
+        self.intake_subsystem.set_spinny_speed(kIntakeSpinner.TARGET_RPM)
+        kIntakeDeployer.STATE = "deploying"    
+    
+    def isFinished(self):
+        return self.forward_limit.value is signals.ForwardLimitValue.CLOSED_TO_GROUND
     
     def end(self, interrupted):
-        self.intake_subsystem.undeploy()
+        self.intake_subsystem.change_deployer_slot(1)
+        kIntakeDeployer.STATE = "deployed"
+
+class IntakeCommandUndeploy(Command):
+    def __init__(self, intake_subsystem : IntakeSubsystem):
+        self.intake_subsystem = intake_subsystem
+        self.reverse_limit = self.intake_subsystem.left_deployer.get_reverse_limit()
+        
+    def initialize(self):
+        self.intake_subsystem.set_deployer_positon(0)
+        self.intake_subsystem.change_deployer_slot(0)
+        kIntakeDeployer.STATE = "undeploying"
+    
+    def isFinished(self):
+        return self.reverse_limit.value is signals.ForwardLimitValue.CLOSED_TO_GROUND
+
+    def end(self, interrupted):
+        self.intake_subsystem.set_internal_deployer_position(0)
+        self.intake_subsystem.set_spinny_speed(0)
+        kIntakeDeployer.STATE = "undeployed"
