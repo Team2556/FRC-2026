@@ -6,6 +6,7 @@ from phoenix6 import signals
 from wpilib import SmartDashboard, DigitalInput
 from constants.intake import kIntakeSpinner, kIntakeDeployer
 from util.editable_pid import EditablePID
+from util.nt_util import NTTable
 
 class IntakeSubsystem(commands2.Subsystem):
     def __init__(self):
@@ -31,7 +32,7 @@ class IntakeSubsystem(commands2.Subsystem):
         self.spinny_motor.configurator.apply(self.spinny_cfg)
         # sets config info for motor
         self.right_deployer.set_control(
-            #tells Right motor to follow left usinf the parameters--> device ID of the leader(is defined as the CAN ID in line 14, TalonFX rcognizes the first parameter as the device_id) and the 
+            #tells Right motor to follow left usinf the parameters--> device ID of the leader(is defined as the CAN ID in line 14, TalonFX rcognizes the first parameter as the device_id) 
             Follower(
                 self.left_deployer.device_id,                                 
                 motor_alignment = signals.spn_enums.MotorAlignmentValue.OPPOSED
@@ -41,13 +42,17 @@ class IntakeSubsystem(commands2.Subsystem):
         self.deployer_position_voltage = phoenix6.controls.PositionVoltage(position=0, slot=0)
         self.velocity_voltage = phoenix6.controls.VelocityVoltage(velocity=0, slot=0)
         
+        self.state = "undeployed"
+        
+        self.nt = NTTable("Intake")
+        self.nt.float("Deployer Position", 0.0)
+        self.nt.float("Spinny RPM", 0.0)
+        self.nt.float("Target Deployer Position", kIntakeDeployer.DEPLOYED_POSITION)
+        self.nt.float("Target Spinny RPM", kIntakeSpinner.TARGET_RPM)
+        self.nt.string("State", self.state)
+        
         self.deploy_editable_pid = EditablePID("Intake/Deployer", self.left_deployer, self.deployer_cfg, use_slot1=True)
         self.spinny_editable_pid = EditablePID("Intake/Spinny", self.spinny_motor, self.spinny_cfg)
-        
-        # SmartDashboard.putNumber("IntakeLeftDeployer position", self.left_deployer.get_position().value)
-        # SmartDashboard.putNumber("Intake/Deploy Initial Position", kIntakeDeployer.INITIAL_POSITION)
-        # SmartDashboard.putNumber("Intake/Deploy Active Position", kIntakeDeployer.DEPLOYED_POSITION)
-        # SmartDashboard.putNumber("Intake/Spinny Speed", kIntakeSpinner.TARGET_RPS)
         
     def set_deployer_positon(self, pos):
         self.left_deployer.set_control(self.deployer_position_voltage.with_position(pos))
@@ -62,10 +67,11 @@ class IntakeSubsystem(commands2.Subsystem):
         self.spinny_motor.set_control(self.velocity_voltage.with_velocity(rpm / 60))
     
     def periodic(self):
-        SmartDashboard.putString("Intake/State", kIntakeDeployer.STATE)
-        # kIntakeDeployer.DEPLOYED_POSITION = SmartDashboard.getNumber("Intake/Deploy Active Position", kIntakeDeployer.DEPLOYED_POSITION)
-        # kIntakeDeployer.INITIAL_POSITION = SmartDashboard.getNumber("Intake/Deploy Initial Position", kIntakeDeployer.INITIAL_POSITION)
-        # kIntakeSpinner.TARGET_RPS = SmartDashboard.getNumber("Intake/Spinny Speed", kIntakeSpinner.TARGET_RPS)
+        self.nt.set("Deployer Position", self.left_deployer.get_position().value)
+        self.nt.set("Spinny RPM", self.left_deployer.get_velocity().value * 60)
+        self.nt.set("State", self.state)
+        kIntakeDeployer.DEPLOYED_POSITION = self.nt.get("Target Deployer Position")
+        kIntakeSpinner.TARGET_RPM = self.nt.get("Target Spinny RPM")
         
         self.deploy_editable_pid.periodic()
         self.spinny_editable_pid.periodic()

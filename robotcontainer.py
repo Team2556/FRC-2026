@@ -13,16 +13,10 @@ from commands.path_commands import custom_path_commands, go_back_with_path
 from commands.spin_motor import SpinMotor
 from commands.intake_commands import IntakeCommandDeploy, IntakeCommandUndeploy
 from commands.climb import ClimbDown, ClimbUp
-from commands.reset_shooter_hood import ResetShooterHood
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
 from constants.shooter import kShooterMotor
-from constants.intake import kIntakeSpinner
-
-# from pathplannerlib.auto import NamedCommands
-from constants.intake import kIntakeMotor
-from constants.climb import kClimb
 from constants.drive import kDriveConfig
 from constants.led import kLED
 
@@ -30,13 +24,11 @@ from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
 from subsystems.controlled_motor import ControlledTalonMotor
 from subsystems.intake import IntakeSubsystem
+from subsystems.climb_subsystem import ClimbSubsystem
 
-from commands2.button import CommandXboxController
 from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.led.LED_controller import CANdleLEDController
 
-from subsystems.climb_subsystem import ClimbSubsystem
-# from subsystems.intake import IntakeSubsystem
 
 from commands2 import ParallelCommandGroup, cmd
 
