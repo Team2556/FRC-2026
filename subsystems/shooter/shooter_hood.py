@@ -29,7 +29,7 @@ class ShooterHood(Subsystem):
         self.nt = NTTable("Shooter").get_subtable("Hood")
         self.nt.float("Hood Position", 0.0)
         self.nt.float("Reset Home Speed", kHoodMotor.RESET_HOME_SPEED)
-        self.editable_pid = EditablePID("Hood", self.hood_motor, kHoodMotor._CONFIG)
+        self.editable_pid = EditablePID("Shooter/Hood", self.hood_motor, kHoodMotor._CONFIG)
 
     def set_speed(self, speed):
         self.hood_motor.set_control(self.home_voltage.with_output(speed))
