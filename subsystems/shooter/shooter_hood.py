@@ -39,6 +39,10 @@ class ShooterHood(Subsystem):
         self.set_position(0)
         
     def periodic(self):
+        if self.is_hard_stopped():
+            self.hood_motor.set_position(0)
+        
         self.nt.set("Hood Angle", self.hood_motor.get())
         kHoodMotor.RESET_HOME_SPEED = self.nt.get("Reset Home Speed")
+        
         self.editable_pid.periodic()

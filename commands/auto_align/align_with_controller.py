@@ -15,7 +15,7 @@ from subsystems.controlled_motor import ControlledTalonMotor
 from subsystems.shooter.shooter_hood import ShooterHood
 
 from commands.auto_align import alignio
-from commands.reset_shooter_hood import ResetShooterHood
+from commands.shooter.hood_commands import ResetShooterHood
 
 class TurretToPose(alignio.TurretTargeWithVelocity):
     def __init__(
