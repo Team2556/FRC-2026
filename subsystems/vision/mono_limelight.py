@@ -9,6 +9,7 @@ from phoenix6.swerve.swerve_drivetrain import SwerveDrivetrain
 from phoenix6.hardware.pigeon2 import Pigeon2
 
 from util import limelight_helpers
+from util.nt_util import NTTable
 
 from subsystems.drivetrain.swerve_tuner import TunerConstants
 
@@ -23,6 +24,11 @@ class Vision(commands2.Subsystem):
         self._cameras = camera_names
 
         self._pigeon = Pigeon2(TunerConstants._pigeon_id)
+        self.offset = 0
+        
+        self.nt = NTTable('Vision')
+        self.nt.bool('Drive State Provided')
+        self.nt.float('Robot Tilt')
 
     def get_best_measurement(self, estimates: list[limelight_helpers.PoseEstimate]):
         if not estimates:
@@ -60,12 +66,15 @@ class Vision(commands2.Subsystem):
         self, drive_state: SwerveDrivetrain.SwerveDriveState = None, use_megatag2=False
     ):
         """Chooses the most accurate limelight and calculates the odometry"""
+        self.nt.set('Drive State Provided', drive_state is not None)
         if drive_state is None:
             raise ("Drive state not provided for vision based odometry")
 
         headingDeg = drive_state.pose.rotation().degrees()
         omegaRPS = units.radiansToRotations(drive_state.speeds.omega)
         if kOdometry.MAX_RPS < abs(omegaRPS):
+            return None
+        if kOdometry.MAX_ROTATIONAL_ERROR < self.offset:
             return None
 
         entry_name = "botpose_orb_wpiblue" if use_megatag2 else "botpose_wpiblue"
@@ -83,7 +92,5 @@ class Vision(commands2.Subsystem):
         return measurement
 
     def periodic(self):
-        offset = math.sqrt(
-            self._pigeon.get_pitch().value ** 2 + self._pigeon.get_roll().value ** 2
-        )
-        SmartDashboard.putNumber("Robot Unflatness", offset)
+        self.offset = math.sqrt(self._pigeon.get_pitch().value**2 + self._pigeon.get_roll().value**2)
+        self.nt.set('Robot Tilt', self.offset)

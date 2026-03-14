@@ -22,6 +22,7 @@ class ClimbSubsystem(commands2.Subsystem):
         self.nt = NTTable("Climb")
         self.nt.float("Position Up", kClimb.POSITION_UP)
         self.nt.float("Position Down", kClimb.POSITION_DOWN)
+        self.nt.float("Ideal Position", 0.0)
         self.nt.float("Position", 0.0)
         self.nt.string("State", self.state)
 
@@ -32,12 +33,14 @@ class ClimbSubsystem(commands2.Subsystem):
             self.climb_position_voltage.with_position(kClimb.POSITION_UP).with_slot(0)
         )
         self.state = "up"
+        self.nt.set("Ideal Position", kClimb.POSITION_UP)
 
     def lower_climb(self):
         self.climb_motor.set_control(
             self.climb_position_voltage.with_position(kClimb.POSITION_DOWN).with_slot(0)
         )
         self.state = "down"
+        self.nt.set("Ideal Position", kClimb.POSITION_DOWN)
 
     def periodic(self):
         kClimb.POSITION_UP = self.nt.get("Position Up")

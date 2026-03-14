@@ -8,7 +8,7 @@ class RobotZoneChecker:
     field_height = 8.07
     field_width = 16.54
     
-    right_allianze_zone_x = 3.5
+    right_alliance_zone_x = 3.5
     
     left_neutral_zone_x = 5.7
     right_neutral_zone_x = 10.8
@@ -43,7 +43,7 @@ class RobotZoneChecker:
         return RobotZoneChecker.is_within_pose(
             pose, 
             FlipUtil.fieldPose(Pose2d(0, 0, Rotation2d())),
-            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.right_allianze_zone_x, RobotZoneChecker.field_height, Rotation2d())),
+            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.right_alliance_zone_x, RobotZoneChecker.field_height, Rotation2d())),
         )
     
     @staticmethod

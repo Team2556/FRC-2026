@@ -62,7 +62,6 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def teleopPeriodic(self) -> None:
         """This function is called periodically during operator control"""
-        commands2.CommandScheduler.getInstance().run()
 
     def testInit(self) -> None:
         commands2.CommandScheduler.getInstance().cancelAll()
