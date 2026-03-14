@@ -72,10 +72,10 @@ class DualMotorShooter(commands2.Subsystem):
     def periodic(self):
         self.editable_PID.periodic()
         
-        motor_velocity = self._top_motor.get_velocity().value
+        motor_velocity_rpm = self._top_motor.get_velocity().value * 60
         if self._state == ShooterState.IDLE:
             at_idle_RPM = (
-                abs(motor_velocity - kShooterMotor.IDLE_RPM)
+                abs(motor_velocity_rpm - kShooterMotor.IDLE_RPM)
                 < kShooterMotor.REACH_TARGET_VELOCITY_ERROR
             )
             self._top_motor.set_control(
@@ -88,7 +88,7 @@ class DualMotorShooter(commands2.Subsystem):
             self._top_motor.set_control(self.charge_request)
 
             self.is_charged = (
-                abs(motor_velocity - kShooterMotor.TARGET_RPM)
+                abs(motor_velocity_rpm - kShooterMotor.TARGET_RPM)
                 < kShooterMotor.REACH_TARGET_VELOCITY_ERROR
             )
             
@@ -100,7 +100,7 @@ class DualMotorShooter(commands2.Subsystem):
             self.nt.set('State', 'CHARGED')
 
         self.nt.set("Motor Charged", self.is_charged)
-        self.nt_sub.set("RPM", motor_velocity)
+        self.nt_sub.set("RPM", motor_velocity_rpm)
         
         kShooterMotor.IDLE_RPM = self.nt_sub.get('Idle RPM')
         kShooterMotor.TARGET_RPM = self.nt_sub.get('Target RPM')
