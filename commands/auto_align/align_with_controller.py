@@ -16,7 +16,7 @@ from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.transfer_sybsystem import TransferSubsystem
 
 from commands.auto_align import alignio
-from commands.reset_shooter_hood import ResetShooterHood
+from commands.shooter.hood_commands import ResetShooterHood
 
 class TurretToPose(alignio.TurretTargeWithVelocity):
     def __init__(
@@ -93,10 +93,12 @@ class ConditionalAlignAndShoot(HubAlign):
         controller: custom_controller.XboxController,
         shooter: DualMotorShooter,
         transfer_subsystem : TransferSubsystem,
+        hood: ShooterHood,
         LED_controller: CANdleLEDController | None = None,
     ):
         super().__init__(drivetrain, controller, shooter, LED_controller)
-
+        
+        self._hood = hood
         self.transfer_subsystem = transfer_subsystem
 
     def initialize(self):
@@ -104,8 +106,12 @@ class ConditionalAlignAndShoot(HubAlign):
         self._shooter.enable()
 
     def execute(self):
-        self.find_target(self._drivetrain.get_state().pose)
         super().execute()
+        robot_pose = self._drivetrain.get_state().pose
+        
+        self.find_target(robot_pose)
+        self._hood.angle_by_position(robot_pose, self.target)
+        
         if self.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES:
             self.transfer_subsystem.activate()
         else:
