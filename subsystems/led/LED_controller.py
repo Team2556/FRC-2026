@@ -8,6 +8,7 @@ from subsystems.led.LED_io import LED_request, CANdle_State
 from subsystems.led.LED_helpers import ColorFactories, CANdle_Color
 
 from constants.led import kLED
+from constants.canbus import kCANId
 
 from util.flip_util import FlipUtil
 
@@ -28,9 +29,9 @@ class CANdle_StateHandler:
 
 
 class CANdleLEDController(commands2.Subsystem):
-    def __init__(self, CAN_id: int):
+    def __init__(self):
         super().__init__()
-        self._candle = phoenix6.hardware.CANdle(CAN_id)
+        self._candle = phoenix6.hardware.CANdle(kCANId.CANDLE)
         self.states: dict[str, CANdle_State] = {}
 
         # What IS actuall being ran on the LED

@@ -7,8 +7,6 @@ class kClimb:
     _CONFIG.slot0.k_i = 0
     _CONFIG.slot0.k_d = 0
 
-    CAN_ID = 0 # TODO: set this to the actual CAN ID of the climb motor
-    
     POSITION_DOWN = 0
     POSITION_UP = 1
     

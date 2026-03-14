@@ -13,13 +13,14 @@ from util.nt_util import NTTable
 from util.math_helpers import distanceFromPose2dtoPose2d
 
 from constants.shooter import kHoodMotor, kShooterData
+from constants.canbus import kCANId
 
 
 # Currently not tested yet. Also there is no "shooter hood" command as all the controlling for
 # this subsystem will be in the hub align command (eventually)
 class ShooterHood(Subsystem):
     def __init__(self):
-        self.hood_motor = TalonFX(kHoodMotor.CAN_ID, "rio")
+        self.hood_motor = TalonFX(kCANId.shooter.HOOD_CONTROL, "rio")
         self.hood_motor.configurator.apply(kHoodMotor._CONFIG)
         self.hood_motor.setNeutralMode(NeutralModeValue.BRAKE)
 
@@ -31,14 +32,17 @@ class ShooterHood(Subsystem):
         self.nt.float("Reset Home Speed", kHoodMotor.RESET_HOME_SPEED)
         self.nt.float("Increment Amount", kHoodMotor.INCREMENT_AMOUNT)
 
-        self.editable_pid = EditablePID("Shooter/Hood", self.hood_motor, kHoodMotor._CONFIG)
+        self.editable_pid = EditablePID(
+            "Shooter/Hood", self.hood_motor, kHoodMotor._CONFIG
+        )
 
     def set_speed(self, speed):
         self.hood_motor.set_control(self.home_voltage.with_output(speed))
 
     def increment(self, mult):
         self.hood_motor.set_control(
-            self.hood_motor.get_position().value + ((kHoodMotor.INCREMENT_AMOUNT / 20) * mult)
+            self.hood_motor.get_position().value
+            + ((kHoodMotor.INCREMENT_AMOUNT / 20) * mult)
         )
 
     def set_position(self, position):
@@ -52,13 +56,17 @@ class ShooterHood(Subsystem):
 
     def reset(self):
         self.set_position(0)
-    
+
     def angle_by_position(self, robot_pose: Pose2d, target_pose: Pose2d) -> None:
         distance_to_target = distanceFromPose2dtoPose2d(robot_pose, target_pose)
-        
-        interpolation_distance_data, interpolation_position_data = zip(*kShooterData.SHOT_ANGLES)
-        target_hood_position = np.interp(distance_to_target, interpolation_distance_data, interpolation_position_data)
-        
+
+        interpolation_distance_data, interpolation_position_data = zip(
+            *kShooterData.SHOT_ANGLES
+        )
+        target_hood_position = np.interp(
+            distance_to_target, interpolation_distance_data, interpolation_position_data
+        )
+
         self.set_position(target_hood_position)
 
     def periodic(self):

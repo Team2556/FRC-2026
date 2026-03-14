@@ -1,23 +1,24 @@
+import math
+
 import commands2
+
 from wpimath import units
+from wpilib import SmartDashboard
 
 from phoenix6.swerve.swerve_drivetrain import SwerveDrivetrain
 from phoenix6.hardware.pigeon2 import Pigeon2
 
-from constants.vision import kOdometry
-from subsystems.drivetrain.swerve_tuner import TunerConstants
-
 from util import limelight_helpers
 
-from wpilib import SmartDashboard
+from subsystems.drivetrain.swerve_tuner import TunerConstants
 
-import math
+from constants.vision import kOdometry
 
 
 class Vision(commands2.Subsystem):
-    '''
-    Only uses measurments of 1 Limelight at a time. (Can take inputs from multiple)'''
-    
+    """
+    Only uses measurments of 1 Limelight at a time. (Can take inputs from multiple)"""
+
     def __init__(self, *camera_names):
         self._cameras = camera_names
 
@@ -46,8 +47,10 @@ class Vision(commands2.Subsystem):
         )
         if measurement.tagCount < kOdometry.MIN_APRILTAGS:
             return None
-        
-        robot_angle_error = math.sqrt(self._pigeon.get_pitch().value**2 + self._pigeon.get_roll().value**2)
+
+        robot_angle_error = math.sqrt(
+            self._pigeon.get_pitch().value ** 2 + self._pigeon.get_roll().value ** 2
+        )
         if abs(robot_angle_error) > kOdometry.MAX_ROTATIONAL_ERROR:
             return None
 
@@ -80,5 +83,7 @@ class Vision(commands2.Subsystem):
         return measurement
 
     def periodic(self):
-        offset = math.sqrt(self._pigeon.get_pitch().value**2 + self._pigeon.get_roll().value**2)
+        offset = math.sqrt(
+            self._pigeon.get_pitch().value ** 2 + self._pigeon.get_roll().value ** 2
+        )
         SmartDashboard.putNumber("Robot Unflatness", offset)
