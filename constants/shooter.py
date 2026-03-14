@@ -9,8 +9,6 @@ class kHoodMotor:
     _CONFIG.slot0.k_i = 0
     _CONFIG.slot0.k_d = 0
     
-    CAN_ID = 0
-    
     # Rotor position value/second when Driver 2 is manually moving it
     INCREMENT_AMOUNT = 0.1
     

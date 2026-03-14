@@ -1,15 +1,19 @@
 import commands2
+
 import phoenix6
 from phoenix6 import controls
 from phoenix6.hardware import TalonFX
-from constants.climb import kClimb
+
 from util.editable_pid import EditablePID
 from util.nt_util import NTTable
+
+from constants.climb import kClimb
+from constants.canbus import kCANId
 
 
 class ClimbSubsystem(commands2.Subsystem):
     def __init__(self):
-        self.climb_motor = TalonFX(kClimb.CAN_ID, "rio")
+        self.climb_motor = TalonFX(kCANId.climb.MOTOR, "rio")
         self.climb_motor.configurator.apply(kClimb._CONFIG)
         self.climb_motor.setNeutralMode(phoenix6.signals.NeutralModeValue.BRAKE)
         self.climb_position_voltage = controls.PositionVoltage(position=0, slot=0)

@@ -32,3 +32,6 @@ class kCANId:
         BOTTOM_MOTOR = 26
         TOP_MOTOR = 27
         HOOD_CONTROL = 28
+    
+    class climb:
+        MOTOR = 41

@@ -63,6 +63,9 @@
 - **Shooter Top** - 27
 - **Hood Motor** - 28
 
+### Climb (41-45)
+- **Motor** - 41
+
 ### Everything Else (31+)
 - **REV Power Hub** - 31
 - **CANDle** - 32
