@@ -23,6 +23,11 @@ class Vision(commands2.Subsystem):
     def __init__(self, *camera_names):
         self._cameras = camera_names
         self._pigeon = Pigeon2(TunerConstants._pigeon_id)
+        self.offset = 0
+        
+        self.nt = NTTable('Vision')
+        self.nt.bool('Drive State Provided')
+        self.nt.float('Robot Tilt')
 
         self.nt = NTTable("Vision")
         self.nt.bool("Drive State Provided")

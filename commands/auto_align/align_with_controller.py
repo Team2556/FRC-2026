@@ -11,9 +11,8 @@ from util.flip_util import FlipUtil
 from subsystems.shooter.dual_shooter import DualMotorShooter
 from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.led.LED_helpers import ColorFactories, CANdle_Color
-from subsystems.controlled_motor import ControlledTalonMotor
 from subsystems.shooter.shooter_hood import ShooterHood
-from subsystems.transfer_sybsystem import TransferSubsystem
+from subsystems.transfer_subsystem import TransferSubsystem
 
 from commands.auto_align import alignio
 from commands.shooter.hood_commands import ResetShooterHood

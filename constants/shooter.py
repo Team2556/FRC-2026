@@ -23,7 +23,7 @@ class kShooterMotor:
     _CONFIG.slot0.k_d = 0
     _CONFIG.slot1.k_p = 0.1
     _CONFIG.slot1.k_i = 10
-    _CONFIG.slot1.k_p = 0
+    _CONFIG.slot1.k_d = 0
     
     IDLE_RPM = -1000
     TARGET_RPM = -2500

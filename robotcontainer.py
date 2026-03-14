@@ -23,7 +23,7 @@ from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
 from subsystems.intake import IntakeSubsystem
 from subsystems.climb_subsystem import ClimbSubsystem
-from subsystems.transfer_sybsystem import TransferSubsystem
+from subsystems.transfer_subsystem import TransferSubsystem
 
 from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.led.LED_controller import CANdleLEDController
@@ -43,15 +43,15 @@ class RobotContainer:
         self.transfer_subsystem = TransferSubsystem()
         self.shooter_subsystem = DualMotorShooter()
         self.hood_subsystem = ShooterHood()
-        self.climb_subsystem = ClimbSubsystem()
+        # self.climb_subsystem = ClimbSubsystem()
 
         self.mono_vision = mono_limelight.Vision(kCamera.llFront.NAME)
-        self.LED_controller = CANdleLEDController(kLED.CAN_ID)
+        self.LED_controller = CANdleLEDController()
 
         self.custom_path_commands = custom_path_commands.CustomPathCommands(
             self._drivetrain,
             shooter_subsystem=self.shooter_subsystem,
-            climb_subsyetem=self.climb_subsystem,
+            # climb_subsyetem=self.climb_subsystem,
         )
         self.time_manager = SendFMSData()
 
@@ -115,15 +115,15 @@ class RobotContainer:
         )
         # =========================
         
-        self._controller_2.b().onTrue(RunTransferCommand(self.transfer_subsystem))
+        self._controller_2.b().whileTrue(RunTransferCommand(self.transfer_subsystem))
 
-        self._controller_2.y().onTrue(
+        self._controller_2.y().whileTrue(
             shooter_commands.EnableShooter(self.shooter_subsystem)
         )
 
-        self._controller_2.povUp().onTrue(ClimbUp(self.climb_subsystem))
+        # self._controller_2.povUp().onTrue(ClimbUp(self.climb_subsystem))
 
-        self._controller_2.povDown().onTrue(ClimbDown(self.climb_subsystem))
+        # self._controller_2.povDown().onTrue(ClimbDown(self.climb_subsystem))
 
         self._controller_2.rightTrigger().onTrue(
             IntakeCommandDeploy(self.intake_subsystem)

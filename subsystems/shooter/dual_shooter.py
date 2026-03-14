@@ -39,10 +39,10 @@ class DualMotorShooter(commands2.Subsystem):
             )
         )
 
-        self.idle_request = VelocityVoltage(velocity=kShooterMotor.IDLE_RPM, slot=0)
+        self.idle_request = VelocityVoltage(velocity=kShooterMotor.IDLE_RPM / 60, slot=0)
         self.coast_request = CoastOut()
-        self.charge_request = VelocityVoltage(velocity=kShooterMotor.TARGET_RPM, slot=0)
-        self.shoot_request = VelocityVoltage(velocity=kShooterMotor.TARGET_RPM, slot=1)
+        self.charge_request = VelocityVoltage(velocity=kShooterMotor.TARGET_RPM / 60, slot=0)
+        self.shoot_request = VelocityVoltage(velocity=kShooterMotor.TARGET_RPM / 60, slot=1)
 
         self._state: ShooterState = ShooterState.IDLE
         self.is_charged = False
@@ -52,7 +52,7 @@ class DualMotorShooter(commands2.Subsystem):
         self.nt.bool("Motor Charged")
 
         self.nt_sub = self.nt.get_subtable("Motor")
-        self.nt_sub.float("RPM")
+        self.nt_sub.float("RPM", 0.0)
         self.nt_sub.float("Target RPM", default=kShooterMotor.TARGET_RPM)
         self.nt_sub.float("Idle RPM", default=kShooterMotor.IDLE_RPM)
         self.nt_sub.float("Reach Target Velocity Error", default=kShooterMotor.REACH_TARGET_VELOCITY_ERROR)
