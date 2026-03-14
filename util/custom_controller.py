@@ -57,7 +57,7 @@ class XboxController(CommandXboxController):
         )  # Remap the joystick values excluding deadband zone
 
         # Apply Smoothing
-        smoothExp = 1.0 + self._smooth_factor * (self.maxSmoothingExponent - 1)
+        # smoothExp = 1.0 + self._smooth_factor * (self.maxSmoothingExponent - 1)
         smoothExp = 3
         _val = _sign * pow(abs(_val), smoothExp)
 
