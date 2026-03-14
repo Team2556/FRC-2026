@@ -6,31 +6,31 @@
 
 from commands.auto_align import align_with_controller
 from util.custom_controller import XboxController
-from util.time_manager import TimeManager
+from util.send_fms_data import SendFMSData
 
 from commands import drive_commands, vision_odometry
 from commands.path_commands import custom_path_commands, go_back_with_path
 from commands.spin_motor import SpinMotor
+from commands.intake_commands import IntakeCommandDeploy, IntakeCommandUndeploy
 from commands.climb import ClimbDown, ClimbUp
 from commands.shooter import shooter_commands
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
 from constants.shooter import kShooterMotor
-from constants.intake import kIntakeMotor
-from constants.climb import kClimb
 from constants.drive import kDriveConfig
 from constants.led import kLED
 
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
 from subsystems.controlled_motor import ControlledTalonMotor
+from subsystems.intake import IntakeSubsystem
+from subsystems.climb_subsystem import ClimbSubsystem
+
 from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.shooter.dual_shooter import DualMotorShooter
 
-from subsystems.climbsubsystem import ClimbSubsystem
-# from subsystems.intake import IntakeSubsystem
 
 from commands2 import ParallelCommandGroup, cmd
 
@@ -46,6 +46,8 @@ class RobotContainer:
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
         self.mono_vision = mono_limelight.Vision(kCamera.llFront.NAME)
+        
+        self.intake_subsystem = IntakeSubsystem()
         self.LED_controller = CANdleLEDController(kLED.CAN_ID)
 
         self.spindex_motor = ControlledTalonMotor(
@@ -54,7 +56,7 @@ class RobotContainer:
             kSpindexer._CONFIG,
             kSpindexer.TARGET_RPM,
         )
-        self.transfer_motor1 = ControlledTalonMotor(
+        self.transfer_motor = ControlledTalonMotor(
             "Transfer 1",
             kTrasnfer.motor_1.CAN_ID,
             kTrasnfer.motor_1._CONFIG,
@@ -78,35 +80,11 @@ class RobotContainer:
             climb_subsyetem = self.climb_subsystem
         )
         
-        self.time_manager = TimeManager()
+        self.time_manager = SendFMSData()
 
         self.configureButtonBindings()
 
     def configureButtonBindings(self) -> None:
-        
-        '''
-        ideal buttons idea
-        
-        Controller 1:
-            - Left Joystick: Move (field-centric)
-            - Right Joystick: Rotate
-            - Right Bumper: Auto drive toward fuel (Ben's magic button)
-            - Right Trigger: Shoot + Align to best spot
-            - Left Bumper: Magic Button
-            - Left Trigger: Move Slower
-            - Letter Buttons: Specific Paths
-        
-        Controller 2:
-            - Right Trigger (hold): Toggle Intake
-            - POV Up (press): Climb up
-            - POV Down (press): Climb Down
-            - B (hold): Spin Spindexer/Transfer
-            - Y (hold): Spin Shooter
-            - ideas:
-                - manually move the hood
-                - deploy but unintake button (in case something jams maybe)
-                - Left Joystick: manually change an offset angle for hub shooting just in case
-        '''
         
         self.mono_vision.setDefaultCommand(
             vision_odometry.UpdateOdometry(self.mono_vision, self._drivetrain)
@@ -149,11 +127,6 @@ class RobotContainer:
                 lambda: self._drivetrain.change_speed_mult()
             )
         )
-
-        # self._controller_1.povLeft().whileTrue(self.custom_path_commands.left_trench_advance)
-        # self._controller_1.povDown().whileTrue(self.custom_path_commands.left_bump_advance)
-        # self._controller_1.povUp().whileTrue(self.custom_path_commands.right_bump_advance)
-        # self._controller_1.povRight().whileTrue(self.custom_path_commands.right_trench_advance)
     
         self._controller_1.x().whileTrue(self.custom_path_commands.left_trench)
         self._controller_1.a().whileTrue(self.custom_path_commands.left_bump)
@@ -182,9 +155,12 @@ class RobotContainer:
             ClimbDown(self.climb_subsystem)
         )
         
-        self._controller_2.rightTrigger().whileTrue(
-            SpinMotor(self.intake_motor)
+        self._controller_2.rightTrigger().onTrue(
+            IntakeCommandDeploy(self.intake_subsystem)
         )
-
+        self._controller_2.rightTrigger().onFalse(
+            IntakeCommandUndeploy(self.intake_subsystem)
+        )
+        
     def getAutonomousCommand(self):
         return self.custom_path_commands.test_auto

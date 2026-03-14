@@ -14,6 +14,8 @@ class kHoodMotor:
     # Rotor position value/second when Driver 2 is manually moving it
     INCREMENT_AMOUNT = 0.1
     
+    RESET_HOME_SPEED = 0.03
+    
     # Put more hood constants here pls
     
 class kShooterMotor:
