@@ -11,9 +11,10 @@ from util.flip_util import FlipUtil
 from subsystems.controlled_motor import ControlledTalonMotor
 from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.led.LED_helpers import ColorFactories, CANdle_Color
+from subsystems.shooter.shooter_hood import ShooterHood
 
 from commands.auto_align import alignio
-
+from commands.reset_shooter_hood import ResetShooterHood
 
 class TurretToPose(alignio.TurretTargeWithVelocity):
     def __init__(
@@ -93,7 +94,7 @@ class ConditionalAlignAndShoot(HubAlign):
         shooter: ControlledTalonMotor,
         spindex: ControlledTalonMotor,
         transfer: ControlledTalonMotor,
-        hood,
+        hood : ShooterHood,
         LED_controller: CANdleLEDController | None = None,
     ):
 
@@ -101,6 +102,7 @@ class ConditionalAlignAndShoot(HubAlign):
 
         self._spindex = spindex
         self._transfer = transfer
+        self._hood = hood
 
     def initialize(self):
         super().initialize()
@@ -121,9 +123,13 @@ class ConditionalAlignAndShoot(HubAlign):
         if RobotZoneChecker.is_in_alliance_zone(pose):
             self.target = FlipUtil.fieldPose(kHub.POS)
         self.with_target(self.target)
+    
+    def isFinished(self):
+        return self._drivetrain.should_stop_shooting()
 
     def end(self, interrupted):
         super().end(interrupted)
+        ResetShooterHood(self._hood).schedule()
         self.stop_shooter()
 
     def activate_shooter(self):

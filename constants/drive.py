@@ -18,6 +18,9 @@ class kAutoAlign:
     REQUIRED_SHOOT_ACCURACY_DEGREES = 5
 
 class kDriveConfig:
+    # Specifically used for retracting hood and stopping shooter when transitioning between zones through bump/trench
+    LOOKAHEAD_SECONDS = 0.25
+    
     SLOW_SPEED_MULT = 0.3
     SLOW_ROTATION_MULT = 0.3
     
