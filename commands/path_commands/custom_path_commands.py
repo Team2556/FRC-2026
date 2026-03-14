@@ -82,9 +82,13 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_right_trench),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_right_trench).with_goal_end_velocity(0),
             ),
-            DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_right_trench),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_right_trench).with_goal_end_velocity(0),
+            ConditionalCommand(
+                DriveToASpotSequence(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_right_trench),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_right_trench).with_goal_end_velocity(0),
+                ),
+                cmd.none(),
+                lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
             ),
             lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)   
         )
@@ -94,9 +98,13 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_right_bump),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_right_bump).with_goal_end_velocity(0),
             ),
-            DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_right_bump),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_right_bump).with_goal_end_velocity(0),
+            ConditionalCommand(
+                DriveToASpotSequence(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_right_bump),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_right_bump).with_goal_end_velocity(0),
+                ),
+                cmd.none(),
+                lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
             ),
             lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)   
         )
@@ -106,9 +114,13 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_left_trench),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_left_trench).with_goal_end_velocity(0),
             ),
-            DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_left_trench),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_left_trench).with_goal_end_velocity(0),
+            ConditionalCommand(
+                DriveToASpotSequence(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_left_trench),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_left_trench).with_goal_end_velocity(0),
+                ),
+                cmd.none(),
+                lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
             ),
             lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)   
         )
@@ -118,9 +130,13 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_left_bump),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_left_bump).with_goal_end_velocity(0),
             ),
-            DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_left_bump),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_left_bump).with_goal_end_velocity(0),
+            ConditionalCommand(
+                DriveToASpotSequence(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_left_bump),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_left_bump).with_goal_end_velocity(0),
+                ),
+                cmd.none(),
+                lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
             ),
             lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)   
         )

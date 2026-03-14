@@ -30,6 +30,7 @@ class ControlledTalonMotor(commands2.Subsystem):
         self.nt.float("k_p", self.cfg.slot0.k_p)
         self.nt.float("k_i", self.cfg.slot0.k_i)
         self.nt.float("k_d", self.cfg.slot0.k_d)
+        self.nt.float("RPM", target_rpm)
         self.nt.float("Target RPM", target_rpm)
         self.nt.bool("Working", False)
 

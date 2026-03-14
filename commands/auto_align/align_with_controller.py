@@ -92,8 +92,7 @@ class ConditionalAlignAndShoot(HubAlign):
         controller: custom_controller.XboxController,
         shooter: ControlledTalonMotor,
         spindex: ControlledTalonMotor,
-        transfer1: ControlledTalonMotor,
-        transfer2: ControlledTalonMotor,
+        transfer: ControlledTalonMotor,
         hood,
         LED_controller: CANdleLEDController | None = None,
     ):
@@ -101,8 +100,7 @@ class ConditionalAlignAndShoot(HubAlign):
         super().__init__(drivetrain, controller, shooter, hood, LED_controller)
 
         self._spindex = spindex
-        self._transfer1 = transfer1
-        self._transfer2 = transfer2
+        self._transfer = transfer
 
     def initialize(self):
         super().initialize()
@@ -130,12 +128,10 @@ class ConditionalAlignAndShoot(HubAlign):
 
     def activate_shooter(self):
         self._spindex.spin()
-        self._transfer1.spin()
-        self._transfer2.spin()
+        self._transfer.spin()
         self._shooter.spin()
 
     def stop_shooter(self):
         self._spindex.stop_motor()
-        self._transfer1.stop_motor()
-        self._transfer2.stop_motor()
+        self._transfer.stop_motor()
         self._shooter.stop_motor()

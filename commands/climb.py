@@ -1,7 +1,5 @@
-import commands2
-from subsystems.climbsubsystem import ClimbSubsystem
-from commands2 import Command   
-from subsystems.drivetrain import drivetrain
+from subsystems.climb_subsystem import ClimbSubsystem
+from commands2 import Command
 
 class ClimbUp(Command):
     def __init__(self, climb_subsystem: ClimbSubsystem):
