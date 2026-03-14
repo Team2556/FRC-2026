@@ -35,7 +35,7 @@ class IntakeCommandUndeploy(Command):
         self.intake_subsystem.state = "undeploying"
     
     def isFinished(self):
-        return self.reverse_limit.value is signals.ForwardLimitValue.CLOSED_TO_GROUND
+        return self.reverse_limit.value is signals.ReverseLimitValue.CLOSED_TO_GROUND
 
     def end(self, interrupted):
         self.intake_subsystem.set_internal_deployer_position(0)

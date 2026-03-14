@@ -87,7 +87,7 @@ class IntakeSubsystem(commands2.Subsystem):
         self.nt.set("Ideal Spinny RPM", rpm)
     
     def periodic(self):
-        if self.left_deployer.get_reverse_limit().value is signals.ForwardLimitValue.CLOSED_TO_GROUND:
+        if self.left_deployer.get_reverse_limit().value is signals.ReverseLimitValue.CLOSED_TO_GROUND:
             self.set_internal_deployer_position(0)
         
         self.nt.set("Deployer Position", self.left_deployer.get_position().value)

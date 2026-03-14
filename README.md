@@ -69,3 +69,37 @@
 ### Everything Else (31+)
 - **REV Power Hub** - 31
 - **CANDle** - 32
+
+---
+
+## Checklist
+
+### Things to do first
+- Make Robot Connect (Radio, RIO)
+- Set CAN IDs
+- Make every (non-dual) motor spin correctly with high quality formware
+
+### Drivetrain/Vision
+- Limelight config to correct positions
+- See if it drives normally
+
+### Intake
+- Check for correct logic
+- Tune PIDs and other values
+- Check if it actually intakes
+
+### Shooting Subsystems
+- Check if transfer works
+- Check if hood works
+- Check if increment works
+- Tune everything to okay values (actually tune later)
+- Get data points for linear interpolation (with hood angles)
+
+### ConditionalAlignAndShoot
+- Get it to work perfectly with no problems
+
+### All Paths
+- Test auto stop shooting when near trench
+- Test every path ever
+
+Then a bunch of practice + testing
