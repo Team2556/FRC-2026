@@ -48,7 +48,7 @@ class XboxController(CommandXboxController):
         )  # Remap the joystick values excluding deadband zone
 
         # Apply Smoothing
-        _val = _sign ** 3
+        _val = _val ** 3
 
         # Apply Mult
         _val = _val * self._mult
