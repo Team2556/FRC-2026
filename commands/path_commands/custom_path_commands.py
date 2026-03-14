@@ -13,20 +13,18 @@ from constants.field import kHub
 
 from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 from subsystems.shooter.shooter_hood import ShooterHood
-from subsystems.controlled_motor import ControlledTalonMotor
+from subsystems.shooter.dual_shooter import DualMotorShooter
 
 class CustomPathCommands:
     '''"Container" that has all the custom useful path commands'''
     def __init__(
         self,
         drivetrain : SwerveDriveTrain = None,
-        hood_subsystem : ShooterHood = None,
-        shooter_subsystem : ControlledTalonMotor = None,
+        shooter_subsystem : DualMotorShooter = None,
         climb_subsyetem : None = None,
         ):
         
         self.drivetrain = drivetrain
-        self.hood_subsystem = hood_subsystem
         self.shooter_subsystem = shooter_subsystem
         
         self.make_path_commands()
@@ -43,7 +41,6 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.auto5),
                 DriveWithAlign(
                     shooter = self.shooter_subsystem,
-                    hood = self.hood_subsystem,
                     alignment_target = kHub.POS,
                     subsystem = self.drivetrain, 
                     target_pose = kPoses.auto6

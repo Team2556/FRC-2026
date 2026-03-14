@@ -8,9 +8,10 @@ from util import custom_controller
 from util.robot_zone_checker import RobotZoneChecker
 from util.flip_util import FlipUtil
 
-from subsystems.controlled_motor import ControlledTalonMotor
+from subsystems.shooter.dual_shooter import DualMotorShooter
 from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.led.LED_helpers import ColorFactories, CANdle_Color
+from subsystems.controlled_motor import ControlledTalonMotor
 
 from commands.auto_align import alignio
 
@@ -21,10 +22,9 @@ class TurretToPose(alignio.TurretTargeWithVelocity):
         drivetrain,
         controller,
         target: Pose2d,
-        shooter: ControlledTalonMotor,
-        hood: None,
+        shooter: DualMotorShooter,
     ):
-        super().__init__(drivetrain, shooter, hood, target)
+        super().__init__(drivetrain, shooter, target)
         self._controller = controller
 
     def execute(self):
@@ -43,11 +43,10 @@ class HubAlign(alignio.TurretTargeWithVelocity):
         self,
         drivetrain,
         controller: custom_controller.XboxController,
-        shooter: ControlledTalonMotor,
-        hood,
+        shooter: DualMotorShooter,
         LED_Controller: CANdleLEDController | None = None,
     ):
-        super().__init__(drivetrain, shooter, hood, kHub.POS)
+        super().__init__(drivetrain, shooter, kHub.POS)
         self._controller = controller
 
         SmartDashboard.putNumber(
@@ -90,22 +89,20 @@ class ConditionalAlignAndShoot(HubAlign):
         self,
         drivetrain,
         controller: custom_controller.XboxController,
-        shooter: ControlledTalonMotor,
+        shooter: DualMotorShooter,
         spindex: ControlledTalonMotor,
         transfer1: ControlledTalonMotor,
-        transfer2: ControlledTalonMotor,
-        hood,
         LED_controller: CANdleLEDController | None = None,
     ):
 
-        super().__init__(drivetrain, controller, shooter, hood, LED_controller)
+        super().__init__(drivetrain, controller, shooter, LED_controller)
 
         self._spindex = spindex
         self._transfer1 = transfer1
-        self._transfer2 = transfer2
 
     def initialize(self):
         super().initialize()
+        self._shooter.enable()
 
     def execute(self):
         self.find_target(self._drivetrain.get_state().pose)
@@ -131,11 +128,7 @@ class ConditionalAlignAndShoot(HubAlign):
     def activate_shooter(self):
         self._spindex.spin()
         self._transfer1.spin()
-        self._transfer2.spin()
-        self._shooter.spin()
 
     def stop_shooter(self):
         self._spindex.stop_motor()
         self._transfer1.stop_motor()
-        self._transfer2.stop_motor()
-        self._shooter.stop_motor()

@@ -36,16 +36,16 @@ class kShooterData:
     Measurements used for interpolation'''
     # Distance | Time
     SHOT_TIME = [
-        (2, 0.7)
-        (3, 1),
+        (2, 0.2),
+        (3, 0.3),
     ]
     # Distance | Position Voltage
     SHOT_ANGLES = [
-        (2, 1)
+        (2, 1),
     ]
     
 
 class kShooterConfig:
-    SHOOTER_OFFSET = Translation2d(-0.029566, -0.212725)  # Meters
+    SHOOTER_OFFSET = Translation2d(0, 0)  # Meters
     SHOOTER_DIRECTION = 0  # 180 for Reverse
     WHEEL_RADIUS = 4 * kMath.MetersPerInch
