@@ -51,8 +51,8 @@ class IntakeSubsystem(commands2.Subsystem):
         self.nt.float("Target Spinny RPM", kIntakeSpinner.TARGET_RPM)
         self.nt.string("State", self.state)
         
-        self.deploy_editable_pid = EditablePID("Intake/Deployer", self.left_deployer, self.deployer_cfg, use_slot1=True)
-        self.spinny_editable_pid = EditablePID("Intake/Spinny", self.spinny_motor, self.spinny_cfg)
+        self.deploy_editable_pid = EditablePID("Intake/DeployerPID", self.left_deployer, self.deployer_cfg, use_slot1=True)
+        self.spinny_editable_pid = EditablePID("Intake/SpinnyPID", self.spinny_motor, self.spinny_cfg)
         
     def set_deployer_positon(self, pos):
         self.left_deployer.set_control(self.deployer_position_voltage.with_position(pos))
