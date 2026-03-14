@@ -77,7 +77,8 @@ class TurretTargetWithVelocity(TurretTargetBase):
         target_yaw = self.get_target_yaw(drive_state.pose, target_pose)
         rotation_rate = self.rotation_PID.calculate(drive_state.heading, target_yaw)
 
-        self.current_accuracy = abs(drive_state.heading - target_yaw)
+        error = drive_state.heading - target_yaw
+        self.current_accuracy = abs((error + 180) % 360 - 180)
 
         return math_helpers.clamp(rotation_rate, -1.0, 1.0)
 
