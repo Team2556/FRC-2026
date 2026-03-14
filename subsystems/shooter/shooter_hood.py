@@ -1,4 +1,8 @@
+import numpy as np
+
 from commands2 import Subsystem
+
+from wpimath.geometry import Pose2d
 
 from phoenix6.hardware import TalonFX
 from phoenix6.controls import PositionVoltage, DutyCycleOut
@@ -6,8 +10,9 @@ from phoenix6.signals import NeutralModeValue, ForwardLimitValue
 
 from util.editable_pid import EditablePID
 from util.nt_util import NTTable
+from util.math_helpers import distanceFromPose2dtoPose2d
 
-from constants.shooter import kHoodMotor
+from constants.shooter import kHoodMotor, kShooterData
 
 
 # Currently not tested yet. Also there is no "shooter hood" command as all the controlling for
@@ -45,6 +50,14 @@ class ShooterHood(Subsystem):
 
     def reset(self):
         self.set_position(0)
+    
+    def angle_by_position(self, robot_pose: Pose2d, target_pose: Pose2d) -> None:
+        distance_to_target = distanceFromPose2dtoPose2d(robot_pose, target_pose)
+        
+        interpolation_distance_data, interpolation_position_data = zip(*kShooterData.SHOT_ANGLES)
+        target_hood_position = np.interp(distance_to_target, interpolation_distance_data, interpolation_position_data)
+        
+        self.set_position(target_hood_position)
 
     def periodic(self):
         if self.is_hard_stopped():

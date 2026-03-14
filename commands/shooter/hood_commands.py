@@ -3,8 +3,10 @@ from wpilib import SmartDashboard
 from commands2 import Command
 
 from util.nt_util import NTTable
+from util.robot_zone_checker import RobotZoneChecker
 
 from subsystems.shooter.shooter_hood import ShooterHood
+from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 
 from constants.shooter import kHoodMotor
 from constants.shooter import kShooterData
@@ -29,8 +31,5 @@ class ResetShooterHood(Command):
 
     def end(self, interrupted):
         self.shooter_hood.set_speed(0)
-        self.shooter_hood.hood_motor.set_position(
-            0
-        )  # Sets internal position to 0; doesn't move the motor
 
         self.nt.set("Resetting", False)

@@ -93,6 +93,7 @@ class ConditionalAlignAndShoot(HubAlign):
         shooter: DualMotorShooter,
         spindex: ControlledTalonMotor,
         transfer1: ControlledTalonMotor,
+        hood: ShooterHood,
         LED_controller: CANdleLEDController | None = None,
     ):
 
@@ -100,14 +101,19 @@ class ConditionalAlignAndShoot(HubAlign):
 
         self._spindex = spindex
         self._transfer1 = transfer1
+        self._hood = hood
 
     def initialize(self):
         super().initialize()
         self._shooter.enable()
 
     def execute(self):
-        self.find_target(self._drivetrain.get_state().pose)
         super().execute()
+        robot_pose = self._drivetrain.get_state().pose
+        
+        self.find_target(robot_pose)
+        self._hood.angle_by_position(robot_pose, self.target)
+        
         if self.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES:
             self.activate_shooter()
         else:
