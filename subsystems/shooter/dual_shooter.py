@@ -1,10 +1,13 @@
+from enum import Enum
+
 import commands2
 
 from phoenix6.hardware import TalonFX
 from phoenix6.controls import Follower, VelocityVoltage, CoastOut
 from phoenix6 import signals
 
-from enum import Enum
+from util.nt_util import NTTable
+from util.editable_pid import EditablePID
 
 from constants.canbus import kCANId
 from constants.shooter import kShooterMotor
@@ -27,7 +30,6 @@ class DualMotorShooter(commands2.Subsystem):
         self.cfg = kShooterMotor._CONFIG
         self.cfg.motor_output.neutral_mode = signals.NeutralModeValue.COAST
 
-        self._bottom_motor.configurator.apply(self.cfg)
         self._top_motor.configurator.apply(self.cfg)
 
         self._bottom_motor.set_control(
@@ -45,6 +47,20 @@ class DualMotorShooter(commands2.Subsystem):
         self._state: ShooterState = ShooterState.IDLE
         self.is_charged = False
 
+        self.nt = NTTable("Shooter")
+        self.nt.string("State")
+        self.nt.bool("Motor Charged")
+
+        self.nt_sub = self.nt.get_subtable("Motor")
+        self.nt_sub.float("RPM")
+        self.nt_sub.float("Target RPM", default=kShooterMotor.TARGET_RPM)
+        self.nt_sub.float("Idle RPM", default=kShooterMotor.IDLE_RPM)
+        self.nt_sub.float("Reach Target Velocity Error", default=kShooterMotor.REACH_TARGET_VELOCITY_ERROR)
+
+        self.editable_PID = EditablePID(
+            "Shooter/Motor", self._top_motor, self.cfg, use_slot0=True, use_slot1=True
+        )
+
     def disable(self) -> None:
         self._state = ShooterState.IDLE
         self.is_charged = False
@@ -54,8 +70,9 @@ class DualMotorShooter(commands2.Subsystem):
         self.is_charged = False
 
     def periodic(self):
-        motor_velocity = self._top_motor.get_velocity().value
+        self.editable_PID.periodic()
         
+        motor_velocity = self._top_motor.get_velocity().value
         if self._state == ShooterState.IDLE:
             at_idle_RPM = (
                 abs(motor_velocity - kShooterMotor.IDLE_RPM)
@@ -64,6 +81,8 @@ class DualMotorShooter(commands2.Subsystem):
             self._top_motor.set_control(
                 self.idle_request if at_idle_RPM else self.coast_request
             )
+            
+            self.nt.set('State', 'IDLE')
 
         elif self._state == ShooterState.ENABLED and not self.is_charged:
             self._top_motor.set_control(self.charge_request)
@@ -72,6 +91,17 @@ class DualMotorShooter(commands2.Subsystem):
                 abs(motor_velocity - kShooterMotor.TARGET_RPM)
                 < kShooterMotor.REACH_TARGET_VELOCITY_ERROR
             )
+            
+            self.nt.set('State', 'CHARGING')
 
         elif self._state == ShooterState.ENABLED and self.is_charged:
             self._top_motor.set_control(self.shoot_request)
+            
+            self.nt.set('State', 'CHARGED')
+
+        self.nt.set("Motor Charged", self.is_charged)
+        self.nt_sub.set("RPM", motor_velocity)
+        
+        kShooterMotor.IDLE_RPM = self.nt_sub.get('Idle RPM')
+        kShooterMotor.TARGET_RPM = self.nt_sub.get('Target RPM')
+        kShooterMotor.REACH_TARGET_VELOCITY_ERROR = self.nt_sub.get('Reach Target Velocity Error')
