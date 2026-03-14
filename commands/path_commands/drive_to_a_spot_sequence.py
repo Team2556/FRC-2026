@@ -32,6 +32,8 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         SmartDashboard.putNumber("Sequence Path/Max Speed", kPath.default_path_speed)
         SmartDashboard.putNumber("Sequence Path/Smoothing Radius", kPath.default_smoothing_radius)
         SmartDashboard.putNumber("Sequence Path/Smoothing Time", kPath.default_smoothing_time)
+        SmartDashboard.putNumber("Sequence Path/Slow Distance Proportional to Max Speed", kPath.percent_slow_distance_proportional_to_max_speed_for_sequence_path)
+        SmartDashboard.putNumber("Sequence Path/Slow Transition Multiplier", kPath.path_transition_slow_multiplier)
     
     def initialize(self):
         super().initialize()
@@ -42,8 +44,11 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         self.max_speed = SmartDashboard.getNumber("Sequence Path/Max Speed", kPath.default_path_speed)
         self.smoothing_radius = SmartDashboard.getNumber("Sequence Path/Smoothing Radius", kPath.default_smoothing_radius)
         self.smoothing_time = SmartDashboard.getNumber("Sequence Path/Smoothing Time", kPath.default_smoothing_time)
+        kPath.percent_slow_distance_proportional_to_max_speed_for_sequence_path = SmartDashboard.getNumber("Sequence Path/Slow Distance Proportional to Max Speed", kPath.percent_slow_distance_proportional_to_max_speed_for_sequence_path)
+        kPath.path_transition_slow_multiplier = SmartDashboard.getNumber("Sequence Path/Slow Transition Multiplier", kPath.path_transition_slow_multiplier)
         
         for command in self._commands:
+            command = command.with_sequence_pose_values() # In case of SmartDashboard Change
             if command.do_override_speed:
                 command.max_speed = command.better_max_speed
             else:

@@ -36,7 +36,6 @@ class MyRobot(commands2.TimedCommandRobot):
 
         This runs after the mode specific periodic functions, but before LiveWindow and
         SmartDashboard integrated updating."""
-        data = wpilib.DriverStation.getGameSpecificMessage()
 
     def disabledInit(self) -> None:
         """This function is called once each time the robot enters Disabled mode."""
