@@ -13,6 +13,7 @@ from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.led.LED_helpers import ColorFactories, CANdle_Color
 from subsystems.controlled_motor import ControlledTalonMotor
 from subsystems.shooter.shooter_hood import ShooterHood
+from subsystems.transfer_sybsystem import TransferSubsystem
 
 from commands.auto_align import alignio
 from commands.reset_shooter_hood import ResetShooterHood
@@ -91,15 +92,12 @@ class ConditionalAlignAndShoot(HubAlign):
         drivetrain,
         controller: custom_controller.XboxController,
         shooter: DualMotorShooter,
-        spindex: ControlledTalonMotor,
-        transfer1: ControlledTalonMotor,
+        transfer_subsystem : TransferSubsystem,
         LED_controller: CANdleLEDController | None = None,
     ):
-
         super().__init__(drivetrain, controller, shooter, LED_controller)
 
-        self._spindex = spindex
-        self._transfer1 = transfer1
+        self.transfer_subsystem = transfer_subsystem
 
     def initialize(self):
         super().initialize()
@@ -109,9 +107,9 @@ class ConditionalAlignAndShoot(HubAlign):
         self.find_target(self._drivetrain.get_state().pose)
         super().execute()
         if self.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES:
-            self.activate_shooter()
+            self.transfer_subsystem.activate()
         else:
-            self.stop_shooter()
+            self.transfer_subsystem.stop()
 
     def find_target(self, pose):
         if RobotZoneChecker.is_in_left_neutral_zone(pose):
@@ -128,12 +126,4 @@ class ConditionalAlignAndShoot(HubAlign):
     def end(self, interrupted):
         super().end(interrupted)
         ResetShooterHood(self._hood).schedule()
-        self.stop_shooter()
-
-    def activate_shooter(self):
-        self._spindex.spin()
-        self._transfer1.spin()
-
-    def stop_shooter(self):
-        self._spindex.stop_motor()
-        self._transfer1.stop_motor()
+        self.transfer_subsystem.stop()
