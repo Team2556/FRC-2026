@@ -8,10 +8,16 @@ class RobotZoneChecker:
     field_height = 8.07
     field_width = 16.54
     
-    right_allianze_zone_x = 3.75
+    right_allianze_zone_x = 3.5
     
-    left_neutral_zone_x = 5.40
-    right_neutral_zone_x = 11.30
+    left_neutral_zone_x = 5.7
+    right_neutral_zone_x = 10.8
+    
+    left_transition_zone_x = 3.5
+    right_transition_zone_x = 5.7
+    
+    left_opposing_transition_zone_x = 10.86
+    right_opposing_transition_zone_x = 13.07
     
     @staticmethod
     def is_between(value, num1, num2):
@@ -54,4 +60,17 @@ class RobotZoneChecker:
             pose, 
             FlipUtil.fieldPose(Pose2d(RobotZoneChecker.left_neutral_zone_x, 0, Rotation2d())),
             FlipUtil.fieldPose(Pose2d(RobotZoneChecker.right_neutral_zone_x, RobotZoneChecker.field_height / 2, Rotation2d())),
+        )
+    
+    @staticmethod
+    def is_near_transition_zone(pose: Pose2d):
+        '''Transition zone is the x value while in or close to a tranch/bump'''
+        return RobotZoneChecker.is_within_pose(
+            pose, 
+            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.left_transition_zone_x, 0, Rotation2d())),
+            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.right_transition_zone_x, RobotZoneChecker.field_height, Rotation2d())),
+        ) or RobotZoneChecker.is_within_pose(
+            pose, 
+            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.left_opposing_transition_zone_x, 0, Rotation2d())),
+            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.right_opposing_transition_zone_x, RobotZoneChecker.field_height, Rotation2d())),
         )

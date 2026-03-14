@@ -9,6 +9,7 @@ from subsystems.drivetrain.swerve_tuner import TunerConstants
 from subsystems.drivetrain.telemetry import Telemetry
 
 from util.custom_controller import CommandXboxController
+from util.robot_zone_checker import RobotZoneChecker
 
 from constants.drive import kDriveConfig
 from constants.drive import kAutoAlign
@@ -82,6 +83,15 @@ class SwerveDriveTrain(commands2.Subsystem):
     
     def stop_target_align(self):
         self.do_target_align = False
+    
+    def should_stop_shooting(self):
+        '''Uses a bit of velocity projection to detect if robot should stop shooting to transition between bump/trench'''
+        projected_pose = self.get_state().pose.transformBy(self.get_state().velocity * kDriveConfig.LOOKAHEAD_SECONDS)
+        half_projected_pose = self.get_state().pose.transformBy(self.get_state().velocity * kDriveConfig.LOOKAHEAD_SECONDS * 0.5)
+        return (
+            RobotZoneChecker.is_near_transition_zone(projected_pose)
+            or RobotZoneChecker.is_near_transition_zone(half_projected_pose)
+        )
 
     def _stop(self):
         self.drive_with_values(velocity_x=0, velocity_y=0, rotation_rate=0)
