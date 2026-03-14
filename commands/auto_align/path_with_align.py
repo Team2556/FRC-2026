@@ -21,7 +21,7 @@ class DriveWithAlign(DriveToASpot):
         **args
     ):
         DriveToASpot.__init__(self, **args)
-        self._hub_align = alignio.TurretTargeWithVelocity(
+        self._hub_align = alignio.TurretTargetWithVelocity(
             self.drivetrain, shooter, alignment_target
         )
 

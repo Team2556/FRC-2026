@@ -53,7 +53,7 @@ class TurretTargetBase(commands2.Command):
         return self
 
 
-class TurretTargeWithVelocity(TurretTargetBase):
+class TurretTargetWithVelocity(TurretTargetBase):
     def __init__(
         self, drivetrain: SwerveDriveTrain, shooter: DualMotorShooter, target: Pose2d
     ):
