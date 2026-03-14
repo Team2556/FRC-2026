@@ -1,4 +1,6 @@
-from commands2.button import CommandXboxController
+from commands2.button import CommandXboxController, CommandPS4Controller
+
+from util.math_helpers import clamp
 
 
 class XboxController(CommandXboxController):
@@ -15,8 +17,6 @@ class XboxController(CommandXboxController):
 
         self._deadband = 0
         self._mult = 1
-
-        self.maxSmoothingExponent = 4.0
 
     def with_deadband(self, deadband):
         """
@@ -37,23 +37,12 @@ class XboxController(CommandXboxController):
         """
         Applies the custom controller settings
         """
-        _val = val
-        _sign = 1.0 if _val > 0 else -1.0
-
-        # Apply Deadband
-        if abs(_val) <= self._deadband:
+        if abs(val) <= self._deadband:
             return 0
-        _val = (
-            _sign * (abs(_val) - self._deadband) / (1.0 - self._deadband)
-        )  # Remap the joystick values excluding deadband zone
 
-        # Apply Smoothing
-        _val = _val ** 3
-
-        # Apply Mult
-        _val = _val * self._mult
-
-        return _val
+        # _val = val**3
+        _val = val
+        return clamp(_val, -1, 1)
 
     def getLeftX(self):
         _val = super().getLeftX()
@@ -70,3 +59,6 @@ class XboxController(CommandXboxController):
     def getRightY(self):
         _val = super().getRightY()
         return self._apply(val=_val)
+
+# class PS4Controller(CommandPS4Controller):
+    

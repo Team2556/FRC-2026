@@ -7,7 +7,7 @@ class kSpindexer:
     _CONFIG.slot0.k_i = 5
     _CONFIG.slot0.k_d = 0
 
-    TARGET_RPM = 60
+    TARGET_RPM = 6000
 
 class kTransfer:
     _CONFIG = TalonFXConfiguration()
@@ -15,4 +15,4 @@ class kTransfer:
     _CONFIG.slot0.k_i = 5
     _CONFIG.slot0.k_d = 0
 
-    TARGET_RPM = -120
+    TARGET_RPM = 6000

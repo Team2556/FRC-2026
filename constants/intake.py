@@ -20,4 +20,4 @@ class kIntakeSpinner:
     _CONFIG.slot0.k_i = 5
     _CONFIG.slot0.k_d = 0
 
-    TARGET_RPM = -3600
+    TARGET_RPM = -6000
