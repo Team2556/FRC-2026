@@ -42,14 +42,12 @@ class ShooterHood(Subsystem):
 
     def increment(self, mult):
         self.set_position(
-            self.position_request.with_position(
-                self.hood_motor.get_position().value
-                + ((kHoodMotor.INCREMENT_AMOUNT / 20) * mult)
-            )
+            self.hood_motor.get_position().value
+            + ((kHoodMotor.INCREMENT_AMOUNT / 20) * mult)
         )
 
     def set_position(self, position):
-        self.hood_motor.set_control(self.position_voltage.with_position(position))
+        self.hood_motor.set_control(self.position_request.with_position(position))
         self.nt.set("Ideal Hood Position", position)
 
     def is_hard_stopped(self):
@@ -61,7 +59,7 @@ class ShooterHood(Subsystem):
     def reset(self):
         self.set_position(0)
         self.nt.set("Ideal Home Position", 0)
-    
+
     def angle_by_position(self, robot_pose: Pose2d, target_pose: Pose2d) -> None:
         distance_to_target = distanceFromPose2dtoPose2d(robot_pose, target_pose)
 
