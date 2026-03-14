@@ -10,27 +10,24 @@ from util.send_fms_data import SendFMSData
 
 from commands import drive_commands, vision_odometry
 from commands.path_commands import custom_path_commands, go_back_with_path
-from commands.spin_motor import SpinMotor
+from commands.run_transfer_motors import RunTransferCommand
 from commands.intake_commands import IntakeCommandDeploy, IntakeCommandUndeploy
 from commands.climb import ClimbDown, ClimbUp
 from commands.shooter import shooter_commands
 
 from constants.vision import kCamera
-from constants.indexer import kSpindexer, kTrasnfer
-from constants.shooter import kShooterMotor
 from constants.drive import kDriveConfig
 from constants.led import kLED
 
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
-from subsystems.controlled_motor import ControlledTalonMotor
 from subsystems.intake import IntakeSubsystem
 from subsystems.climb_subsystem import ClimbSubsystem
+from subsystems.transfer_sybsystem import TransferSubsystem
 
 from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.shooter.dual_shooter import DualMotorShooter
-
 
 from commands2 import ParallelCommandGroup, cmd
 
@@ -49,30 +46,12 @@ class RobotContainer:
         
         self.intake_subsystem = IntakeSubsystem()
         self.LED_controller = CANdleLEDController(kLED.CAN_ID)
-
-        self.spindex_motor = ControlledTalonMotor(
-            "Spindex",
-            kSpindexer.CAN_ID,
-            kSpindexer._CONFIG,
-            kSpindexer.TARGET_RPM,
-        )
-        self.transfer_motor = ControlledTalonMotor(
-            "Transfer 1",
-            kTrasnfer.motor_1.CAN_ID,
-            kTrasnfer.motor_1._CONFIG,
-            kTrasnfer.motor_1.TARGET_RPM,
-        )
-        self.intake_motor = ControlledTalonMotor(
-            "Intake Motor",
-            kIntakeMotor.CAN_ID,
-            kIntakeMotor._CONFIG,
-            kIntakeMotor.TARGET_RPM,
-            enable_smartdashboard=True,
-        )
+        
+        self.transfer_subsystem = TransferSubsystem()
+        self.shooter_subsystem = DualMotorShooter()
+        self.hood_subsystem = ShooterHood()
         
         self.climb_subsystem = ClimbSubsystem()
-        self.shooter_subsystem = DualMotorShooter()
-        self.hood_motor = ShooterHood()
         
         self.custom_path_commands = custom_path_commands.CustomPathCommands(
             self._drivetrain,
@@ -100,8 +79,7 @@ class RobotContainer:
 
         self._controller_1.rightBumper().whileTrue(
             ParallelCommandGroup(
-                SpinMotor(self.transfer_motor1),
-                SpinMotor(self.spindex_motor),
+                RunTransferCommand(self.transfer_subsystem),
                 shooter_commands.EnableShooter(self.shooter_subsystem),
             )
         )
@@ -111,8 +89,8 @@ class RobotContainer:
                 self._drivetrain, 
                 self._controller_1, 
                 self.shooter_subsystem, 
-                self.spindex_motor,
-                self.transfer_motor1,
+                self.transfer_subsystem,
+                self.hood_subsystem,
                 self.LED_controller
             )
         )
@@ -135,17 +113,14 @@ class RobotContainer:
         
         # CONTROLLER 2
         self._controller_2.b().onTrue(
-            ParallelCommandGroup(
-                SpinMotor(self.spindex_motor),
-                SpinMotor(self.transfer_motor1),
-            )
+            RunTransferCommand(self.transfer_subsystem)
         )
         
         self._controller_2.y().onTrue(
             shooter_commands.EnableShooter(self.shooter_subsystem)
         )
         
-        cmd.run(lambda: self.hood_motor.increment(self._controller_2.getRightX()))
+        cmd.run(lambda: self.hood_subsystem.increment(self._controller_2.getRightX()))
         
         self._controller_2.povUp().onTrue(
             ClimbUp(self.climb_subsystem)
