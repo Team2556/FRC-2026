@@ -16,16 +16,14 @@ class kIntakeDeployer:
     # right follows left using Follower in intake.py subsystems line 27
     
     STATE = "undeployed"
-    INITIAL_POSITION = 0
     DEPLOYED_POSITION = 0.5
 
 
 class kIntakeSpinner:
     _CONFIG = TalonFXConfiguration()
     _CONFIG.slot0.k_p = 0
-    _CONFIG.slot0.k_i = 6
+    _CONFIG.slot0.k_i = 5
     _CONFIG.slot0.k_d = 0
 
     CAN_ID = 0
-    TARGET_RPS = 1
     TARGET_RPM = -3600

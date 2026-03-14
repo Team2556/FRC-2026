@@ -9,7 +9,7 @@ from util.custom_controller import XboxController
 from commands import auto_align, drive_commands, vision_odometry
 from commands.path_commands import go_back_with_path, drive_to_a_spot, drive_to_a_spot_sequence
 from commands.spin_motor import SpinMotor
-from commands.intake_commands import intake_command_deploy, intake_command_undeploy
+from commands.intake_commands import IntakeCommandDeploy, IntakeCommandUndeploy
 
 from constants.vision import kCamera
 from constants.indexer import kSpindexer, kTrasnfer
@@ -113,18 +113,11 @@ class RobotContainer:
             go_back_with_path.GoBackWithPath(self._drivetrain)
         )
         
-        self.deploy_command_spin_intake = (
-            intake_command_undeploy(self.intake_subsystem)
-        )
         self._controller_2.rightTrigger().onTrue(
-            self.deploy_command_spin_intake
-        )
-        
-        self.undeploy_command_spin_intake = (
-            intake_command_undeploy(self.intake_subsystem)
+            IntakeCommandDeploy(self.intake_subsystem)
         )
         self._controller_2.rightTrigger().onFalse(
-            self.undeploy_command_spin_intake
+            IntakeCommandUndeploy(self.intake_subsystem)
         )
         
     def getAutonomousCommand(self):

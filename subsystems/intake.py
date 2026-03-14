@@ -39,44 +39,33 @@ class IntakeSubsystem(commands2.Subsystem):
         )
         
         self.deployer_position_voltage = phoenix6.controls.PositionVoltage(position=0, slot=0)
-        #
         self.velocity_voltage = phoenix6.controls.VelocityVoltage(velocity=0, slot=0)
         
         self.deploy_editable_pid = EditablePID("Intake/Deployer", self.left_deployer, self.deployer_cfg, use_slot1=True)
         self.spinny_editable_pid = EditablePID("Intake/Spinny", self.spinny_motor, self.spinny_cfg)
-        SmartDashboard.putNumber("IntakeLeftDeployer position", self.left_deployer.get_position().value)
-        SmartDashboard.putNumber("Intake/Deploy Initial Position", kIntakeDeployer.INITIAL_POSITION)
-        SmartDashboard.putNumber("Intake/Deploy Active Position", kIntakeDeployer.DEPLOYED_POSITION)
-        SmartDashboard.putNumber("Intake/Spinny Speed", kIntakeSpinner.TARGET_RPS)
+        
+        # SmartDashboard.putNumber("IntakeLeftDeployer position", self.left_deployer.get_position().value)
+        # SmartDashboard.putNumber("Intake/Deploy Initial Position", kIntakeDeployer.INITIAL_POSITION)
+        # SmartDashboard.putNumber("Intake/Deploy Active Position", kIntakeDeployer.DEPLOYED_POSITION)
+        # SmartDashboard.putNumber("Intake/Spinny Speed", kIntakeSpinner.TARGET_RPS)
         
     def set_deployer_positon(self, pos):
         self.left_deployer.set_control(self.deployer_position_voltage.with_position(pos))
-        
-    def deploy(self):   
-        self.spinny_motor.set_control(self.velocity_voltage.with_velocity(kIntakeSpinner.TARGET_RPS))
-         
-        self.left_deployer.set_control(
-            self.deployer_position_voltage
-            .with_position(kIntakeDeployer.DEPLOYED_POSITION)
-            .with_slot(0)
-        )
     
-    def undeploy(self):
-        self.spinny_motor.disable()
-        
-        self.left_deployer.set_control(
-            self.deployer_position_voltage
-            .with_position(kIntakeDeployer.INITIAL_POSITION)
-            .with_slot(0)
-        )
+    def set_internal_deployer_position(self, pos):
+        self.left_deployer.set_position(pos)
+    
+    def change_deployer_slot(self, slot=0):
+        self.left_deployer.set_control(self.deployer_position_voltage.with_slot(slot))
+    
+    def set_spinny_speed(self, rpm):
+        self.spinny_motor.set_control(self.velocity_voltage.with_velocity(rpm / 60))
     
     def periodic(self):
-        # This only detects left limit switches for now but it still should work ideally
-        
         SmartDashboard.putString("Intake/State", kIntakeDeployer.STATE)
-        kIntakeDeployer.DEPLOYED_POSITION = SmartDashboard.getNumber("Intake/Deploy Active Position", kIntakeDeployer.DEPLOYED_POSITION)
-        kIntakeDeployer.INITIAL_POSITION = SmartDashboard.getNumber("Intake/Deploy Initial Position", kIntakeDeployer.INITIAL_POSITION)
-        kIntakeSpinner.TARGET_RPS = SmartDashboard.getNumber("Intake/Spinny Speed", kIntakeSpinner.TARGET_RPS)
+        # kIntakeDeployer.DEPLOYED_POSITION = SmartDashboard.getNumber("Intake/Deploy Active Position", kIntakeDeployer.DEPLOYED_POSITION)
+        # kIntakeDeployer.INITIAL_POSITION = SmartDashboard.getNumber("Intake/Deploy Initial Position", kIntakeDeployer.INITIAL_POSITION)
+        # kIntakeSpinner.TARGET_RPS = SmartDashboard.getNumber("Intake/Spinny Speed", kIntakeSpinner.TARGET_RPS)
         
         self.deploy_editable_pid.periodic()
         self.spinny_editable_pid.periodic()

@@ -4,39 +4,38 @@ from phoenix6 import signals
 from constants.intake import kIntakeDeployer, kIntakeSpinner
 from wpilib import SmartDashboard
    
-class intake_command_deploy(Command):
+class IntakeCommandDeploy(Command):
     def __init__(self, intake_subsystem : IntakeSubsystem):
         self.intake_subsystem = intake_subsystem
-        self.intake_subsystem.set_deployer_positon(1)
         self.forward_limit = self.intake_subsystem.left_deployer.get_forward_limit()
         
     def initialize(self):
         self.intake_subsystem.set_deployer_positon(kIntakeDeployer.DEPLOYED_POSITION)
+        self.intake_subsystem.change_deployer_slot(0)
+        self.intake_subsystem.set_spinny_speed(kIntakeSpinner.TARGET_RPM)
         kIntakeDeployer.STATE = "deploying"    
     
     def isFinished(self):
         return self.forward_limit.value is signals.ForwardLimitValue.CLOSED_TO_GROUND
     
     def end(self, interrupted):
-        self.intake_subsystem.spinny_motor.set_control(self.intake_subsystem.velocity_voltage.with_velocity(kIntakeSpinner.TARGET_RPS))
-        self.intake_subsystem.left_deployer.set_control(self.intake_subsystem.deployer_position_voltage.with_slot(1))
+        self.intake_subsystem.change_deployer_slot(1)
         kIntakeDeployer.STATE = "deployed"
 
-class intake_command_undeploy(Command):
+class IntakeCommandUndeploy(Command):
     def __init__(self, intake_subsystem : IntakeSubsystem):
         self.intake_subsystem = intake_subsystem
-        self.intake_subsystem.set_deployer_positon(0)
         self.reverse_limit = self.intake_subsystem.left_deployer.get_reverse_limit()
         
     def initialize(self):
-        self.intake_subsystem.undeploy()
+        self.intake_subsystem.set_deployer_positon(0)
+        self.intake_subsystem.change_deployer_slot(0)
         kIntakeDeployer.STATE = "undeploying"
     
     def isFinished(self):
         return self.reverse_limit.value is signals.ForwardLimitValue.CLOSED_TO_GROUND
 
     def end(self, interrupted):
-        self.intake_subsystem.left_deployer.set_control(self.intake_subsystem.deployer_position_voltage.with_slot(1))
-        kIntakeDeployer.STATE = "undeployed"
+        self.intake_subsystem.set_internal_deployer_position(0)
         self.intake_subsystem.spinny_motor.set_control(self.intake_subsystem.velocity_voltage.with_velocity(0))
-        #detects if left deployer motor is up and sets the state to "undeployed"
+        kIntakeDeployer.STATE = "undeployed"
