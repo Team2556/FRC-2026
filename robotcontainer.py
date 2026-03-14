@@ -23,7 +23,7 @@ from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
 from subsystems.intake import IntakeSubsystem
 from subsystems.climb_subsystem import ClimbSubsystem
-from subsystems.transfer_sybsystem import TransferSubsystem
+from subsystems.transfer_subsystem import TransferSubsystem
 
 from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.led.LED_controller import CANdleLEDController
@@ -115,9 +115,9 @@ class RobotContainer:
         )
         # =========================
         
-        self._controller_2.b().onTrue(RunTransferCommand(self.transfer_subsystem))
+        self._controller_2.b().whileTrue(RunTransferCommand(self.transfer_subsystem))
 
-        self._controller_2.y().onTrue(
+        self._controller_2.y().whileTrue(
             shooter_commands.EnableShooter(self.shooter_subsystem)
         )
 

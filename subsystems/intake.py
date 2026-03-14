@@ -46,9 +46,12 @@ class IntakeSubsystem(commands2.Subsystem):
         
         self.nt = NTTable("Intake")
         self.nt.float("Deployer Position", 0.0)
-        self.nt.float("Spinny RPM", 0.0)
         self.nt.float("Target Deployer Position", kIntakeDeployer.DEPLOYED_POSITION)
+        self.nt.float("Ideal Deployer Position", 0.0)
+        self.nt.int("Current Slot", 0)
+        self.nt.float("Spinny RPM", 0.0)
         self.nt.float("Target Spinny RPM", kIntakeSpinner.TARGET_RPM)
+        self.nt.float("Ideal Spinny RPM", 0.0)
         self.nt.string("State", self.state)
         
         self.deploy_editable_pid = EditablePID("Intake/DeployerPID", self.left_deployer, self.deployer_cfg, use_slot1=True)
@@ -56,19 +59,26 @@ class IntakeSubsystem(commands2.Subsystem):
         
     def set_deployer_positon(self, pos):
         self.left_deployer.set_control(self.deployer_position_voltage.with_position(pos))
+        self.nt.set("Ideal Deployer Position", pos)
     
     def set_internal_deployer_position(self, pos):
         self.left_deployer.set_position(pos)
+        self.nt.set("Ideal Deployer Position", 0)
     
     def change_deployer_slot(self, slot=0):
         self.left_deployer.set_control(self.deployer_position_voltage.with_slot(slot))
+        self.nt.set("Current Slot", slot)
     
     def set_spinny_speed(self, rpm):
         self.spinny_motor.set_control(self.velocity_voltage.with_velocity(rpm / 60))
+        self.nt.set("Ideal Spinny RPM", rpm)
     
     def periodic(self):
+        if self.left_deployer.get_reverse_limit().value is signals.ForwardLimitValue.CLOSED_TO_GROUND:
+            self.set_internal_deployer_position(0)
+        
         self.nt.set("Deployer Position", self.left_deployer.get_position().value)
-        self.nt.set("Spinny RPM", self.left_deployer.get_velocity().value * 60)
+        self.nt.set("Spinny RPM", self.spinny_motor.get_velocity().value * 60)
         self.nt.set("State", self.state)
         kIntakeDeployer.DEPLOYED_POSITION = self.nt.get("Target Deployer Position")
         kIntakeSpinner.TARGET_RPM = self.nt.get("Target Spinny RPM")

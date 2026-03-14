@@ -6,7 +6,7 @@ from wpimath.geometry import Pose2d
 
 from phoenix6.hardware import TalonFX
 from phoenix6.controls import PositionVoltage, DutyCycleOut
-from phoenix6.signals import NeutralModeValue, ForwardLimitValue
+from phoenix6.signals import NeutralModeValue, ReverseLimitValue
 
 from util.editable_pid import EditablePID
 from util.nt_util import NTTable
@@ -28,6 +28,7 @@ class ShooterHood(Subsystem):
 
         self.nt = NTTable("Shooter").get_subtable("Hood")
         self.nt.float("Hood Position", 0.0)
+        self.nt.float("Ideal Hood Position", 0.0)
         self.nt.float("Reset Home Speed", kHoodMotor.RESET_HOME_SPEED)
         self.nt.float("Increment Amount", kHoodMotor.INCREMENT_AMOUNT)
 
@@ -43,15 +44,17 @@ class ShooterHood(Subsystem):
 
     def set_position(self, position):
         self.hood_motor.set_control(self.position_voltage.with_position(position))
+        self.nt.set("Ideal Hood Position", position)
 
     def is_hard_stopped(self):
         return (
             self.hood_motor.get_reverse_limit().value
-            is ForwardLimitValue.CLOSED_TO_GROUND
+            is ReverseLimitValue.CLOSED_TO_GROUND
         )
 
     def reset(self):
         self.set_position(0)
+        self.nt.set("Ideal Home Position", 0)
     
     def angle_by_position(self, robot_pose: Pose2d, target_pose: Pose2d) -> None:
         distance_to_target = distanceFromPose2dtoPose2d(robot_pose, target_pose)
