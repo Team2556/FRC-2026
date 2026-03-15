@@ -17,9 +17,9 @@ class IntakeSubsystem(commands2.Subsystem):
     def __init__(self):
         super().__init__()
 
-        self.left_deployer = phoenix6.hardware.TalonFX(kCANId.intake.LEFT_PIVOT, "rio")
+        self.left_deployer = phoenix6.hardware.TalonFXS(kCANId.intake.LEFT_PIVOT, "rio")
         # defines the  left deplpyer motor, "rio" is for saying it is on the native roboRIO CAN bus
-        self.right_deployer = phoenix6.hardware.TalonFX(
+        self.right_deployer = phoenix6.hardware.TalonFXS(
             kCANId.intake.RIGHT_PIVOT, "rio"
         )
         # defines the right deployer motor
