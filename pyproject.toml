@@ -8,11 +8,11 @@
 # Version of robotpy this project depends on
 robotpy_version = "2026.2.1.1"
 
-# Which core WPILib components should be installed
+# Which optional robotpy components should be installed?
 # -> equivalent to `pip install robotpy[extra1, ...]
 components = [
-    # "all",
-    "apriltag",
+    #"all",
+    # "apriltag",
     "commands2",
     # "cscore",
     # "romi",

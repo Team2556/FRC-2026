@@ -45,7 +45,7 @@ class RobotContainer:
         self.hood_subsystem = ShooterHood()
         # self.climb_subsystem = ClimbSubsystem()
 
-        self.mono_vision = mono_limelight.Vision(kCamera.llFront.NAME)
+        self.mono_vision = mono_limelight.Vision(kCamera.BACK_LL, kCamera.SHOOTER_LL)
         self.LED_controller = CANdleLEDController()
 
         self.custom_path_commands = custom_path_commands.CustomPathCommands(
