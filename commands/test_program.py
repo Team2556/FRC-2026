@@ -266,10 +266,11 @@ class TestProgramCommand(commands2.Command):
             self.initial_drivetrain_positions = []
             for i in range(4):  # Assuming 4 swerve modules
                 try:
-                    module_state = state.robot_state.module_states[i]
-                    self.initial_drivetrain_positions.append(module_state.distance_meter)
-                    print(f"  Module {i} initial position: {module_state.distance_meter:.4f} meters")
-                except IndexError:
+                    module_position = state.robot_state.module_positions[i]
+                    distance = module_position.distance
+                    self.initial_drivetrain_positions.append(distance)
+                    print(f"  Module {i} initial position: {distance:.4f} meters")
+                except (IndexError, AttributeError):
                     self.initial_drivetrain_positions.append(0.0)
             print(f"  Drivetrain: Small movement test starting...")
 
@@ -287,8 +288,8 @@ class TestProgramCommand(commands2.Command):
             
             for i in range(min(4, len(self.initial_drivetrain_positions))):
                 try:
-                    module_state = state.robot_state.module_states[i]
-                    current_pos = module_state.distance_meter
+                    module_position = state.robot_state.module_positions[i]
+                    current_pos = module_position.distance
                     movement = abs(current_pos - self.initial_drivetrain_positions[i])
                     total_movement += movement
                     modules_moved += 1
