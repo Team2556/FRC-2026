@@ -17,7 +17,7 @@ class IntakeCommandDeploy(Command):
         self.intake_subsystem.state = "deploying"    
     
     def isFinished(self):
-        return self.forward_limit.value is signals.ForwardLimitValue.CLOSED_TO_GROUND
+        return self.forward_limit.value == signals.ForwardLimitValue.CLOSED_TO_GROUND
     
     def end(self, interrupted):
         self.intake_subsystem.change_deployer_slot(1)
@@ -30,12 +30,13 @@ class IntakeCommandUndeploy(Command):
         self.addRequirements(intake_subsystem)
         
     def initialize(self):
+        self.intake_subsystem.set_spinny_speed(0)
         self.intake_subsystem.set_deployer_position(0)
         self.intake_subsystem.change_deployer_slot(0)
         self.intake_subsystem.state = "undeploying"
     
     def isFinished(self):
-        return self.reverse_limit.value is signals.ReverseLimitValue.CLOSED_TO_GROUND
+        return self.reverse_limit.value == signals.ReverseLimitValue.CLOSED_TO_GROUND
 
     def end(self, interrupted):
         self.intake_subsystem.set_internal_deployer_position(0)

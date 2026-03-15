@@ -1,15 +1,21 @@
 import commands2
 
 from subsystems.transfer_subsystem import TransferSubsystem
+from subsystems.shooter.dual_shooter import DualMotorShooter
+
 
 class RunTransferCommand(commands2.Command):
-    def __init__(self, transfer_sybsystem: TransferSubsystem):
+    def __init__(self, transfer_sybsystem: TransferSubsystem, shooter: DualMotorShooter):
         super().__init__()
         self.transfer_sybsystem = transfer_sybsystem
+        self.shooter = shooter
         self.addRequirements(transfer_sybsystem)
-        
-    def initialize(self):
-        self.transfer_sybsystem.activate()
+
+    def execute(self):
+        if self.shooter.is_charged:
+            self.transfer_sybsystem.activate()
+        else:
+            self.transfer_sybsystem.stop()
 
     def end(self, interrupted):
         self.transfer_sybsystem.stop()

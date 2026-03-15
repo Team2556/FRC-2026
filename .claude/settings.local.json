@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:v6.docs.ctr-electronics.com)",
+      "Bash(python -m pytest tests/ -x)",
+      "Bash(.venv/Scripts/python -m pip show pyfrc)",
+      "Bash(.venv/Scripts/python -m pip show robotpy)",
+      "Bash(python -m pytest tests/ -v)",
+      "Bash(python -c \"from phoenix6.signals import MotorArrangementValue; print\\([x for x in dir\\(MotorArrangementValue\\) if not x.startswith\\(''_''\\)]\\)\")",
+      "Bash(grep -r \"MotionMagic\\\\|motion_magic\" /c/Users/willi/Claude/FRC-2026-Prototype --include=*.py --exclude-dir=.venv)",
+      "Bash(find /c/Users/willi/AppData/Roaming/Python/Python312/site-packages/phoenix6 -name *license* -o -name *LICENSE* -o -name *pro*)"
+    ]
+  }
+}

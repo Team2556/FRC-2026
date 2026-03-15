@@ -39,8 +39,6 @@ class SwerveDriveTrain(commands2.Subsystem):
         self._field = wpilib.Field2d()
         wpilib.SmartDashboard.putData("Field", self._field)
 
-        self.hub_pos = FlipUtil.fieldPose(kHub.POS)
-
         self.target_align_rotation_rate = 0
         self.do_target_align = False
 
@@ -137,6 +135,6 @@ class SwerveDriveTrain(commands2.Subsystem):
         pose = self.get_state().pose
         self._field.setRobotPose(pose)
 
-        self.nt.set("Distance to Hub", distanceFromPose2dtoPose2d(pose, FlipUtil.fieldPose(self.hub_pos)))
+        self.nt.set("Distance to Hub", distanceFromPose2dtoPose2d(pose, FlipUtil.fieldPose(kHub.POS)))
         self.nt.set("Do Target Align", self.do_target_align)
         self.nt.set("Target Align Rotation Rate", self.target_align_rotation_rate)

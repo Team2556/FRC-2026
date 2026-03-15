@@ -4,8 +4,9 @@ from wpilib import SmartDashboard, DigitalInput
 import commands2
 
 import phoenix6
-from phoenix6.controls import Follower
+import phoenix6.controls
 from phoenix6 import signals
+from phoenix6.signals import MotorAlignmentValue
 
 from util.editable_pid import EditablePID
 from util.nt_util import NTTable
@@ -35,25 +36,22 @@ class IntakeSubsystem(commands2.Subsystem):
         self.spinny_cfg.motor_output.neutral_mode = signals.NeutralModeValue.COAST
         # when the spiny motor's output is neutral it coasts
 
+        self.deployer_position_voltage = phoenix6.controls.MotionMagicVoltage(
+            position=0, enable_foc=False, slot=0
+        )
+        self.right_deployer_follower = phoenix6.controls.Follower(
+            kCANId.intake.LEFT_PIVOT, MotorAlignmentValue.OPPOSED
+        )
+
         # Skip configuration in simulation/tests to prevent hanging
         if not wpilib.RobotBase.isSimulation():
             self.left_deployer.configurator.apply(self.deployer_cfg)
-            # self.right_deployer.configurator.apply(self.deployer_cfg) # might need this, sets the 'config info' for the motor
+            self.right_deployer.configurator.apply(self.deployer_cfg)  # ABSOLUTLY need this, sets the 'config info' for the motor
+            self.right_deployer.set_control(self.right_deployer_follower)
             self.spinny_motor.configurator.apply(self.spinny_cfg)
-        # sets config info for motor
-        self.right_deployer.set_control(
-            # tells Right motor to follow left usinf the parameters--> device ID of the leader(is defined as the CAN ID in line 14, TalonFX rcognizes the first parameter as the device_id)
-            Follower(
-                self.left_deployer.device_id,
-                motor_alignment=signals.spn_enums.MotorAlignmentValue.OPPOSED,
-            )
-        )
-
-        self.deployer_position_voltage = phoenix6.controls.PositionVoltage(
-            position=0, slot=0
-        )
         self.velocity_voltage = phoenix6.controls.VelocityVoltage(velocity=0, slot=0)
 
+        self._was_at_reverse_limit = False
         self.state = "undeployed"
 
         self.nt = NTTable("Intake")
@@ -76,11 +74,11 @@ class IntakeSubsystem(commands2.Subsystem):
     def set_deployer_position(self, pos):
         self.left_deployer.set_control(self.deployer_position_voltage.with_position(pos))
         self.nt.set("Ideal Deployer Position", pos)
-    
+
     def set_internal_deployer_position(self, pos):
         self.left_deployer.set_position(pos)
         self.nt.set("Ideal Deployer Position", 0)
-    
+
     def change_deployer_slot(self, slot=0):
         self.left_deployer.set_control(self.deployer_position_voltage.with_slot(slot))
         self.nt.set("Current Slot", slot)
@@ -90,8 +88,10 @@ class IntakeSubsystem(commands2.Subsystem):
         self.nt.set("Ideal Spinny RPM", rpm)
     
     def periodic(self):
-        if self.left_deployer.get_reverse_limit().value is signals.ReverseLimitValue.CLOSED_TO_GROUND:
+        at_reverse_limit = self.left_deployer.get_reverse_limit().value is signals.ReverseLimitValue.CLOSED_TO_GROUND
+        if at_reverse_limit and not self._was_at_reverse_limit:
             self.set_internal_deployer_position(0)
+        self._was_at_reverse_limit = at_reverse_limit
         
         self.nt.set("Deployer Position", self.left_deployer.get_position().value)
         self.nt.set("Spinny RPM", self.spinny_motor.get_velocity().value * 60)

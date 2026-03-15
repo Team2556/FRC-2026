@@ -34,8 +34,8 @@ from commands2 import ParallelCommandGroup, cmd
 
 class RobotContainer:
     def __init__(self) -> None:
-        self._controller_1 = XboxController(port=0).with_deadband(0.1)
-        self._controller_2 = XboxController(port=1).with_deadband(0.1)
+        self._controller_1 = XboxController(port=0).with_deadband(0.3).with_power(5).with_mult(0.6)
+        self._controller_2 = XboxController(port=1).with_deadband(0.3).with_power(5).with_mult(0.6)
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
 
@@ -72,7 +72,7 @@ class RobotContainer:
 
         self._controller_1.rightBumper().whileTrue(
             ParallelCommandGroup(
-                RunTransferCommand(self.transfer_subsystem),
+                RunTransferCommand(self.transfer_subsystem, self.shooter_subsystem),
                 shooter_commands.EnableShooter(self.shooter_subsystem),
             )
         )
@@ -115,7 +115,7 @@ class RobotContainer:
         )
         # =========================
         
-        self._controller_2.b().whileTrue(RunTransferCommand(self.transfer_subsystem))
+        self._controller_2.b().whileTrue(RunTransferCommand(self.transfer_subsystem, self.shooter_subsystem))
 
         self._controller_2.y().whileTrue(
             shooter_commands.EnableShooter(self.shooter_subsystem)

@@ -1,4 +1,5 @@
 from phoenix6.configs import TalonFXConfiguration, Slot0Configs
+from phoenix6.signals import InvertedValue
 
 
 class kSpindexer:
@@ -14,5 +15,6 @@ class kTransfer:
     _CONFIG.slot0.k_p = 0.1
     _CONFIG.slot0.k_i = 5
     _CONFIG.slot0.k_d = 0
+    _CONFIG.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
 
-    TARGET_RPM = 6000
+    TARGET_RPM = 3000

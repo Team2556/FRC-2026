@@ -6,7 +6,7 @@ from commands2 import Subsystem
 from wpimath.geometry import Pose2d
 
 from phoenix6.hardware import TalonFXS
-from phoenix6.controls import PositionVoltage, DutyCycleOut
+from phoenix6.controls import MotionMagicVoltage, DutyCycleOut
 from phoenix6.signals import NeutralModeValue, ReverseLimitValue
 
 from util.editable_pid import EditablePID
@@ -22,12 +22,13 @@ from constants.canbus import kCANId
 class ShooterHood(Subsystem):
     def __init__(self):
         self.hood_motor = TalonFXS(kCANId.shooter.HOOD_CONTROL, "rio")
-        # Skip configuration in simulation/tests to prevent hanging
+# Apply configuration once during initialization only
         if not wpilib.RobotBase.isSimulation():
             self.hood_motor.configurator.apply(kHoodMotor._CONFIG)
+            # Set neutral mode once during initialization only
             self.hood_motor.setNeutralMode(NeutralModeValue.BRAKE)
 
-        self.position_request = PositionVoltage(0)
+        self.position_request = MotionMagicVoltage(position=0, enable_foc=False)
         self.home_request = DutyCycleOut(0)
 
         self.nt = NTTable("Shooter").get_subtable("Hood")
@@ -35,6 +36,8 @@ class ShooterHood(Subsystem):
         self.nt.float("Ideal Hood Position", 0.0)
         self.nt.float("Reset Home Speed", kHoodMotor.RESET_HOME_SPEED)
         self.nt.float("Increment Amount", kHoodMotor.INCREMENT_AMOUNT)
+
+        self._was_hard_stopped = False
 
         self.editable_pid = EditablePID(
             "Shooter/Hood", self.hood_motor, kHoodMotor._CONFIG
@@ -76,10 +79,12 @@ class ShooterHood(Subsystem):
         self.set_position(target_hood_position)
 
     def periodic(self):
-        if self.is_hard_stopped():
+        hard_stopped = self.is_hard_stopped()
+        if hard_stopped and not self._was_hard_stopped:
             self.hood_motor.set_position(0)
+        self._was_hard_stopped = hard_stopped
 
-        self.nt.set("Hood Angle", self.hood_motor.get_position().value)
+        self.nt.set("Hood Position", self.hood_motor.get_position().value)
         kHoodMotor.RESET_HOME_SPEED = self.nt.get("Reset Home Speed")
         kHoodMotor.INCREMENT_AMOUNT = self.nt.get("Increment Amount")
 

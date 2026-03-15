@@ -51,13 +51,12 @@ class TunerConstants:
     # The type of motor used for the drive motor
     _steer_motor_type = swerve.SteerMotorArrangement.TALON_FX_INTEGRATED
 
-    # The remote sensor feedback type to use for the steer motors;
-    # When not Pro-licensed, Fused*/Sync* automatically fall back to Remote*
-    _steer_feedback_type = swerve.SteerFeedbackType.FUSED_CANCODER
+    # The remote sensor feedback type to use for the steer motors
+    _steer_feedback_type = swerve.SteerFeedbackType.REMOTE_CANCODER
 
     # The stator current at which the wheels start to slip;
     # This needs to be tuned to your individual robot
-    _slip_current: units.ampere = 120.0
+    _slip_current: units.ampere = 60.0 #originally 120.0
 
     # Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
     # Some configs will be overwritten; check the `with_*_initial_configs()` API documentation.
@@ -66,7 +65,8 @@ class TunerConstants:
         configs.CurrentLimitsConfigs()
         # Swerve azimuth does not require much torque output, so we can set a relatively low
         # stator current limit to help avoid brownouts without impacting performance.
-        .with_stator_current_limit(60.0)
+        # .with_stator_current_limit(60.0)
+        .with_stator_current_limit(35.0)
         .with_stator_current_limit_enable(True)
     )
     _encoder_initial_configs = configs.CANcoderConfiguration()
@@ -83,7 +83,7 @@ class TunerConstants:
 
     # Every 1 rotation of the azimuth results in _couple_ratio drive motor turns;
     # This may need to be tuned to your individual robot
-    _couple_ratio = 3.5714285714285716
+    _couple_ratio = (2 + (9 / 45)) / 5 #3.5714285714285716
 
     _drive_gear_ratio = 8.142857142857142
     _steer_gear_ratio = 12.8

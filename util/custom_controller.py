@@ -15,8 +15,9 @@ class XboxController(CommandXboxController):
         """
         super().__init__(port)
 
-        self._deadband = 0
-        self._mult = 1
+        self._deadband = 0.15
+        self._mult = 0.1
+        self._power = 3
 
     def with_deadband(self, deadband):
         """
@@ -32,6 +33,13 @@ class XboxController(CommandXboxController):
         """
         self._mult = mult
         return self
+    
+    def with_power(self, power):
+        """
+        Raises all joystick values to the given power, while maintaining the sign
+        """
+        self._power = power
+        return self
 
     def _apply(self, val):
         """
@@ -40,8 +48,8 @@ class XboxController(CommandXboxController):
         if abs(val) <= self._deadband:
             return 0
 
-        # _val = val**3
-        _val = val
+        _val = val**self._power + self._mult * val
+        # _val = val
         return clamp(_val, -1, 1)
 
     def getLeftX(self):

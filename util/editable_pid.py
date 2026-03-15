@@ -1,3 +1,4 @@
+import wpilib
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.hardware import TalonFX
 from util.nt_util import NTTable
@@ -17,6 +18,8 @@ class EditablePID:
         
         # Track last applied values to avoid unnecessary config updates
         self.last_applied_values = {}
+        # Debounce: track last apply time to stay below Phoenix 6's 1-second frequent-call threshold
+        self._last_apply_time = -10.0
 
         if self.use_slot0:
             self.nt.float("slot0/k_p", self.cfg.slot0.k_p)
@@ -49,6 +52,7 @@ class EditablePID:
     def periodic(self):
         """Only apply configuration when PID values have actually changed from NetworkTables"""
         values_changed = False
+        tolerance = 0.01  # Large dead-band to rule out floating-point noise
         
         # Check slot0 changes
         if self.use_slot0:
@@ -56,9 +60,9 @@ class EditablePID:
             new_ki = self.nt.get("slot0/k_i") 
             new_kd = self.nt.get("slot0/k_d")
             
-            if (new_kp != self.last_applied_values['slot0']['k_p'] or
-                new_ki != self.last_applied_values['slot0']['k_i'] or 
-                new_kd != self.last_applied_values['slot0']['k_d']):
+            if (abs(new_kp - self.last_applied_values['slot0']['k_p']) > tolerance or
+                abs(new_ki - self.last_applied_values['slot0']['k_i']) > tolerance or 
+                abs(new_kd - self.last_applied_values['slot0']['k_d']) > tolerance):
                 
                 self.cfg.slot0.k_p = new_kp
                 self.cfg.slot0.k_i = new_ki
@@ -68,6 +72,7 @@ class EditablePID:
                 self.last_applied_values['slot0']['k_i'] = new_ki  
                 self.last_applied_values['slot0']['k_d'] = new_kd
                 values_changed = True
+                print(f"[{self.name}] Slot0 PID changed: kP={new_kp}, kI={new_ki}, kD={new_kd}")
         
         # Check slot1 changes
         if self.use_slot1:
@@ -75,9 +80,9 @@ class EditablePID:
             new_ki = self.nt.get("slot1/k_i")
             new_kd = self.nt.get("slot1/k_d")
             
-            if (new_kp != self.last_applied_values['slot1']['k_p'] or
-                new_ki != self.last_applied_values['slot1']['k_i'] or
-                new_kd != self.last_applied_values['slot1']['k_d']):
+            if (abs(new_kp - self.last_applied_values['slot1']['k_p']) > tolerance or
+                abs(new_ki - self.last_applied_values['slot1']['k_i']) > tolerance or
+                abs(new_kd - self.last_applied_values['slot1']['k_d']) > tolerance):
                 
                 self.cfg.slot1.k_p = new_kp
                 self.cfg.slot1.k_i = new_ki
@@ -87,6 +92,7 @@ class EditablePID:
                 self.last_applied_values['slot1']['k_i'] = new_ki
                 self.last_applied_values['slot1']['k_d'] = new_kd
                 values_changed = True
+                print(f"[{self.name}] Slot1 PID changed: kP={new_kp}, kI={new_ki}, kD={new_kd}")
                 
         # Check slot2 changes  
         if self.use_slot2:
@@ -94,9 +100,9 @@ class EditablePID:
             new_ki = self.nt.get("slot2/k_i")
             new_kd = self.nt.get("slot2/k_d")
             
-            if (new_kp != self.last_applied_values['slot2']['k_p'] or
-                new_ki != self.last_applied_values['slot2']['k_i'] or
-                new_kd != self.last_applied_values['slot2']['k_d']):
+            if (abs(new_kp - self.last_applied_values['slot2']['k_p']) > tolerance or
+                abs(new_ki - self.last_applied_values['slot2']['k_i']) > tolerance or
+                abs(new_kd - self.last_applied_values['slot2']['k_d']) > tolerance):
                 
                 self.cfg.slot2.k_p = new_kp
                 self.cfg.slot2.k_i = new_ki
@@ -106,11 +112,18 @@ class EditablePID:
                 self.last_applied_values['slot2']['k_i'] = new_ki  
                 self.last_applied_values['slot2']['k_d'] = new_kd
                 values_changed = True
+                print(f"[{self.name}] Slot2 PID changed: kP={new_kp}, kI={new_ki}, kD={new_kd}")
 
-        # Only apply configuration if values actually changed
+        # Only apply configuration if values changed, not on FMS, and debounce has elapsed
         if values_changed:
-            self.talon_motor.configurator.apply(self.cfg)
-            print(f"[{self.name}] Applied PID configuration update")
+            if wpilib.DriverStation.isFMSAttached():
+                print(f"[{self.name}] FMS attached - PID updates disabled")
+            else:
+                now = wpilib.Timer.getFPGATimestamp()
+                if now - self._last_apply_time >= 1.5:
+                    self.talon_motor.configurator.apply(self.cfg, 0.050)
+                    self._last_apply_time = now
+                    print(f"[{self.name}] *** APPLIED PID CONFIGURATION TO MOTOR ***")
 
     def with_slot1(self) -> "EditablePID":
         self.use_slot1 = True

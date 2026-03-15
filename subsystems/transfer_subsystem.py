@@ -1,7 +1,7 @@
 import wpilib
 from commands2 import Subsystem
 import phoenix6
-from phoenix6.controls import VelocityVoltage
+from phoenix6.controls import VelocityVoltage, NeutralOut
 from phoenix6.hardware import TalonFX
 from constants.transfer import kSpindexer, kTransfer
 from constants.canbus import kCANId
@@ -23,6 +23,7 @@ class TransferSubsystem(Subsystem):
         
         self.spindex_velocity_voltage = VelocityVoltage(0)
         self.up_transfer_velocity_voltage = VelocityVoltage(0)
+        self._neutral = NeutralOut()
         
         # Network Tables stuff
         self.nt = NTTable("Transfer")
@@ -49,8 +50,8 @@ class TransferSubsystem(Subsystem):
         self.nt.set("Active", True)
 
     def stop(self):
-        self.spindex_motor.set_control(self.spindex_velocity_voltage.with_velocity(0))
-        self.up_transfer_motor.set_control(self.up_transfer_velocity_voltage.with_velocity(0))
+        self.spindex_motor.set_control(self._neutral)
+        self.up_transfer_motor.set_control(self._neutral)
         self.spindexer_nt.set("Ideal RPM", 0)
         self.up_transfer_nt.set("Ideal RPM", 0)
         self.nt.set("Active", False)
