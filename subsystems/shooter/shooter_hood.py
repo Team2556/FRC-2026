@@ -4,7 +4,7 @@ from commands2 import Subsystem
 
 from wpimath.geometry import Pose2d
 
-from phoenix6.hardware import TalonFX
+from phoenix6.hardware import TalonFXS
 from phoenix6.controls import PositionVoltage, DutyCycleOut
 from phoenix6.signals import NeutralModeValue, ReverseLimitValue
 
@@ -20,7 +20,7 @@ from constants.canbus import kCANId
 # this subsystem will be in the hub align command (eventually)
 class ShooterHood(Subsystem):
     def __init__(self):
-        self.hood_motor = TalonFX(kCANId.shooter.HOOD_CONTROL, "rio")
+        self.hood_motor = TalonFXS(kCANId.shooter.HOOD_CONTROL, "rio")
         self.hood_motor.configurator.apply(kHoodMotor._CONFIG)
         self.hood_motor.setNeutralMode(NeutralModeValue.BRAKE)
 
