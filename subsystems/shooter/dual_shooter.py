@@ -70,7 +70,8 @@ class DualMotorShooter(commands2.Subsystem):
         self.is_charged = False
 
     def periodic(self):
-        self.editable_PID.periodic()
+        # Commented out to prevent periodic config application warnings
+        # self.editable_PID.periodic()
         
         motor_velocity_rpm = self._top_motor.get_velocity().value * 60
         if self._state == ShooterState.IDLE:

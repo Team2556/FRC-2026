@@ -96,5 +96,6 @@ class IntakeSubsystem(commands2.Subsystem):
         kIntakeDeployer.DEPLOYED_POSITION = self.nt.get("Target Deployer Position")
         kIntakeSpinner.TARGET_RPM = self.nt.get("Target Spinny RPM")
 
-        self.deploy_editable_pid.periodic()
-        self.spinny_editable_pid.periodic()
+        # Commented out to prevent periodic config application warnings
+        # self.deploy_editable_pid.periodic()
+        # self.spinny_editable_pid.periodic()

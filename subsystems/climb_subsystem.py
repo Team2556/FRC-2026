@@ -47,4 +47,5 @@ class ClimbSubsystem(commands2.Subsystem):
         kClimb.POSITION_DOWN = self.nt.get("Position Down")
         self.nt.set("Position", self.climb_motor.get_position().value)
         self.nt.set("State", self.state)
-        self.editable_pid.periodic()
+        # Commented out to prevent periodic config application warnings
+        # self.editable_pid.periodic()

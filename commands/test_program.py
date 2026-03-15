@@ -20,8 +20,6 @@ import commands2
 import wpilib
 from wpimath import units
 from wpimath.geometry import Rotation2d
-from phoenix6.orchestra import Orchestra
-from phoenix6.hardware import TalonFX
 import math
 
 from phoenix6.hardware.pigeon2 import Pigeon2
@@ -36,7 +34,6 @@ class TestProgramCommand(commands2.Command):
     """
     Comprehensive test program that cycles through all robot subsystems
     with encoder feedback verification and low movement thresholds.
-    Plays a victory song on successful completion!
     """
 
     # Test sequence timing (in seconds)
@@ -56,15 +53,6 @@ class TestProgramCommand(commands2.Command):
     MIN_SHOOTER_RPM = 50  # RPM change
     MIN_DRIVETRAIN_MOVEMENT = 0.01  # rotations per module
     MIN_TURN_ANGLE = 5.0  # degrees per module
-    
-    # Victory song in CTRE Orchestra format: "We Are The Champions" opening
-    VICTORY_SONG_CHRP = """T120 L8 o4 e e f g g f e2 r4 o5 c4 o4 b a g2 r4 o4 e e f g2"""
-    
-    # Failure song: Sad trombone effect
-    FAILURE_SONG_CHRP = """T60 L4 o4 a# a g# g2 o3 f2"""
-    
-    # Shark hunt progression: Menacing, predatory theme (plays during active tests)
-    SHARK_HUNT_CHRP = """T100 L8 o3 e r e r f r f r f# r f# r g r g r g# r g# r o4 c r c r d r d r d# r d# r"""
 
     def __init__(self,
                  drivetrain,
@@ -116,14 +104,6 @@ class TestProgramCommand(commands2.Command):
         self.shooter_movement_result = {"rpm_achieved": 0.0, "passed": False}
         self.drivetrain_movement_result = {"avg_moved": 0.0, "passed": False}
         self.turn_motor_result = {"avg_turned": 0.0, "passed": False}
-        
-        # CTRE Orchestra for victory music
-        self.orchestra = None
-        self.orchestra_instruments = []
-        self._setup_orchestra()
-        
-        # Track if background music is playing
-        self.background_music_active = False
 
         # Add subsystem requirements
         self.addRequirements(
@@ -134,61 +114,6 @@ class TestProgramCommand(commands2.Command):
             self.hood,
             self.led
         )
-
-    def _setup_orchestra(self):
-        """
-        Setup CTRE Orchestra using existing motor instances from robot subsystems.
-        This avoids configuration conflicts by reusing already-configured motors.
-        """
-        try:
-            self.orchestra = Orchestra("Test Orchestra")
-            instruments_added = 0
-            
-            # Use shooter motors (these are easily accessible)
-            try:
-                if hasattr(self.shooter, '_top_motor'):
-                    self.orchestra.add_instrument(self.shooter._top_motor)
-                    self.orchestra_instruments.append(self.shooter._top_motor)
-                    instruments_added += 1
-                    print(f"  🎼 Added shooter top motor to orchestra")
-                    
-                if hasattr(self.shooter, '_bottom_motor'):
-                    self.orchestra.add_instrument(self.shooter._bottom_motor)
-                    self.orchestra_instruments.append(self.shooter._bottom_motor)
-                    instruments_added += 1
-                    print(f"  🎼 Added shooter bottom motor to orchestra")
-            except Exception as e:
-                print(f"  🎼 Could not add shooter motors: {e}")
-            
-            # Try to add hood motor if accessible
-            try:
-                if hasattr(self.hood, 'hood_motor'):
-                    self.orchestra.add_instrument(self.hood.hood_motor)
-                    self.orchestra_instruments.append(self.hood.hood_motor)
-                    instruments_added += 1
-                    print(f"  🎼 Added hood motor to orchestra")
-            except Exception as e:
-                print(f"  🎼 Could not add hood motor: {e}")
-                
-            # Try to add intake motors if accessible  
-            try:
-                if hasattr(self.intake, 'deployer_motor'):
-                    self.orchestra.add_instrument(self.intake.deployer_motor)
-                    self.orchestra_instruments.append(self.intake.deployer_motor)
-                    instruments_added += 1
-                    print(f"  🎼 Added intake deployer motor to orchestra")
-            except Exception as e:
-                print(f"  🎼 Could not add intake motors: {e}")
-            
-            if instruments_added > 0:
-                print(f"  🎼 Orchestra ready with {instruments_added} instruments!")
-            else:
-                print("  🎼 No motors available for orchestra")
-                self.orchestra = None
-                
-        except Exception as e:
-            print(f"  🎼 Orchestra setup failed: {e}")
-            self.orchestra = None
 
     def initialize(self):
         """Called when the command is initially scheduled."""
@@ -207,9 +132,6 @@ class TestProgramCommand(commands2.Command):
             enable=True
         )
 
-        # Start background hunting music
-        self._start_shark_hunt_music()
-        
         print("=== Test Program Started ===")
         print(f"Total phases: {self.total_phases}")
         print("Press DISABLE to stop the test at any time")
@@ -665,13 +587,9 @@ class TestProgramCommand(commands2.Command):
         if self.transfer_movement_result["passed"]:
             tests_passed += 1
 
-        # Stop background music before results music
-        self._stop_background_music()
-
         # Display overall result on LEDs
         if tests_passed == total_tests:
-            # All tests passed - play victory music!
-            self._play_victory_song()
+            # All tests passed!
             self.test_state = self.led.create_state(
                 state_key="test_program",
                 animation_request=ColorFactories.rainbow(brightness=1.0, speed=0.5),
@@ -686,8 +604,7 @@ class TestProgramCommand(commands2.Command):
                 enable=True
             )
         else:
-            # Tests failed - play failure music!
-            self._play_failure_song()
+            # Tests failed!
             self.test_state = self.led.create_state(
                 state_key="test_program",
                 animation_request=ColorFactories.solid_color(CANdle_Color.RED),
@@ -708,86 +625,6 @@ class TestProgramCommand(commands2.Command):
             print(f"Transfer: S:{self.transfer_movement_result['spindexer_moved']:.4f}, U:{self.transfer_movement_result['up_moved']:.4f} rotations ({'PASS' if self.transfer_movement_result['passed'] else 'FAIL'})")
             print("\nAll motors stopped")
             print("=" * 50)
-
-    def _play_victory_song(self):
-        """
-        Play the victory song using CTRE Orchestra.
-        Ensures robot is stopped before music starts.
-        """
-        if not self.orchestra:
-            print("🎵 No orchestra available for victory song")
-            return
-            
-        try:
-            # Ensure robot is completely stopped before music
-            self.drivetrain.drive_with_values(velocity_x=0, velocity_y=0, rotation_rate=0)
-            
-            print("\n🎉 ALL TESTS PASSED! Playing victory song... 🎵")
-            self.orchestra.load_music(self.VICTORY_SONG_CHRP)
-            self.orchestra.play()
-            print("🎵 Victory song started! Motors are singing! 🎶")
-        except Exception as e:
-            print(f"🎵 Error playing victory song: {e}")
-
-    def _play_failure_song(self):
-        """
-        Play the failure song using CTRE Orchestra.
-        Ensures robot is stopped before music starts.
-        """
-        if not self.orchestra:
-            print("🎵 No orchestra available for failure song")
-            return
-            
-        try:
-            # Ensure robot is completely stopped before music
-            self.drivetrain.drive_with_values(velocity_x=0, velocity_y=0, rotation_rate=0)
-            
-            print("\n😞 TESTS FAILED! Playing sad trombone... 🎺")
-            self.orchestra.load_music(self.FAILURE_SONG_CHRP)
-            self.orchestra.play()
-            print("🎺 Sad trombone playing... Better luck next time!")
-        except Exception as e:
-            print(f"🎵 Error playing failure song: {e}")
-
-    def _start_shark_hunt_music(self):
-        """
-        Start the menacing shark hunt background music during testing phases.
-        """
-        if not self.orchestra or self.background_music_active:
-            return
-            
-        try:
-            print("🦈 Starting shark hunt music... Testing in progress!")
-            self.orchestra.load_music(self.SHARK_HUNT_CHRP)
-            self.orchestra.play()
-            self.background_music_active = True
-        except Exception as e:
-            print(f"🎵 Error starting background music: {e}")
-
-    def _stop_background_music(self):
-        """
-        Stop the background music safely.
-        """
-        if self.orchestra and self.background_music_active:
-            try:
-                self.orchestra.stop()
-                self.background_music_active = False
-                print("🦈 Shark hunt music stopped")
-            except Exception as e:
-                print(f"🎵 Error stopping background music: {e}")
-                # Force reset the flag even if stop failed
-                self.background_music_active = False
-
-    def _stop_victory_music(self):
-        """
-        Stop the victory music using CTRE Orchestra safely.
-        """
-        if self.orchestra:
-            try:
-                self.orchestra.stop()
-                print("🎵 Victory song stopped")
-            except Exception as e:
-                print(f"🎵 Error stopping victory music: {e}")
 
     def _update_tilt_leds(self):
         """Update LED color based on IMU tilt measurements"""
@@ -822,10 +659,6 @@ class TestProgramCommand(commands2.Command):
 
     def end(self, interrupted: bool):
         """Called when the command ends."""
-        # Stop all music
-        self._stop_background_music()
-        self._stop_victory_music()
-        
         # Ensure all motors are stopped
         self.drivetrain.drive_with_values(velocity_x=0, velocity_y=0, rotation_rate=0)
         self.shooter.disable()

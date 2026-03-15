@@ -80,4 +80,5 @@ class ShooterHood(Subsystem):
         kHoodMotor.RESET_HOME_SPEED = self.nt.get("Reset Home Speed")
         kHoodMotor.INCREMENT_AMOUNT = self.nt.get("Increment Amount")
 
-        self.editable_pid.periodic()
+        # Commented out to prevent periodic config application warnings
+        # self.editable_pid.periodic()

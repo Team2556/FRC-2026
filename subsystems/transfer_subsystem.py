@@ -59,5 +59,6 @@ class TransferSubsystem(Subsystem):
         self.up_transfer_nt.set("RPM", self.up_transfer_motor.get_velocity().value)
         kTransfer.TARGET_RPM = self.up_transfer_nt.get("Target RPM")
         
-        self.spindex_editable_pid.periodic()
-        self.up_transfer_editable_pid.periodic()
+        # Commented out to prevent periodic config application warnings
+        # self.spindex_editable_pid.periodic()
+        # self.up_transfer_editable_pid.periodic()
