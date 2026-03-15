@@ -11,7 +11,7 @@ class IntakeCommandDeploy(Command):
         self.addRequirements(intake_subsystem)
         
     def initialize(self):
-        self.intake_subsystem.set_deployer_positon(kIntakeDeployer.DEPLOYED_POSITION)
+        self.intake_subsystem.set_deployer_position(kIntakeDeployer.DEPLOYED_POSITION)
         self.intake_subsystem.change_deployer_slot(0)
         self.intake_subsystem.set_spinny_speed(kIntakeSpinner.TARGET_RPM)
         self.intake_subsystem.state = "deploying"    
@@ -30,7 +30,7 @@ class IntakeCommandUndeploy(Command):
         self.addRequirements(intake_subsystem)
         
     def initialize(self):
-        self.intake_subsystem.set_deployer_positon(0)
+        self.intake_subsystem.set_deployer_position(0)
         self.intake_subsystem.change_deployer_slot(0)
         self.intake_subsystem.state = "undeploying"
     

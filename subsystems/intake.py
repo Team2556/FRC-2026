@@ -70,7 +70,7 @@ class IntakeSubsystem(commands2.Subsystem):
             "Intake/SpinnyPID", self.spinny_motor, self.spinny_cfg
         )
 
-    def set_deployer_positon(self, pos):
+    def set_deployer_position(self, pos):
         self.left_deployer.set_control(self.deployer_position_voltage.with_position(pos))
         self.nt.set("Ideal Deployer Position", pos)
     
