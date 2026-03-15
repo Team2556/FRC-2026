@@ -1,3 +1,4 @@
+import wpilib
 from commands2 import Subsystem
 import phoenix6
 from phoenix6.controls import VelocityVoltage
@@ -12,11 +13,13 @@ class TransferSubsystem(Subsystem):
         self.spindex_motor = TalonFX(kCANId.hopper.SPINDEXER, "rio")
         self.up_transfer_motor = TalonFX(kCANId.hopper.TRASNFER, "rio")
         
-        self.spindex_motor.configurator.apply(kSpindexer._CONFIG)
-        self.up_transfer_motor.configurator.apply(kTransfer._CONFIG)
-        
-        self.spindex_motor.setNeutralMode(phoenix6.signals.NeutralModeValue.BRAKE)
-        self.up_transfer_motor.setNeutralMode(phoenix6.signals.NeutralModeValue.BRAKE)
+        # Skip configuration in simulation/tests to prevent hanging
+        if not wpilib.RobotBase.isSimulation():
+            self.spindex_motor.configurator.apply(kSpindexer._CONFIG)
+            self.up_transfer_motor.configurator.apply(kTransfer._CONFIG)
+            
+            self.spindex_motor.setNeutralMode(phoenix6.signals.NeutralModeValue.BRAKE)
+            self.up_transfer_motor.setNeutralMode(phoenix6.signals.NeutralModeValue.BRAKE)
         
         self.spindex_velocity_voltage = VelocityVoltage(0)
         self.up_transfer_velocity_voltage = VelocityVoltage(0)
@@ -53,12 +56,12 @@ class TransferSubsystem(Subsystem):
         self.nt.set("Active", False)
     
     def periodic(self):    
+        # EditablePID only applies config when values change and skips simulation
+        self.spindex_editable_pid.periodic()
+        self.up_transfer_editable_pid.periodic()
+        
         self.spindexer_nt.set("RPM", self.spindex_motor.get_velocity().value)
         kSpindexer.TARGET_RPM = self.spindexer_nt.get("Target RPM")
         
         self.up_transfer_nt.set("RPM", self.up_transfer_motor.get_velocity().value)
         kTransfer.TARGET_RPM = self.up_transfer_nt.get("Target RPM")
-        
-        # Commented out to prevent periodic config application warnings
-        # self.spindex_editable_pid.periodic()
-        # self.up_transfer_editable_pid.periodic()

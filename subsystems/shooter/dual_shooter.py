@@ -1,3 +1,4 @@
+import wpilib
 from enum import Enum
 
 import commands2
@@ -30,7 +31,9 @@ class DualMotorShooter(commands2.Subsystem):
         self.cfg = kShooterMotor._CONFIG
         self.cfg.motor_output.neutral_mode = signals.NeutralModeValue.COAST
 
-        self._top_motor.configurator.apply(self.cfg)
+        # Skip configuration in simulation/tests to prevent hanging
+        if not wpilib.RobotBase.isSimulation():
+            self._top_motor.configurator.apply(self.cfg)
 
         self._bottom_motor.set_control(
             Follower(
@@ -70,8 +73,8 @@ class DualMotorShooter(commands2.Subsystem):
         self.is_charged = False
 
     def periodic(self):
-        # Commented out to prevent periodic config application warnings
-        # self.editable_PID.periodic()
+        # EditablePID only applies config when values change and skips simulation
+        self.editable_PID.periodic()
         
         motor_velocity_rpm = self._top_motor.get_velocity().value * 60
         if self._state == ShooterState.IDLE:

@@ -1,4 +1,5 @@
 import numpy as np
+import wpilib
 
 from commands2 import Subsystem
 
@@ -21,8 +22,10 @@ from constants.canbus import kCANId
 class ShooterHood(Subsystem):
     def __init__(self):
         self.hood_motor = TalonFXS(kCANId.shooter.HOOD_CONTROL, "rio")
-        self.hood_motor.configurator.apply(kHoodMotor._CONFIG)
-        self.hood_motor.setNeutralMode(NeutralModeValue.BRAKE)
+        # Skip configuration in simulation/tests to prevent hanging
+        if not wpilib.RobotBase.isSimulation():
+            self.hood_motor.configurator.apply(kHoodMotor._CONFIG)
+            self.hood_motor.setNeutralMode(NeutralModeValue.BRAKE)
 
         self.position_request = PositionVoltage(0)
         self.home_request = DutyCycleOut(0)
@@ -80,5 +83,5 @@ class ShooterHood(Subsystem):
         kHoodMotor.RESET_HOME_SPEED = self.nt.get("Reset Home Speed")
         kHoodMotor.INCREMENT_AMOUNT = self.nt.get("Increment Amount")
 
-        # Commented out to prevent periodic config application warnings
-        # self.editable_pid.periodic()
+        # EditablePID only applies config when values change and skips simulation
+        self.editable_pid.periodic()

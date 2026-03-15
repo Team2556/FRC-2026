@@ -1,4 +1,5 @@
 import commands2
+import wpilib
 
 import phoenix6
 from phoenix6 import controls
@@ -14,8 +15,10 @@ from constants.canbus import kCANId
 class ClimbSubsystem(commands2.Subsystem):
     def __init__(self):
         self.climb_motor = TalonFX(kCANId.climb.MOTOR, "rio")
-        self.climb_motor.configurator.apply(kClimb._CONFIG)
-        self.climb_motor.setNeutralMode(phoenix6.signals.NeutralModeValue.BRAKE)
+        # Skip configuration in simulation/tests to prevent hanging
+        if not wpilib.RobotBase.isSimulation():
+            self.climb_motor.configurator.apply(kClimb._CONFIG)
+            self.climb_motor.setNeutralMode(phoenix6.signals.NeutralModeValue.BRAKE)
         self.climb_position_voltage = controls.PositionVoltage(position=0, slot=0)
         self.state: str = "down"
 
@@ -47,5 +50,5 @@ class ClimbSubsystem(commands2.Subsystem):
         kClimb.POSITION_DOWN = self.nt.get("Position Down")
         self.nt.set("Position", self.climb_motor.get_position().value)
         self.nt.set("State", self.state)
-        # Commented out to prevent periodic config application warnings
-        # self.editable_pid.periodic()
+        # EditablePID only applies config when values change and skips simulation
+        self.editable_pid.periodic()

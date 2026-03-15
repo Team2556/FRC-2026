@@ -1,3 +1,4 @@
+import wpilib
 from wpilib import SmartDashboard, DigitalInput
 
 import commands2
@@ -34,9 +35,11 @@ class IntakeSubsystem(commands2.Subsystem):
         self.spinny_cfg.motor_output.neutral_mode = signals.NeutralModeValue.COAST
         # when the spiny motor's output is neutral it coasts
 
-        self.left_deployer.configurator.apply(self.deployer_cfg)
-        # self.right_deployer.configurator.apply(self.deployer_cfg) # might need this, sets the 'config info' for the motor
-        self.spinny_motor.configurator.apply(self.spinny_cfg)
+        # Skip configuration in simulation/tests to prevent hanging
+        if not wpilib.RobotBase.isSimulation():
+            self.left_deployer.configurator.apply(self.deployer_cfg)
+            # self.right_deployer.configurator.apply(self.deployer_cfg) # might need this, sets the 'config info' for the motor
+            self.spinny_motor.configurator.apply(self.spinny_cfg)
         # sets config info for motor
         self.right_deployer.set_control(
             # tells Right motor to follow left usinf the parameters--> device ID of the leader(is defined as the CAN ID in line 14, TalonFX rcognizes the first parameter as the device_id)
@@ -96,6 +99,6 @@ class IntakeSubsystem(commands2.Subsystem):
         kIntakeDeployer.DEPLOYED_POSITION = self.nt.get("Target Deployer Position")
         kIntakeSpinner.TARGET_RPM = self.nt.get("Target Spinny RPM")
 
-        # Commented out to prevent periodic config application warnings
-        # self.deploy_editable_pid.periodic()
-        # self.spinny_editable_pid.periodic()
+        # EditablePID only applies config when values change and skips simulation
+        self.deploy_editable_pid.periodic()
+        self.spinny_editable_pid.periodic()

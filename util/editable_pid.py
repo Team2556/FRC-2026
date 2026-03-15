@@ -14,56 +14,103 @@ class EditablePID:
         self.use_slot2 = use_slot2
 
         self.nt = NTTable(self.name).get_subtable("EditablePID")
+        
+        # Track last applied values to avoid unnecessary config updates
+        self.last_applied_values = {}
 
         if self.use_slot0:
             self.nt.float("slot0/k_p", self.cfg.slot0.k_p)
             self.nt.float("slot0/k_i", self.cfg.slot0.k_i)
             self.nt.float("slot0/k_d", self.cfg.slot0.k_d)
+            self.last_applied_values['slot0'] = {
+                'k_p': self.cfg.slot0.k_p,
+                'k_i': self.cfg.slot0.k_i, 
+                'k_d': self.cfg.slot0.k_d
+            }
         if self.use_slot1:
             self.nt.float("slot1/k_p", self.cfg.slot1.k_p)
             self.nt.float("slot1/k_i", self.cfg.slot1.k_i)
             self.nt.float("slot1/k_d", self.cfg.slot1.k_d)
+            self.last_applied_values['slot1'] = {
+                'k_p': self.cfg.slot1.k_p,
+                'k_i': self.cfg.slot1.k_i,
+                'k_d': self.cfg.slot1.k_d
+            }
         if self.use_slot2:
             self.nt.float("slot2/k_p", self.cfg.slot2.k_p)
             self.nt.float("slot2/k_i", self.cfg.slot2.k_i)
             self.nt.float("slot2/k_d", self.cfg.slot2.k_d)
+            self.last_applied_values['slot2'] = {
+                'k_p': self.cfg.slot2.k_p,
+                'k_i': self.cfg.slot2.k_i,
+                'k_d': self.cfg.slot2.k_d
+            }
 
     def periodic(self):
-        value_changed = False
-
+        """Only apply configuration when PID values have actually changed from NetworkTables"""
+        values_changed = False
+        
+        # Check slot0 changes
         if self.use_slot0:
-            value_changed = (
-                self.cfg.slot0.k_p != self.nt.get("slot0/k_p")
-                or self.cfg.slot0.k_i != self.nt.get("slot0/k_i")
-                or self.cfg.slot0.k_d != self.nt.get("slot0/k_d")
-            )
+            new_kp = self.nt.get("slot0/k_p")
+            new_ki = self.nt.get("slot0/k_i") 
+            new_kd = self.nt.get("slot0/k_d")
+            
+            if (new_kp != self.last_applied_values['slot0']['k_p'] or
+                new_ki != self.last_applied_values['slot0']['k_i'] or 
+                new_kd != self.last_applied_values['slot0']['k_d']):
+                
+                self.cfg.slot0.k_p = new_kp
+                self.cfg.slot0.k_i = new_ki
+                self.cfg.slot0.k_d = new_kd
+                
+                self.last_applied_values['slot0']['k_p'] = new_kp
+                self.last_applied_values['slot0']['k_i'] = new_ki  
+                self.last_applied_values['slot0']['k_d'] = new_kd
+                values_changed = True
+        
+        # Check slot1 changes
         if self.use_slot1:
-            value_changed = value_changed or (
-                self.cfg.slot1.k_p != self.nt.get("slot1/k_p")
-                or self.cfg.slot1.k_i != self.nt.get("slot1/k_i")
-                or self.cfg.slot1.k_d != self.nt.get("slot1/k_d")
-            )
+            new_kp = self.nt.get("slot1/k_p")
+            new_ki = self.nt.get("slot1/k_i")
+            new_kd = self.nt.get("slot1/k_d")
+            
+            if (new_kp != self.last_applied_values['slot1']['k_p'] or
+                new_ki != self.last_applied_values['slot1']['k_i'] or
+                new_kd != self.last_applied_values['slot1']['k_d']):
+                
+                self.cfg.slot1.k_p = new_kp
+                self.cfg.slot1.k_i = new_ki
+                self.cfg.slot1.k_d = new_kd
+                
+                self.last_applied_values['slot1']['k_p'] = new_kp
+                self.last_applied_values['slot1']['k_i'] = new_ki
+                self.last_applied_values['slot1']['k_d'] = new_kd
+                values_changed = True
+                
+        # Check slot2 changes  
         if self.use_slot2:
-            value_changed = value_changed or (
-                self.cfg.slot2.k_p != self.nt.get("slot2/k_p")
-                or self.cfg.slot2.k_i != self.nt.get("slot2/k_i")
-                or self.cfg.slot2.k_d != self.nt.get("slot2/k_d")
-            )
+            new_kp = self.nt.get("slot2/k_p")
+            new_ki = self.nt.get("slot2/k_i")
+            new_kd = self.nt.get("slot2/k_d")
+            
+            if (new_kp != self.last_applied_values['slot2']['k_p'] or
+                new_ki != self.last_applied_values['slot2']['k_i'] or
+                new_kd != self.last_applied_values['slot2']['k_d']):
+                
+                self.cfg.slot2.k_p = new_kp
+                self.cfg.slot2.k_i = new_ki
+                self.cfg.slot2.k_d = new_kd
+                
+                self.last_applied_values['slot2']['k_p'] = new_kp
+                self.last_applied_values['slot2']['k_i'] = new_ki  
+                self.last_applied_values['slot2']['k_d'] = new_kd
+                values_changed = True
 
-        if value_changed:
-            if self.use_slot0:
-                self.cfg.slot0.k_p = self.nt.get("slot0/k_p")
-                self.cfg.slot0.k_i = self.nt.get("slot0/k_i")
-                self.cfg.slot0.k_d = self.nt.get("slot0/k_d")
-            if self.use_slot1:
-                self.cfg.slot1.k_p = self.nt.get("slot1/k_p")
-                self.cfg.slot1.k_i = self.nt.get("slot1/k_i")
-                self.cfg.slot1.k_d = self.nt.get("slot1/k_d")
-            if self.use_slot2:
-                self.cfg.slot2.k_p = self.nt.get("slot2/k_p")
-                self.cfg.slot2.k_i = self.nt.get("slot2/k_i")
-                self.cfg.slot2.k_d = self.nt.get("slot2/k_d")
+        # Only apply configuration if values actually changed
+        if values_changed:
             self.talon_motor.configurator.apply(self.cfg)
+            print(f"[{self.name}] Applied PID configuration update")
 
     def with_slot1(self) -> "EditablePID":
         self.use_slot1 = True
