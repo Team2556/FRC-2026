@@ -58,10 +58,13 @@ class TestProgramCommand(commands2.Command):
     MIN_TURN_ANGLE = 5.0  # degrees per module
     
     # Victory song in CTRE Orchestra format: "We Are The Champions" opening
-    # Notes: c, d, e, f, g, a, b for natural notes
-    # Add # for sharp (e.g., c# for C sharp)
-    # Add number for octave (e.g., c4 for middle C)
     VICTORY_SONG_CHRP = """T120 L8 o4 e e f g g f e2 r4 o5 c4 o4 b a g2 r4 o4 e e f g2"""
+    
+    # Failure song: Sad trombone effect
+    FAILURE_SONG_CHRP = """T60 L4 o4 a# a g# g2 o3 f2"""
+    
+    # Shark hunt progression: Menacing, predatory theme (plays during active tests)
+    SHARK_HUNT_CHRP = """T100 L8 o3 e r e r f r f r f# r f# r g r g r g# r g# r o4 c r c r d r d r d# r d# r"""
 
     def __init__(self,
                  drivetrain,
@@ -118,6 +121,9 @@ class TestProgramCommand(commands2.Command):
         self.orchestra = None
         self.orchestra_instruments = []
         self._setup_orchestra()
+        
+        # Track if background music is playing
+        self.background_music_active = False
 
         # Add subsystem requirements
         self.addRequirements(
@@ -703,10 +709,54 @@ class TestProgramCommand(commands2.Command):
             
         try:
             print("\n🎉 ALL TESTS PASSED! Playing victory song... 🎵")
+            self.orchestra.load_music(self.VICTORY_SONG_CHRP)
             self.orchestra.play()
             print("🎵 Victory song started! Motors are singing! 🎶")
         except Exception as e:
             print(f"🎵 Error playing victory song: {e}")
+
+    def _play_failure_song(self):
+        """
+        Play the failure song using CTRE Orchestra.
+        """
+        if not self.orchestra:
+            print("🎵 No orchestra available for failure song")
+            return
+            
+        try:
+            print("\n😞 TESTS FAILED! Playing sad trombone... 🎺")
+            self.orchestra.load_music(self.FAILURE_SONG_CHRP)
+            self.orchestra.play()
+            print("🎺 Sad trombone playing... Better luck next time!")
+        except Exception as e:
+            print(f"🎵 Error playing failure song: {e}")
+
+    def _start_shark_hunt_music(self):
+        """
+        Start the menacing shark hunt background music during testing phases.
+        """
+        if not self.orchestra or self.background_music_active:
+            return
+            
+        try:
+            print("🦈 Starting shark hunt music... Testing in progress!")
+            self.orchestra.load_music(self.SHARK_HUNT_CHRP)
+            self.orchestra.play()
+            self.background_music_active = True
+        except Exception as e:
+            print(f"🎵 Error starting background music: {e}")
+
+    def _stop_background_music(self):
+        """
+        Stop the background music.
+        """
+        if self.orchestra and self.background_music_active:
+            try:
+                self.orchestra.stop()
+                self.background_music_active = False
+                print("🦈 Shark hunt music stopped")
+            except Exception as e:
+                print(f"🎵 Error stopping background music: {e}")
 
     def _stop_victory_music(self):
         """
