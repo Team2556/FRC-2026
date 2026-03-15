@@ -11,7 +11,7 @@ import commands2
 import typing
 
 from robotcontainer import RobotContainer
-from commands.test_program import TestProgramCommand
+# from commands.test_program import TestProgramCommand
 
 from phoenix6 import SignalLogger
 
@@ -69,13 +69,13 @@ class MyRobot(commands2.TimedCommandRobot):
         commands2.CommandScheduler.getInstance().cancelAll()
 
         # Create and schedule the test program
-        self.testCommand = TestProgramCommand(
-            intake_subsystem=self.container.intake_subsystem,
-            transfer_subsystem=self.container.transfer_subsystem,
-            shooter_subsystem=self.container.shooter_subsystem,
-            hood_subsystem=self.container.hood_subsystem,
-            led_controller=self.container.LED_controller
-        )
+        # self.testCommand = TestProgramCommand(
+        #     intake_subsystem=self.container.intake_subsystem,
+        #     transfer_subsystem=self.container.transfer_subsystem,
+        #     shooter_subsystem=self.container.shooter_subsystem,
+        #     hood_subsystem=self.container.hood_subsystem,
+        #     led_controller=self.container.LED_controller
+        # )
 
         if self.testCommand:
             self.testCommand.schedule()

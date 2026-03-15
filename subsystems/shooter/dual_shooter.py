@@ -78,8 +78,11 @@ class DualMotorShooter(commands2.Subsystem):
                 abs(motor_velocity_rpm - kShooterMotor.IDLE_RPM)
                 < kShooterMotor.REACH_TARGET_VELOCITY_ERROR
             )
+            # self._top_motor.set_control(
+            #     self.idle_request if at_idle_RPM else self.coast_request
+            # )
             self._top_motor.set_control(
-                self.idle_request if at_idle_RPM else self.coast_request
+                self.idle_request
             )
             
             self.nt.set('State', 'IDLE')

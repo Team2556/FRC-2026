@@ -17,6 +17,7 @@
 ### Controller 2
 - **Right Trigger** *(hold)* - Toggle intake
 - **POV Up** *(press)* - Climb up
+
 - **POV Down** *(press)* - Climb down
 - **B** *(hold)* - Spin spindexer / transfer
 - **Y** *(hold)* - Spin shooter

@@ -26,6 +26,8 @@ class kLimelight:
 
 class kCamera:
     LOCATION_PUBLISHER_KEY = "camera/location"
+    SHOOTER_LL = "limelight-shooter"
+    BACK_LL = "limelight-back"
 
     class llFront:
         NAME = "limelight-front"
