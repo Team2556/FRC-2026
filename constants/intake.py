@@ -13,9 +13,9 @@ class kIntakeDeployer:
     _CONFIG.slot1.k_i = 0.01
     _CONFIG.slot1.k_d = 0
 
-    _CONFIG.motion_magic.motion_magic_cruise_velocity = 101  # rotations/sec
-    _CONFIG.motion_magic.motion_magic_acceleration = 338     # rotations/sec²
-    _CONFIG.motion_magic.motion_magic_jerk = 675             # rotations/sec³
+    _CONFIG.motion_magic.motion_magic_cruise_velocity = 152  # rotations/sec
+    _CONFIG.motion_magic.motion_magic_acceleration = 507     # rotations/sec²
+    _CONFIG.motion_magic.motion_magic_jerk = 1013            # rotations/sec³
 
     DEPLOYED_POSITION = 10.0
 

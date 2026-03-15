@@ -75,7 +75,7 @@ class RobotContainer:
             drive_commands.ControllerDrive(self._drivetrain, self._controller_1)
         )
 
-        self._controller_1.rightBumper().whileTrue(
+        self._controller_1.rightBumper().and_(self._controller_1.leftBumper().negate()).whileTrue(
             ParallelCommandGroup(
                 RunTransferCommand(self.transfer_subsystem, self.shooter_subsystem),
                 shooter_commands.EnableShooter(self.shooter_subsystem),
@@ -93,7 +93,7 @@ class RobotContainer:
             )
         )
 
-        self._controller_1.leftBumper().whileTrue(
+        self._controller_1.leftBumper().and_(self._controller_1.rightBumper().negate()).whileTrue(
             go_back_with_path.GoBackWithPath(self._drivetrain)
         )
 
@@ -143,6 +143,11 @@ class RobotContainer:
         self._controller_2.rightTrigger().onFalse(
             IntakeCommandUndeploy(self.intake_subsystem)
         )
+
+        # Controller 1: both bumpers together — intake deploy
+        _c1_intake = self._controller_1.leftBumper().and_(self._controller_1.rightBumper())
+        _c1_intake.onTrue(IntakeCommandDeploy(self.intake_subsystem))
+        _c1_intake.onFalse(IntakeCommandUndeploy(self.intake_subsystem))
 
         # Dev only: Back + Start force-pushes all dashboard PID values to motors
         (self._controller_1.back().and_(self._controller_1.start())).onTrue(

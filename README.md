@@ -12,6 +12,7 @@
 - **Right Trigger** - Shoot + align to best spot
 - **Left Bumper** - Magic button
 - **Left Trigger** - Move slower
+- **Both Bumpers** *(hold)* - Deploy intake
 - **Letter Buttons** - Specific paths
 
 ### Controller 2

@@ -12,9 +12,9 @@ class kHoodMotor:
     _CONFIG.slot0.k_i = 0.1
     _CONFIG.slot0.k_d = 0.1
 
-    _CONFIG.motion_magic.motion_magic_cruise_velocity = 120  # rotations/sec
-    _CONFIG.motion_magic.motion_magic_acceleration = 240     # rotations/sec²
-    _CONFIG.motion_magic.motion_magic_jerk = 1200            # rotations/sec³
+    _CONFIG.motion_magic.motion_magic_cruise_velocity = 240  # rotations/sec
+    _CONFIG.motion_magic.motion_magic_acceleration = 480     # rotations/sec²
+    _CONFIG.motion_magic.motion_magic_jerk = 2400            # rotations/sec³
 
     # Rotor position value/second when Driver 2 is manually moving it
     INCREMENT_AMOUNT = 0.1
@@ -67,6 +67,6 @@ class kShooterData:
     
 
 class kShooterConfig:
-    SHOOTER_OFFSET = Translation2d(10.432 * kMath.MetersPerInch, 0)  # Meters
+    SHOOTER_OFFSET = Translation2d(-10.432 * kMath.MetersPerInch, 0)  # Meters
     SHOOTER_DIRECTION = -90  # 180 for Reverse
     WHEEL_RADIUS = 4 * kMath.MetersPerInch
