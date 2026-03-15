@@ -7,17 +7,16 @@ NTValue = Union[bool, int, float, str, list[bool], list[int], list[float], list[
 
 
 class NTEntry(Generic[T]):
-    def __init__(self, publisher, subscriber, default: T):
-        self._publisher = publisher
-        self._subscriber = subscriber
+    def __init__(self, entry, default: T):
+        self._entry = entry
         self._default = default
-        self._publisher.set(default)
+        self._entry.set(default)
 
     def get(self) -> T:
-        return self._subscriber.get(self._default)
+        return self._entry.get(self._default)
 
     def set(self, value: T) -> None:
-        self._publisher.set(value)
+        self._entry.set(value)
 
 
 class NTTable:
@@ -39,81 +38,49 @@ class NTTable:
     def bool(self, name: str, default: bool = False) -> NTEntry[bool]:
         return self._get_or_create(
             name,
-            NTEntry(
-                self._table.getBooleanTopic(name).publish(),
-                self._table.getBooleanTopic(name).subscribe(default),
-                default,
-            ),
+            NTEntry(self._table.getBooleanTopic(name).getEntry(default), default),
         )
 
     def int(self, name: str, default: int = 0) -> NTEntry[int]:
         return self._get_or_create(
             name,
-            NTEntry(
-                self._table.getIntegerTopic(name).publish(),
-                self._table.getIntegerTopic(name).subscribe(default),
-                default,
-            ),
+            NTEntry(self._table.getIntegerTopic(name).getEntry(default), default),
         )
 
     def float(self, name: str, default: float = 0.0) -> NTEntry[float]:
         return self._get_or_create(
             name,
-            NTEntry(
-                self._table.getDoubleTopic(name).publish(),
-                self._table.getDoubleTopic(name).subscribe(default),
-                default,
-            ),
+            NTEntry(self._table.getDoubleTopic(name).getEntry(default), default),
         )
 
     def string(self, name: str, default: str = "") -> NTEntry[str]:
         return self._get_or_create(
             name,
-            NTEntry(
-                self._table.getStringTopic(name).publish(),
-                self._table.getStringTopic(name).subscribe(default),
-                default,
-            ),
+            NTEntry(self._table.getStringTopic(name).getEntry(default), default),
         )
 
     def bool_array(self, name: str, default: list[bool] = []) -> NTEntry[list[bool]]:
         return self._get_or_create(
             name,
-            NTEntry(
-                self._table.getBooleanArrayTopic(name).publish(),
-                self._table.getBooleanArrayTopic(name).subscribe(default),
-                default,
-            ),
+            NTEntry(self._table.getBooleanArrayTopic(name).getEntry(default), default),
         )
 
     def int_array(self, name: str, default: list[int] = []) -> NTEntry[list[int]]:
         return self._get_or_create(
             name,
-            NTEntry(
-                self._table.getIntegerArrayTopic(name).publish(),
-                self._table.getIntegerArrayTopic(name).subscribe(default),
-                default,
-            ),
+            NTEntry(self._table.getIntegerArrayTopic(name).getEntry(default), default),
         )
 
     def float_array(self, name: str, default: list[float] = []) -> NTEntry[list[float]]:
         return self._get_or_create(
             name,
-            NTEntry(
-                self._table.getDoubleArrayTopic(name).publish(),
-                self._table.getDoubleArrayTopic(name).subscribe(default),
-                default,
-            ),
+            NTEntry(self._table.getDoubleArrayTopic(name).getEntry(default), default),
         )
 
     def string_array(self, name: str, default: list[str] = []) -> NTEntry[list[str]]:
         return self._get_or_create(
             name,
-            NTEntry(
-                self._table.getStringArrayTopic(name).publish(),
-                self._table.getStringArrayTopic(name).subscribe(default),
-                default,
-            ),
+            NTEntry(self._table.getStringArrayTopic(name).getEntry(default), default),
         )
 
     def get(self, name: str) -> NTValue | None:
