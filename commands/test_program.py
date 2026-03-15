@@ -140,33 +140,35 @@ class TestProgramCommand(commands2.Command):
         Setup CTRE Orchestra with available TalonFX motors for victory music.
         """
         try:
-            self.orchestra = Orchestra("Victory Orchestra")
+            self.orchestra = Orchestra("Test Orchestra")
             
             # Try to add drive motors from swerve modules
             drive_motor_ids = []
-            for i in range(4):  # 4 swerve modules typical
+            
+            # Try to get motor IDs from TunerConstants first
+            tuner_motor_attrs = [
+                '_front_left_drive_motor_id',
+                '_front_right_drive_motor_id', 
+                '_back_left_drive_motor_id',
+                '_back_right_drive_motor_id'
+            ]
+            
+            for attr in tuner_motor_attrs:
                 try:
-                    # Get drive motor ID from swerve tuner constants
-                    if hasattr(TunerConstants, f'_front_left_drive_motor_id'):
-                        # Add known motor IDs if available
-                        motor_ids = [
-                            getattr(TunerConstants, '_front_left_drive_motor_id', None),
-                            getattr(TunerConstants, '_front_right_drive_motor_id', None),
-                            getattr(TunerConstants, '_back_left_drive_motor_id', None),
-                            getattr(TunerConstants, '_back_right_drive_motor_id', None)
-                        ]
-                        drive_motor_ids.extend([id for id in motor_ids if id is not None])
-                        break
-                except:
+                    motor_id = getattr(TunerConstants, attr, None)
+                    if motor_id is not None:
+                        drive_motor_ids.append(motor_id)
+                except AttributeError:
                     pass
             
-            # Fallback: try common swerve motor IDs (adjust for your robot)
+            # Fallback to common swerve motor IDs if none found
             if not drive_motor_ids:
                 drive_motor_ids = [1, 3, 5, 7]  # Common drive motor IDs
+                print("  🎼 Using fallback motor IDs for orchestra")
             
-            # Add TalonFX motors to orchestra
+            # Add TalonFX motors to orchestra (limit to 4 for safety)
             instruments_added = 0
-            for motor_id in drive_motor_ids[:4]:  # Limit to 4 motors
+            for motor_id in drive_motor_ids[:4]:  
                 try:
                     motor = TalonFX(motor_id, "rio")
                     self.orchestra.add_instrument(motor)
@@ -177,8 +179,6 @@ class TestProgramCommand(commands2.Command):
                     print(f"  🎼 Could not add motor {motor_id}: {e}")
             
             if instruments_added > 0:
-                # Load the victory song
-                self.orchestra.load_music(self.VICTORY_SONG_CHRP)
                 print(f"  🎼 Orchestra ready with {instruments_added} instruments!")
             else:
                 print("  🎼 No motors available for orchestra")
@@ -205,6 +205,9 @@ class TestProgramCommand(commands2.Command):
             enable=True
         )
 
+        # Start background hunting music
+        self._start_shark_hunt_music()
+        
         print("=== Test Program Started ===")
         print(f"Total phases: {self.total_phases}")
         print("Press DISABLE to stop the test at any time")
@@ -458,9 +461,9 @@ class TestProgramCommand(commands2.Command):
             try:
                 self.initial_shooter_position = self.shooter._top_motor.get_velocity().value * 60  # Convert to RPM
                 print(f"  Shooter: Initial RPM: {self.initial_shooter_position:.1f}")
-            except AttributeError:
+            except (AttributeError, Exception) as e:
                 self.initial_shooter_position = 0.0
-                print("  Shooter: Could not read initial RPM")
+                print(f"  Shooter: Could not read initial RPM: {e}")
 
         if motor_time < self.SAFE_MOTOR_TIME:
             # Run shooter
@@ -483,8 +486,8 @@ class TestProgramCommand(commands2.Command):
                 wpilib.SmartDashboard.putBoolean("Shooter Test Passed", passed)
                 
                 print(f"  Shooter: {self.initial_shooter_position:.1f} -> {current_rpm:.1f} RPM (change: {rpm_achieved:.1f} {'PASS' if passed else 'FAIL'} - min: {self.MIN_SHOOTER_RPM})")
-            except AttributeError:
-                print("  Shooter: Could not read final RPM")
+            except (AttributeError, Exception) as e:
+                print(f"  Shooter: Could not read final RPM: {e}")
                 self.shooter_movement_result = {"rpm_achieved": 0.0, "passed": False}
         else:
             self.shooter.disable()
@@ -499,9 +502,9 @@ class TestProgramCommand(commands2.Command):
             try:
                 self.initial_hood_position = self.hood.hood_motor.get_position().value
                 print(f"  Hood: Initial position: {self.initial_hood_position:.4f} rotations")
-            except AttributeError:
+            except (AttributeError, Exception) as e:
                 self.initial_hood_position = 0.0
-                print("  Hood: Could not read initial position")
+                print(f"  Hood: Could not read initial position: {e}")
 
         if motor_time < self.HAZARD_MOTOR_TIME:
             # Small position movement
@@ -541,9 +544,9 @@ class TestProgramCommand(commands2.Command):
             try:
                 self.initial_intake_position = self.intake.left_deployer.get_position().value
                 print(f"  Intake: Initial position: {self.initial_intake_position:.4f} rotations")
-            except AttributeError:
+            except (AttributeError, Exception) as e:
                 self.initial_intake_position = 0.0
-                print("  Intake: Could not read initial position")
+                print(f"  Intake: Could not read initial position: {e}")
 
         if motor_time < self.HAZARD_MOTOR_TIME:
             # Small deployment movement
@@ -589,10 +592,10 @@ class TestProgramCommand(commands2.Command):
                 self.initial_transfer_spindexer_position = self.transfer.spindex_motor.get_position().value
                 self.initial_transfer_up_position = self.transfer.up_transfer_motor.get_position().value
                 print(f"  Transfer: Initial - Spindexer: {self.initial_transfer_spindexer_position:.4f}, Up: {self.initial_transfer_up_position:.4f} rotations")
-            except AttributeError:
+            except (AttributeError, Exception) as e:
                 self.initial_transfer_spindexer_position = 0.0
                 self.initial_transfer_up_position = 0.0
-                print("  Transfer: Could not read initial positions")
+                print(f"  Transfer: Could not read initial positions: {e}")
 
         if motor_time < self.HAZARD_MOTOR_TIME:
             # Brief transfer activation
@@ -625,8 +628,8 @@ class TestProgramCommand(commands2.Command):
                 wpilib.SmartDashboard.putBoolean("Transfer Test Passed", passed)
                 
                 print(f"  Transfer: Spindexer {spindexer_movement:.4f}, Up {up_movement:.4f} rotations ({'PASS' if passed else 'FAIL'} - min: {self.MIN_TRANSFER_MOVEMENT})")
-            except AttributeError:
-                print("  Transfer: Could not read final positions")
+            except (AttributeError, Exception) as e:
+                print(f"  Transfer: Could not read final positions: {e}")
                 self.transfer_movement_result = {"spindexer_moved": 0.0, "up_moved": 0.0, "passed": False}
         else:
             self.transfer.stop()
@@ -660,6 +663,9 @@ class TestProgramCommand(commands2.Command):
         if self.transfer_movement_result["passed"]:
             tests_passed += 1
 
+        # Stop background music before results music
+        self._stop_background_music()
+
         # Display overall result on LEDs
         if tests_passed == total_tests:
             # All tests passed - play victory music!
@@ -678,6 +684,8 @@ class TestProgramCommand(commands2.Command):
                 enable=True
             )
         else:
+            # Tests failed - play failure music!
+            self._play_failure_song()
             self.test_state = self.led.create_state(
                 state_key="test_program",
                 animation_request=ColorFactories.solid_color(CANdle_Color.RED),
@@ -702,12 +710,16 @@ class TestProgramCommand(commands2.Command):
     def _play_victory_song(self):
         """
         Play the victory song using CTRE Orchestra.
+        Ensures robot is stopped before music starts.
         """
         if not self.orchestra:
             print("🎵 No orchestra available for victory song")
             return
             
         try:
+            # Ensure robot is completely stopped before music
+            self.drivetrain.drive_with_values(velocity_x=0, velocity_y=0, rotation_rate=0)
+            
             print("\n🎉 ALL TESTS PASSED! Playing victory song... 🎵")
             self.orchestra.load_music(self.VICTORY_SONG_CHRP)
             self.orchestra.play()
@@ -718,12 +730,16 @@ class TestProgramCommand(commands2.Command):
     def _play_failure_song(self):
         """
         Play the failure song using CTRE Orchestra.
+        Ensures robot is stopped before music starts.
         """
         if not self.orchestra:
             print("🎵 No orchestra available for failure song")
             return
             
         try:
+            # Ensure robot is completely stopped before music
+            self.drivetrain.drive_with_values(velocity_x=0, velocity_y=0, rotation_rate=0)
+            
             print("\n😞 TESTS FAILED! Playing sad trombone... 🎺")
             self.orchestra.load_music(self.FAILURE_SONG_CHRP)
             self.orchestra.play()
@@ -748,7 +764,7 @@ class TestProgramCommand(commands2.Command):
 
     def _stop_background_music(self):
         """
-        Stop the background music.
+        Stop the background music safely.
         """
         if self.orchestra and self.background_music_active:
             try:
@@ -757,17 +773,19 @@ class TestProgramCommand(commands2.Command):
                 print("🦈 Shark hunt music stopped")
             except Exception as e:
                 print(f"🎵 Error stopping background music: {e}")
+                # Force reset the flag even if stop failed
+                self.background_music_active = False
 
     def _stop_victory_music(self):
         """
-        Stop the victory music using CTRE Orchestra.
+        Stop the victory music using CTRE Orchestra safely.
         """
         if self.orchestra:
             try:
                 self.orchestra.stop()
                 print("🎵 Victory song stopped")
             except Exception as e:
-                print(f"🎵 Error stopping music: {e}")
+                print(f"🎵 Error stopping victory music: {e}")
 
     def _update_tilt_leds(self):
         """Update LED color based on IMU tilt measurements"""
@@ -802,7 +820,8 @@ class TestProgramCommand(commands2.Command):
 
     def end(self, interrupted: bool):
         """Called when the command ends."""
-        # Stop victory music
+        # Stop all music
+        self._stop_background_music()
         self._stop_victory_music()
         
         # Ensure all motors are stopped
