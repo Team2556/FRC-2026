@@ -32,9 +32,9 @@ class TestProgramCommand(commands2.Command):
     """
 
     # Test sequence timing (in seconds)
-    PHASE_DURATION = 3.0  # Duration of each test phase
-    HAZARD_MOTOR_TIME = 0.5  # Maximum time for hazard motors (hood, intake deployer, transfer)
-    SAFE_MOTOR_TIME = 2.0  # Maximum time for safe motors (shooter)
+    PHASE_DURATION = 1.5  # Duration of each test phase
+    HAZARD_MOTOR_TIME = 0.25  # Maximum time for hazard motors (hood, intake deployer, transfer)
+    SAFE_MOTOR_TIME = 1.0  # Maximum time for safe motors (shooter)
 
     # Tilt thresholds (in degrees)
     TILT_WARNING_THRESHOLD = 5.0  # Yellow warning
