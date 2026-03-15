@@ -50,6 +50,7 @@ class IntakeSubsystem(commands2.Subsystem):
             self.right_deployer.set_control(self.right_deployer_follower)
             self.spinny_motor.configurator.apply(self.spinny_cfg)
         self.velocity_voltage = phoenix6.controls.VelocityVoltage(velocity=0, slot=0)
+        self._spinny_neutral = phoenix6.controls.NeutralOut()
 
         self._was_at_reverse_limit = False
         self.state = "undeployed"
@@ -86,6 +87,10 @@ class IntakeSubsystem(commands2.Subsystem):
     def set_spinny_speed(self, rpm):
         self.spinny_motor.set_control(self.velocity_voltage.with_velocity(rpm / 60))
         self.nt.set("Ideal Spinny RPM", rpm)
+
+    def stop_spinny(self):
+        self.spinny_motor.set_control(self._spinny_neutral)
+        self.nt.set("Ideal Spinny RPM", 0)
     
     def periodic(self):
         at_reverse_limit = self.left_deployer.get_reverse_limit().value is signals.ReverseLimitValue.CLOSED_TO_GROUND

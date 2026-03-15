@@ -112,7 +112,8 @@ class ConditionalAlignAndShoot(HubAlign):
         self.find_target(robot_pose)
         self._hood.angle_by_position(robot_pose, self.target)
         
-        if self.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES:
+        if (self.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES
+                and self._hood.is_at_angle()):
             self.transfer_subsystem.activate()
         else:
             self.transfer_subsystem.stop()

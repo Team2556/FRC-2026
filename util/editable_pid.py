@@ -125,6 +125,29 @@ class EditablePID:
                     self._last_apply_time = now
                     print(f"[{self.name}] *** APPLIED PID CONFIGURATION TO MOTOR ***")
 
+    def force_apply(self):
+        """Bypass debounce and force-push current dashboard values to motor. Dev use only."""
+        if wpilib.RobotBase.isSimulation() or wpilib.DriverStation.isFMSAttached():
+            return
+        if self.use_slot0:
+            self.cfg.slot0.k_p = self.nt.get("slot0/k_p")
+            self.cfg.slot0.k_i = self.nt.get("slot0/k_i")
+            self.cfg.slot0.k_d = self.nt.get("slot0/k_d")
+            self.last_applied_values['slot0'] = {'k_p': self.cfg.slot0.k_p, 'k_i': self.cfg.slot0.k_i, 'k_d': self.cfg.slot0.k_d}
+        if self.use_slot1:
+            self.cfg.slot1.k_p = self.nt.get("slot1/k_p")
+            self.cfg.slot1.k_i = self.nt.get("slot1/k_i")
+            self.cfg.slot1.k_d = self.nt.get("slot1/k_d")
+            self.last_applied_values['slot1'] = {'k_p': self.cfg.slot1.k_p, 'k_i': self.cfg.slot1.k_i, 'k_d': self.cfg.slot1.k_d}
+        if self.use_slot2:
+            self.cfg.slot2.k_p = self.nt.get("slot2/k_p")
+            self.cfg.slot2.k_i = self.nt.get("slot2/k_i")
+            self.cfg.slot2.k_d = self.nt.get("slot2/k_d")
+            self.last_applied_values['slot2'] = {'k_p': self.cfg.slot2.k_p, 'k_i': self.cfg.slot2.k_i, 'k_d': self.cfg.slot2.k_d}
+        self.talon_motor.configurator.apply(self.cfg, 0.050)
+        self._last_apply_time = wpilib.Timer.getFPGATimestamp()
+        print(f"[{self.name}] FORCE APPLIED PID")
+
     def with_slot1(self) -> "EditablePID":
         self.use_slot1 = True
         return self

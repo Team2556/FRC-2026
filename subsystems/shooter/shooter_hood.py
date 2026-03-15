@@ -36,6 +36,10 @@ class ShooterHood(Subsystem):
         self.nt.float("Ideal Hood Position", 0.0)
         self.nt.float("Reset Home Speed", kHoodMotor.RESET_HOME_SPEED)
         self.nt.float("Increment Amount", kHoodMotor.INCREMENT_AMOUNT)
+        self.nt.float("Max Hood Position (deg)", kHoodMotor.MAX_POSITION_DEG)
+
+        # Command hood to hold at home position on startup
+        self.set_position(kHoodMotor.HOME_POSITION)
 
         self._was_hard_stopped = False
 
@@ -53,8 +57,15 @@ class ShooterHood(Subsystem):
         )
 
     def set_position(self, position):
+        position = min(position, kHoodMotor.MAX_POSITION)
+        self._target_position = position
         self.hood_motor.set_control(self.position_request.with_position(position))
-        self.nt.set("Ideal Hood Position", position)
+        self.nt.set("Ideal Hood Position", position * kHoodMotor.DEGREES_PER_REVOLUTION)
+
+    def is_at_angle(self) -> bool:
+        current_deg = self.hood_motor.get_position().value * kHoodMotor.DEGREES_PER_REVOLUTION
+        target_deg = self._target_position * kHoodMotor.DEGREES_PER_REVOLUTION
+        return abs(current_deg - target_deg) <= kHoodMotor.REACH_TARGET_ANGLE_ERROR
 
     def is_hard_stopped(self):
         return (
@@ -63,8 +74,8 @@ class ShooterHood(Subsystem):
         )
 
     def reset(self):
-        self.set_position(0)
-        self.nt.set("Ideal Home Position", 0)
+        self.set_position(kHoodMotor.HOME_POSITION)
+        self.nt.set("Ideal Hood Position", kHoodMotor.HOME_POSITION)
 
     def angle_by_position(self, robot_pose: Pose2d, target_pose: Pose2d) -> None:
         distance_to_target = distanceFromPose2dtoPose2d(robot_pose, target_pose)
@@ -72,21 +83,22 @@ class ShooterHood(Subsystem):
         interpolation_distance_data, interpolation_position_data = zip(
             *kShooterData.SHOT_ANGLES
         )
-        target_hood_position = np.interp(
+        target_hood_degrees = np.interp(
             distance_to_target, interpolation_distance_data, interpolation_position_data
         )
 
-        self.set_position(target_hood_position)
+        self.set_position(target_hood_degrees * kHoodMotor.REVOLUTIONS_PER_DEGREE)
 
     def periodic(self):
         hard_stopped = self.is_hard_stopped()
         if hard_stopped and not self._was_hard_stopped:
-            self.hood_motor.set_position(0)
+            self.hood_motor.set_position(kHoodMotor.HOME_POSITION)
         self._was_hard_stopped = hard_stopped
 
-        self.nt.set("Hood Position", self.hood_motor.get_position().value)
+        self.nt.set("Hood Position", self.hood_motor.get_position().value * kHoodMotor.DEGREES_PER_REVOLUTION)
         kHoodMotor.RESET_HOME_SPEED = self.nt.get("Reset Home Speed")
         kHoodMotor.INCREMENT_AMOUNT = self.nt.get("Increment Amount")
+        kHoodMotor.MAX_POSITION = self.nt.get("Max Hood Position (deg)") * kHoodMotor.REVOLUTIONS_PER_DEGREE
 
         # EditablePID only applies config when values change and skips simulation
         self.editable_pid.periodic()

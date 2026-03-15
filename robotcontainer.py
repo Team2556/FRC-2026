@@ -29,7 +29,12 @@ from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.shooter.dual_shooter import DualMotorShooter
 
-from commands2 import ParallelCommandGroup, cmd
+from commands2 import ParallelCommandGroup, RunCommand, cmd, InstantCommand
+from commands2.button import Trigger
+
+from util.robot_zone_checker import RobotZoneChecker
+from util.flip_util import FlipUtil
+from constants.field import kHub, kPassSpots
 
 
 class RobotContainer:
@@ -111,7 +116,14 @@ class RobotContainer:
         # =========================
         #        TESTING ONLY
         self.hood_subsystem.setDefaultCommand(
-            hood_commands.ManualShooterHood(self.hood_subsystem, self._controller_2)
+            hood_commands.ManualShooterHood(
+                self.hood_subsystem,
+                self._controller_2,
+                self._get_hood_pose_and_target,
+            )
+        )
+        Trigger(self._drivetrain.should_stop_shooting).whileTrue(
+            RunCommand(lambda: self.hood_subsystem.reset(), self.hood_subsystem)
         )
         # =========================
         
@@ -131,6 +143,27 @@ class RobotContainer:
         self._controller_2.rightTrigger().onFalse(
             IntakeCommandUndeploy(self.intake_subsystem)
         )
+
+        # Dev only: Back + Start force-pushes all dashboard PID values to motors
+        (self._controller_1.back().and_(self._controller_1.start())).onTrue(
+            InstantCommand(self._force_apply_all_pids)
+        )
+
+    def _get_hood_pose_and_target(self):
+        pose = self._drivetrain.get_state().pose
+        if RobotZoneChecker.is_in_left_neutral_zone(pose):
+            return pose, FlipUtil.fieldPose(kPassSpots.PASS_SPOT_LEFT)
+        if RobotZoneChecker.is_in_right_neutral_zone(pose):
+            return pose, FlipUtil.fieldPose(kPassSpots.PASS_SPOT_RIGHT)
+        return pose, FlipUtil.fieldPose(kHub.POS)
+
+    def _force_apply_all_pids(self):
+        self.intake_subsystem.deploy_editable_pid.force_apply()
+        self.intake_subsystem.spinny_editable_pid.force_apply()
+        self.transfer_subsystem.spindex_editable_pid.force_apply()
+        self.transfer_subsystem.up_transfer_editable_pid.force_apply()
+        self.hood_subsystem.editable_pid.force_apply()
+        self.shooter_subsystem.editable_PID.force_apply()
 
     def getAutonomousCommand(self):
         return self.custom_path_commands.test_auto

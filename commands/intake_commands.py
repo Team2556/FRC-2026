@@ -1,3 +1,4 @@
+import wpilib
 from subsystems.intake import IntakeSubsystem
 from commands2 import Command, InterruptionBehavior
 from phoenix6 import signals
@@ -30,15 +31,17 @@ class IntakeCommandUndeploy(Command):
         self.addRequirements(intake_subsystem)
         
     def initialize(self):
-        self.intake_subsystem.set_spinny_speed(0)
+        self._start_time = wpilib.Timer.getFPGATimestamp()
+        self.intake_subsystem.stop_spinny()
         self.intake_subsystem.set_deployer_position(0)
         self.intake_subsystem.change_deployer_slot(0)
         self.intake_subsystem.state = "undeploying"
-    
+
     def isFinished(self):
-        return self.reverse_limit.value == signals.ReverseLimitValue.CLOSED_TO_GROUND
+        timed_out = (wpilib.Timer.getFPGATimestamp() - self._start_time) > 3.0
+        return self.reverse_limit.value == signals.ReverseLimitValue.CLOSED_TO_GROUND or timed_out
 
     def end(self, interrupted):
         self.intake_subsystem.set_internal_deployer_position(0)
-        self.intake_subsystem.set_spinny_speed(0)
+        self.intake_subsystem.stop_spinny()
         self.intake_subsystem.state = "undeployed"
