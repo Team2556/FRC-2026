@@ -20,7 +20,10 @@ import commands2
 import wpilib
 from wpimath import units
 from wpimath.geometry import Rotation2d
+from phoenix6.controls import DutyCycleOut
 import math
+import threading
+import time
 
 from phoenix6.hardware.pigeon2 import Pigeon2
 
@@ -34,6 +37,7 @@ class TestProgramCommand(commands2.Command):
     """
     Comprehensive test program that cycles through all robot subsystems
     with encoder feedback verification and low movement thresholds.
+    Plays a victory song on successful completion!
     """
 
     # Test sequence timing (in seconds)
@@ -53,6 +57,25 @@ class TestProgramCommand(commands2.Command):
     MIN_SHOOTER_RPM = 50  # RPM change
     MIN_DRIVETRAIN_MOVEMENT = 0.01  # rotations per module
     MIN_TURN_ANGLE = 5.0  # degrees per module
+    
+    # Musical notes (frequency in Hz for motor oscillation)
+    NOTES = {
+        "C4": 261.63, "D4": 293.66, "E4": 329.63, "F4": 349.23, 
+        "G4": 392.00, "A4": 440.00, "B4": 493.88,
+        "C5": 523.25, "D5": 587.33, "E5": 659.25, "F5": 698.46,
+        "G5": 783.99, "A5": 880.00, "B5": 987.77,
+        "REST": 0.0
+    }
+    
+    # Victory song: "We Are The Champions" opening
+    VICTORY_SONG = [
+        ("E4", 0.5), ("E4", 0.5), ("F4", 0.5), ("G4", 0.5),
+        ("G4", 0.5), ("F4", 0.5), ("E4", 1.0),
+        ("REST", 0.2),
+        ("C5", 0.8), ("B4", 0.4), ("A4", 0.4), ("G4", 1.2),
+        ("REST", 0.2),
+        ("E4", 0.5), ("E4", 0.5), ("F4", 0.5), ("G4", 1.5)
+    ]
 
     def __init__(self,
                  drivetrain,
@@ -104,6 +127,10 @@ class TestProgramCommand(commands2.Command):
         self.shooter_movement_result = {"rpm_achieved": 0.0, "passed": False}
         self.drivetrain_movement_result = {"avg_moved": 0.0, "passed": False}
         self.turn_motor_result = {"avg_turned": 0.0, "passed": False}
+        
+        # Music control
+        self.music_thread = None
+        self.stop_music = False
 
         # Add subsystem requirements
         self.addRequirements(
@@ -589,13 +616,15 @@ class TestProgramCommand(commands2.Command):
 
         # Display overall result on LEDs
         if tests_passed == total_tests:
+            # All tests passed - play victory music!
+            self._start_victory_music()
             self.test_state = self.led.create_state(
                 state_key="test_program",
-                animation_request=ColorFactories.solid_color(CANdle_Color.GREEN),
+                animation_request=ColorFactories.rainbow(brightness=1.0, speed=0.5),
                 priority=100,
                 enable=True
             )
-        elif tests_passed >= 3:
+        elif tests_passed >= 4:  # Most tests passed
             self.test_state = self.led.create_state(
                 state_key="test_program",
                 animation_request=ColorFactories.solid_color(CANdle_Color.YELLOW),
@@ -623,6 +652,110 @@ class TestProgramCommand(commands2.Command):
             print(f"Transfer: S:{self.transfer_movement_result['spindexer_moved']:.4f}, U:{self.transfer_movement_result['up_moved']:.4f} rotations ({'PASS' if self.transfer_movement_result['passed'] else 'FAIL'})")
             print("\nAll motors stopped")
             print("=" * 50)
+
+    def _play_note_on_motors(self, frequency, duration):
+        """
+        Play a musical note using drive motor oscillation.
+        Uses duty cycle oscillation to create audible tones.
+        """
+        if frequency == 0.0:  # REST note
+            time.sleep(duration)
+            return
+            
+        try:
+            # Get drive motors from swerve modules
+            drive_motors = []
+            for i in range(4):  # 4 swerve modules
+                try:
+                    module = self.drivetrain._drivetrain.get_module(i)
+                    drive_motor = module.get_drive_motor()
+                    drive_motors.append(drive_motor)
+                except:
+                    pass  # Skip if can't access motor
+            
+            if not drive_motors:
+                print(f"  🎵 Note {frequency:.1f}Hz (no motors available)")
+                time.sleep(duration)
+                return
+                
+            # Calculate oscillation parameters
+            period = 1.0 / frequency if frequency > 0 else 0.1
+            half_period = period / 2.0
+            cycles = int(duration / period)
+            
+            # Create duty cycle requests
+            high_request = DutyCycleOut(0.05)  # Small positive duty cycle
+            low_request = DutyCycleOut(-0.05)  # Small negative duty cycle
+            stop_request = DutyCycleOut(0.0)
+            
+            print(f"  🎵 Playing {frequency:.1f}Hz for {duration:.1f}s on {len(drive_motors)} motors")
+            
+            # Oscillate motors to create tone
+            for cycle in range(cycles):
+                if self.stop_music:
+                    break
+                    
+                # High phase
+                for motor in drive_motors:
+                    try:
+                        motor.set_control(high_request)
+                    except:
+                        pass
+                time.sleep(half_period)
+                
+                # Low phase  
+                for motor in drive_motors:
+                    try:
+                        motor.set_control(low_request)
+                    except:
+                        pass
+                time.sleep(half_period)
+            
+            # Stop motors
+            for motor in drive_motors:
+                try:
+                    motor.set_control(stop_request)
+                except:
+                    pass
+                    
+        except Exception as e:
+            print(f"  🎵 Music error: {e}")
+            time.sleep(duration)
+
+    def _play_victory_song(self):
+        """
+        Play the victory song in a separate thread to avoid blocking the main robot loop.
+        """
+        print("\n🎉 ALL TESTS PASSED! Playing victory song... 🎵")
+        
+        for note_name, duration in self.VICTORY_SONG:
+            if self.stop_music:
+                break
+                
+            frequency = self.NOTES.get(note_name, 0.0)
+            self._play_note_on_motors(frequency, duration)
+            
+        print("🎵 Victory song complete! 🎉")
+
+    def _start_victory_music(self):
+        """
+        Start the victory song in a background thread.
+        """
+        if self.music_thread and self.music_thread.is_alive():
+            self.stop_music = True
+            self.music_thread.join(timeout=1.0)
+            
+        self.stop_music = False
+        self.music_thread = threading.Thread(target=self._play_victory_song, daemon=True)
+        self.music_thread.start()
+
+    def _stop_victory_music(self):
+        """
+        Stop the victory music.
+        """
+        self.stop_music = True
+        if self.music_thread and self.music_thread.is_alive():
+            self.music_thread.join(timeout=1.0)
 
     def _update_tilt_leds(self):
         """Update LED color based on IMU tilt measurements"""
@@ -657,6 +790,9 @@ class TestProgramCommand(commands2.Command):
 
     def end(self, interrupted: bool):
         """Called when the command ends."""
+        # Stop victory music
+        self._stop_victory_music()
+        
         # Ensure all motors are stopped
         self.drivetrain.drive_with_values(velocity_x=0, velocity_y=0, rotation_rate=0)
         self.shooter.disable()
