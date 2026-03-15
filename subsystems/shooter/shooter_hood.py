@@ -57,6 +57,7 @@ class ShooterHood(Subsystem):
         )
 
     def set_position(self, position):
+        # Clamp to MAX_POSITION to prevent mechanical over-travel _FCC_
         position = min(position, kHoodMotor.MAX_POSITION)
         self._target_position = position
         self.hood_motor.set_control(self.position_request.with_position(position))
@@ -90,11 +91,13 @@ class ShooterHood(Subsystem):
         self.set_position(target_hood_degrees * kHoodMotor.REVOLUTIONS_PER_DEGREE)
 
     def periodic(self):
+        # On rising edge of reverse limit, re-zero encoder to HOME so position stays accurate _FCC_
         hard_stopped = self.is_hard_stopped()
         if hard_stopped and not self._was_hard_stopped:
             self.hood_motor.set_position(kHoodMotor.HOME_POSITION)
         self._was_hard_stopped = hard_stopped
 
+        # All NT values are in degrees for human readability; internal math uses revolutions _FCC_
         self.nt.set("Hood Position", self.hood_motor.get_position().value * kHoodMotor.DEGREES_PER_REVOLUTION)
         kHoodMotor.RESET_HOME_SPEED = self.nt.get("Reset Home Speed")
         kHoodMotor.INCREMENT_AMOUNT = self.nt.get("Increment Amount")

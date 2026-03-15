@@ -21,6 +21,7 @@ class kHoodMotor:
 
     RESET_HOME_SPEED = -0.03  # Negative: drives hood down toward reverse limit
 
+    # Gear ratio: 15.1 motor revolutions = 35 degrees of hood travel _FCC_
     DEGREES_PER_REVOLUTION = 35.0 / 15.1
     REVOLUTIONS_PER_DEGREE = 15.1 / 35.0
     HOME_POSITION = 5.0 * (15.1 / 35.0)   # 5 degrees in motor revolutions
@@ -67,6 +68,7 @@ class kShooterData:
     
 
 class kShooterConfig:
+    # Negative X = toward back of robot where shooter sits _FCC_
     SHOOTER_OFFSET = Translation2d(-10.432 * kMath.MetersPerInch, 0)  # Meters
     SHOOTER_DIRECTION = -90  # 180 for Reverse
     WHEEL_RADIUS = 4 * kMath.MetersPerInch

@@ -32,12 +32,14 @@ class IntakeCommandUndeploy(Command):
         
     def initialize(self):
         self._start_time = wpilib.Timer.getFPGATimestamp()
+        # NeutralOut kills integrator windup; VelocityVoltage(0) does not _FCC_
         self.intake_subsystem.stop_spinny()
         self.intake_subsystem.set_deployer_position(0)
         self.intake_subsystem.change_deployer_slot(0)
         self.intake_subsystem.state = "undeploying"
 
     def isFinished(self):
+        # 3s timeout prevents getting stuck if reverse limit never triggers _FCC_
         timed_out = (wpilib.Timer.getFPGATimestamp() - self._start_time) > 3.0
         return self.reverse_limit.value == signals.ReverseLimitValue.CLOSED_TO_GROUND or timed_out
 

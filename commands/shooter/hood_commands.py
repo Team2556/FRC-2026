@@ -48,10 +48,12 @@ class ManualShooterHood(Command):
         self.addRequirements(self._shooter_hood)
 
     def execute(self):
+        # Deadband prevents hood creep from stick drift _FCC_
         x = applyDeadband(self._controller.getRightX(), 0.2)
         if x != 0:
             self._shooter_hood.increment(x)
         else:
+            # Auto-correct hood angle by distance when stick is idle _FCC_
             pose, target = self._get_pose_and_target()
             self._shooter_hood.angle_by_position(pose, target)
 

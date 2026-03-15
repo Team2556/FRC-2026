@@ -89,6 +89,7 @@ class IntakeSubsystem(commands2.Subsystem):
         self.nt.set("Ideal Spinny RPM", rpm)
 
     def stop_spinny(self):
+        # NeutralOut fully disables the motor; VelocityVoltage(0) leaves the integrator running _FCC_
         self.spinny_motor.set_control(self._spinny_neutral)
         self.nt.set("Ideal Spinny RPM", 0)
     

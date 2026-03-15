@@ -114,7 +114,7 @@ class EditablePID:
                 values_changed = True
                 print(f"[{self.name}] Slot2 PID changed: kP={new_kp}, kI={new_ki}, kD={new_kd}")
 
-        # Only apply configuration if values changed, not on FMS, and debounce has elapsed
+        # 1.5s debounce avoids Phoenix 6 "frequent config" warning; FMS gate prevents field mishaps _FCC_
         if values_changed:
             if wpilib.DriverStation.isFMSAttached():
                 print(f"[{self.name}] FMS attached - PID updates disabled")
@@ -126,7 +126,7 @@ class EditablePID:
                     print(f"[{self.name}] *** APPLIED PID CONFIGURATION TO MOTOR ***")
 
     def force_apply(self):
-        """Bypass debounce and force-push current dashboard values to motor. Dev use only."""
+        """Bypass debounce and force-push current dashboard values to motor. Dev use only. _FCC_"""
         if wpilib.RobotBase.isSimulation() or wpilib.DriverStation.isFMSAttached():
             return
         if self.use_slot0:

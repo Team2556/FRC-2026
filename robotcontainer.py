@@ -75,6 +75,7 @@ class RobotContainer:
             drive_commands.ControllerDrive(self._drivetrain, self._controller_1)
         )
 
+        # .negate() guards prevent firing when both bumpers are held (that's intake) _FCC_
         self._controller_1.rightBumper().and_(self._controller_1.leftBumper().negate()).whileTrue(
             ParallelCommandGroup(
                 RunTransferCommand(self.transfer_subsystem, self.shooter_subsystem),
@@ -122,6 +123,7 @@ class RobotContainer:
                 self._get_hood_pose_and_target,
             )
         )
+        # Retracts hood in danger zone (bumps/trench); interrupts default command _FCC_
         Trigger(self._drivetrain.should_stop_shooting).whileTrue(
             RunCommand(lambda: self.hood_subsystem.reset(), self.hood_subsystem)
         )
@@ -155,6 +157,7 @@ class RobotContainer:
         )
 
     def _get_hood_pose_and_target(self):
+        # Picks hub or pass spot based on field zone; keeps drivetrain out of hood commands _FCC_
         pose = self._drivetrain.get_state().pose
         if RobotZoneChecker.is_in_left_neutral_zone(pose):
             return pose, FlipUtil.fieldPose(kPassSpots.PASS_SPOT_LEFT)

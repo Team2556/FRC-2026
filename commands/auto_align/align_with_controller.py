@@ -112,6 +112,7 @@ class ConditionalAlignAndShoot(HubAlign):
         self.find_target(robot_pose)
         self._hood.angle_by_position(robot_pose, self.target)
         
+        # Don't fire until BOTH yaw and hood angle are on target _FCC_
         if (self.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES
                 and self._hood.is_at_angle()):
             self.transfer_subsystem.activate()
