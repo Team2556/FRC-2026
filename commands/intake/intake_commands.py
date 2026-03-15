@@ -1,4 +1,4 @@
-from subsystems.intake import IntakeSubsystem
+from subsystems.intake.intake import IntakeSubsystem
 from commands2 import Command, InterruptionBehavior
 from phoenix6 import signals
 from constants.intake import kIntakeDeployer, kIntakeSpinner
