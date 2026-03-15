@@ -70,6 +70,7 @@ class MyRobot(commands2.TimedCommandRobot):
 
         # Create and schedule the test program
         self.testCommand = TestProgramCommand(
+            drivetrain=self.container._drivetrain,
             intake_subsystem=self.container.intake_subsystem,
             transfer_subsystem=self.container.transfer_subsystem,
             shooter_subsystem=self.container.shooter_subsystem,
