@@ -19,6 +19,7 @@ Motors tested with encoder feedback:
 import commands2
 import wpilib
 from wpimath import units
+from wpimath.geometry import Rotation2d
 import math
 
 from phoenix6.hardware.pigeon2 import Pigeon2
@@ -51,6 +52,7 @@ class TestProgramCommand(commands2.Command):
     MIN_TRANSFER_MOVEMENT = 0.02  # rotations
     MIN_SHOOTER_RPM = 50  # RPM change
     MIN_DRIVETRAIN_MOVEMENT = 0.01  # rotations per module
+    MIN_TURN_ANGLE = 5.0  # degrees per module
 
     def __init__(self,
                  drivetrain,
@@ -75,7 +77,7 @@ class TestProgramCommand(commands2.Command):
         self.phase_timer = wpilib.Timer()
         self.motor_timer = wpilib.Timer()
         self.current_phase = 0
-        self.total_phases = 9  # Added drivetrain test
+        self.total_phases = 10  # Added drivetrain and turn motor tests
 
         # Tilt measurements
         self.pitch = 0.0
@@ -93,6 +95,7 @@ class TestProgramCommand(commands2.Command):
         self.initial_transfer_up_position = 0.0
         self.initial_shooter_position = 0.0
         self.initial_drivetrain_positions = []
+        self.initial_turn_angles = []
         
         # Movement results
         self.hood_movement_result = {"moved": 0.0, "passed": False}
@@ -100,6 +103,7 @@ class TestProgramCommand(commands2.Command):
         self.transfer_movement_result = {"spindexer_moved": 0.0, "up_moved": 0.0, "passed": False}
         self.shooter_movement_result = {"rpm_achieved": 0.0, "passed": False}
         self.drivetrain_movement_result = {"avg_moved": 0.0, "passed": False}
+        self.turn_motor_result = {"avg_turned": 0.0, "passed": False}
 
         # Add subsystem requirements
         self.addRequirements(
@@ -166,14 +170,16 @@ class TestProgramCommand(commands2.Command):
         elif self.current_phase == 3:
             self._phase_drivetrain_test()
         elif self.current_phase == 4:
-            self._phase_shooter_test()
+            self._phase_turn_motor_test()
         elif self.current_phase == 5:
-            self._phase_hood_test()
+            self._phase_shooter_test()
         elif self.current_phase == 6:
-            self._phase_intake_test()
+            self._phase_hood_test()
         elif self.current_phase == 7:
-            self._phase_transfer_test()
+            self._phase_intake_test()
         elif self.current_phase == 8:
+            self._phase_transfer_test()
+        elif self.current_phase == 9:
             self._phase_complete()
 
         # Update LED based on tilt (unless in LED test phase)
@@ -299,6 +305,70 @@ class TestProgramCommand(commands2.Command):
             wpilib.SmartDashboard.putBoolean("Drivetrain Test Passed", passed)
             
             print(f"  Drivetrain: Average movement {avg_movement:.4f}m ({'PASS' if passed else 'FAIL'} - min: {self.MIN_DRIVETRAIN_MOVEMENT})")
+
+        else:
+            # Ensure stopped
+            self.drivetrain.drive_with_values(velocity_x=0, velocity_y=0, rotation_rate=0)
+
+    def _phase_turn_motor_test(self):
+        """Phase 4: Turn/steer motor test with angle verification"""
+        wpilib.SmartDashboard.putString("Test Program", "TURN MOTOR TEST")
+
+        motor_time = self.motor_timer.get()
+
+        if motor_time < 0.05:  # Capture initial angles
+            state = self.drivetrain.get_state()
+            self.initial_turn_angles = []
+            for i in range(4):  # Assuming 4 swerve modules
+                try:
+                    module_state = state.robot_state.module_states[i]
+                    angle_deg = module_state.angle.degrees()
+                    self.initial_turn_angles.append(angle_deg)
+                    print(f"  Module {i} initial angle: {angle_deg:.2f} degrees")
+                except (IndexError, AttributeError):
+                    self.initial_turn_angles.append(0.0)
+            print(f"  Turn Motors: Pointing wheels to 45° test starting...")
+
+        elif motor_time < self.DRIVETRAIN_TIME:
+            # Point wheels at 45 degree angle
+            target_angle = Rotation2d.fromDegrees(45.0)
+            self.drivetrain._drivetrain.set_control(
+                self.drivetrain._point.with_module_direction(target_angle)
+            )
+            
+        elif motor_time < self.DRIVETRAIN_TIME + 0.1:  # Stop and measure
+            self.drivetrain.drive_with_values(velocity_x=0, velocity_y=0, rotation_rate=0)
+            
+            # Measure angle changes
+            state = self.drivetrain.get_state()
+            total_angle_change = 0.0
+            modules_moved = 0
+            
+            for i in range(min(4, len(self.initial_turn_angles))):
+                try:
+                    module_state = state.robot_state.module_states[i]
+                    current_angle = module_state.angle.degrees()
+                    angle_change = abs(current_angle - self.initial_turn_angles[i])
+                    
+                    # Handle angle wraparound (e.g. 350° to 10° = 20° change, not 340°)
+                    if angle_change > 180:
+                        angle_change = 360 - angle_change
+                    
+                    total_angle_change += angle_change
+                    modules_moved += 1
+                    print(f"  Module {i}: {self.initial_turn_angles[i]:.2f}° -> {current_angle:.2f}° (turned {angle_change:.2f}°)")
+                except (IndexError, AttributeError):
+                    pass
+            
+            avg_angle_change = total_angle_change / max(1, modules_moved) if modules_moved > 0 else 0.0
+            passed = avg_angle_change > self.MIN_TURN_ANGLE
+            
+            self.turn_motor_result = {"avg_turned": avg_angle_change, "passed": passed}
+            
+            wpilib.SmartDashboard.putNumber("Turn Motor Avg Angle Change", avg_angle_change)
+            wpilib.SmartDashboard.putBoolean("Turn Motor Test Passed", passed)
+            
+            print(f"  Turn Motors: Average angle change {avg_angle_change:.2f}° ({'PASS' if passed else 'FAIL'} - min: {self.MIN_TURN_ANGLE}°)")
 
         else:
             # Ensure stopped
@@ -501,9 +571,11 @@ class TestProgramCommand(commands2.Command):
 
         # Count passed tests
         tests_passed = 0
-        total_tests = 5
+        total_tests = 6
         
         if self.drivetrain_movement_result["passed"]:
+            tests_passed += 1
+        if self.turn_motor_result["passed"]:
             tests_passed += 1
         if self.shooter_movement_result["passed"]:
             tests_passed += 1
@@ -543,6 +615,7 @@ class TestProgramCommand(commands2.Command):
             print(f"Final Tilt: {self.tilt:.2f}°")
             print("\n--- Movement Results ---")
             print(f"Drivetrain: {self.drivetrain_movement_result['avg_moved']:.4f}m avg ({'PASS' if self.drivetrain_movement_result['passed'] else 'FAIL'})")
+            print(f"Turn Motors: {self.turn_motor_result['avg_turned']:.2f}° avg ({'PASS' if self.turn_motor_result['passed'] else 'FAIL'})")
             print(f"Shooter: {self.shooter_movement_result['rpm_achieved']:.1f} RPM change ({'PASS' if self.shooter_movement_result['passed'] else 'FAIL'})")
             print(f"Hood: {self.hood_movement_result['moved']:.4f} rotations ({'PASS' if self.hood_movement_result['passed'] else 'FAIL'})")
             print(f"Intake: {self.intake_movement_result['moved']:.4f} rotations ({'PASS' if self.intake_movement_result['passed'] else 'FAIL'})")
