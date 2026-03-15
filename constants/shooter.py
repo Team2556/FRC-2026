@@ -2,7 +2,7 @@ from phoenix6.configs import TalonFXConfiguration, TalonFXSConfiguration
 from phoenix6.signals import InvertedValue, MotorArrangementValue
 from wpimath.geometry import Transform2d, Rotation2d, Translation2d
 
-from constants.math import kMath
+from util.math import kMath
 
 class kHoodMotor:
     _CONFIG = TalonFXSConfiguration()

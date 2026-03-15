@@ -5,14 +5,15 @@
 #
 
 from commands.auto_align import align_with_controller
+from commands.drive import drive_commands
 from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
 
-from commands import drive_commands, vision_odometry
+from commands.vision import vision_odometry
 from commands.path_commands import custom_path_commands, go_back_with_path
-from commands.run_transfer_motors import RunTransferCommand
-from commands.intake_commands import IntakeCommandDeploy, IntakeCommandUndeploy
-from commands.climb import ClimbDown, ClimbUp
+from commands.transfer.run_transfer_motors import RunTransferCommand
+from commands.intake.intake_commands import IntakeCommandDeploy, IntakeCommandUndeploy
+from commands.climb.climb import ClimbDown, ClimbUp
 from commands.shooter import shooter_commands, hood_commands
 
 from constants.vision import kCamera
@@ -21,9 +22,9 @@ from constants.led import kLED
 
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
-from subsystems.intake import IntakeSubsystem
-from subsystems.climb_subsystem import ClimbSubsystem
-from subsystems.transfer_subsystem import TransferSubsystem
+from subsystems.intake.intake import IntakeSubsystem
+from subsystems.climb.climb_subsystem import ClimbSubsystem
+from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
 
 from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.led.LED_controller import CANdleLEDController

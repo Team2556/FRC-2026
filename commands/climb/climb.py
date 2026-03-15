@@ -1,4 +1,4 @@
-from subsystems.climb_subsystem import ClimbSubsystem
+from subsystems.climb.climb_subsystem import ClimbSubsystem
 from commands2 import Command
 
 class ClimbUp(Command):

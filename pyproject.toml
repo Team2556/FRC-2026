@@ -29,6 +29,5 @@ requires = [
     # "robotpy-pathplannerlib",
     # "robotpy-playingwithfusion",
     # "robotpy-rev",
-    "robotpy-apriltag",
     "numpy; platform_machine == 'roborio'",
 ]
