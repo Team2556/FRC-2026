@@ -47,5 +47,4 @@ class kShooterData:
 
 class kShooterConfig:
     SHOOTER_OFFSET = Translation2d(0, 0)  # Meters
-    SHOOTER_DIRECTION = 0  # 180 for Reverse
-    WHEEL_RADIUS = 4 * kMath.MetersPerInch
+    SHOOTER_DIRECTION = 90  # 180 for Reverse

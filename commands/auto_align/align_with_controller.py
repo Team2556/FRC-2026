@@ -21,12 +21,10 @@ class TurretToPose(alignio.TurretTargetWithVelocity):
     def __init__(
         self,
         drivetrain,
-        controller,
         target: Pose2d,
         shooter: DualMotorShooter,
     ):
         super().__init__(drivetrain, shooter, target)
-        self._controller = controller
 
     def execute(self):
         rotation_rate = self.calculate_rotation()
@@ -43,12 +41,10 @@ class HubAlign(alignio.TurretTargetWithVelocity):
     def __init__(
         self,
         drivetrain,
-        controller: custom_controller.XboxController,
         shooter: DualMotorShooter,
         LED_Controller: CANdleLEDController | None = None,
     ):
         super().__init__(drivetrain, shooter, kHub.POS)
-        self._controller = controller
 
         SmartDashboard.putNumber(
             "Hub Align Flight Time Scalar", self.flight_time_scalar
@@ -89,13 +85,12 @@ class ConditionalAlignAndShoot(HubAlign):
     def __init__(
         self,
         drivetrain,
-        controller: custom_controller.XboxController,
         shooter: DualMotorShooter,
         transfer_subsystem : TransferSubsystem,
         hood: ShooterHood,
         LED_controller: CANdleLEDController | None = None,
     ):
-        super().__init__(drivetrain, controller, shooter, LED_controller)
+        super().__init__(drivetrain, shooter, LED_controller)
         
         self._hood = hood
         self.transfer_subsystem = transfer_subsystem

@@ -65,13 +65,14 @@ class DriveToASpot(commands2.Command):
         self.pose_estimate = Pose2d()
         
         self.do_override_speed = False
-        self.parallel_command = None
+        self.parallel_commands : list[commands2.Command] = []
         
         self.reset_variables()
         
     def initialize(self):
-        if self.parallel_command:
-            self.parallel_command.schedule()
+        if self.parallel_commands:
+            for parallel_command in self.parallel_commands:
+                parallel_command.schedule()
         self.reset_variables()
     
     def reset_variables(self):
@@ -199,9 +200,10 @@ class DriveToASpot(commands2.Command):
     def with_parallel_command(self, command : commands2.Command):
         '''
         If you give DriveToASpot a parallel command with this function, said parallel command 
-        will be scheduled at the same time this command is scheduled
+        will be scheduled at the same time this command is scheduled. Works with multiple commands 
+        if you use this function twice
         '''
-        self.parallel_command = command
+        self.parallel_commands.append(command)
         return self
     
     def with_target_pose(self, value): self.target_pose = value; return self

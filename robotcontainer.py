@@ -7,6 +7,7 @@
 from commands.auto_align import align_with_controller
 from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
+from util.auto_chooser import AutoChooser
 
 from commands import drive_commands, vision_odometry
 from commands.path_commands import custom_path_commands, go_back_with_path
@@ -50,9 +51,17 @@ class RobotContainer:
 
         self.custom_path_commands = custom_path_commands.CustomPathCommands(
             self._drivetrain,
+            intake_subsystem=self.intake_subsystem,
+            transfer_subsystem=self.transfer_subsystem,
             shooter_subsystem=self.shooter_subsystem,
+            hood_subsystem=self.hood_subsystem,
+            led_controller=self.LED_controller,
             # climb_subsyetem=self.climb_subsystem,
         )
+        
+        self.auto_chooser = AutoChooser(self.custom_path_commands.get_autos())
+        self.auto_chooser.make_dropdown()
+        
         self.time_manager = SendFMSData()
 
         self.configureButtonBindings()
@@ -80,7 +89,6 @@ class RobotContainer:
         self._controller_1.rightTrigger().whileTrue(
             align_with_controller.ConditionalAlignAndShoot(
                 self._drivetrain,
-                self._controller_1,
                 self.shooter_subsystem,
                 self.transfer_subsystem,
                 self.hood_subsystem,
@@ -133,4 +141,4 @@ class RobotContainer:
         )
 
     def getAutonomousCommand(self):
-        return self.custom_path_commands.test_auto
+        return self.auto_chooser.choose_auto()

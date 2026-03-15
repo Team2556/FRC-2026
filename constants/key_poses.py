@@ -12,7 +12,7 @@ class kPath:
     default_smoothing_time = 0.5 # Try 15-20% of path speed maybe
     default_smoothing_radius = 0.6 * default_path_speed * default_smoothing_time
     
-    # High quality variable name
+    # High quality variable names; also NOTE: These values need re-enabling to modify on SmartDashboard
     percent_slow_distance_proportional_to_max_speed_for_sequence_path = 0.25
     path_transition_slow_multiplier = 0.5 # In percent from 0 to 1
 
@@ -36,12 +36,11 @@ class kPoses:
     opposing_zone_left_bump = Pose2d(13.2, kField.WIDTH - 2.5, Rotation2d(pi/2))
     
     # Temporary Poses
-    auto1 = Pose2d(6, 0.6, Rotation2d())
-    auto2 = Pose2d(7.81, 1.5, Rotation2d(pi))
-    auto3 = Pose2d(7.81, 5.3, Rotation2d(pi))
-    auto4 = Pose2d(5.8, 5.5, Rotation2d(pi))
-    auto5 = Pose2d(2.3, 5.4, Rotation2d(3*pi/4))
-    auto6 = Pose2d(0.9, 4.66, Rotation2d())
+    left_fuel_auto_1 = Pose2d(7.3, 7.425, Rotation2d(pi/2))
+    left_fuel_auto_2 = Pose2d(7.774, 6.606, Rotation2d(pi/2))
+    left_fuel_auto_3 = Pose2d(7.774, 4.000, Rotation2d(pi/2))
+    left_fuel_auto_4 = Pose2d(6.052, 5.300, Rotation2d())
+    left_fuel_auto_5 = Pose2d(3.200, 5.300, Rotation2d())
     
     to_outpost0 = Pose2d(1.8, 4.8, Rotation2d())
     to_outpost1 = Pose2d(1.8, 0.9, Rotation2d())
