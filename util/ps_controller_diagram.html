@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PS4/PS5 Controller Axis Reference — FRC 2026</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #1a1a2e;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      padding: 24px;
+    }
+    h1 {
+      text-align: center;
+      color: #00d4ff;
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #888;
+      font-size: 0.85rem;
+      margin-bottom: 28px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto 20px auto;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto 20px auto;
+    }
+    .card {
+      background: #16213e;
+      border: 1px solid #0f3460;
+      border-radius: 12px;
+      padding: 18px 14px 14px;
+    }
+    .card h2 {
+      text-align: center;
+      font-size: 1rem;
+      margin-bottom: 14px;
+      color: #00d4ff;
+      letter-spacing: 0.5px;
+    }
+    svg { display: block; margin: 0 auto; }
+
+    .key-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      margin-top: 12px;
+    }
+    .key-table th {
+      color: #00d4ff;
+      border-bottom: 1px solid #0f3460;
+      padding: 4px 6px;
+      text-align: left;
+    }
+    .key-table td { padding: 3px 6px; }
+    .key-table tr:nth-child(even) td { background: #0f3460; }
+    .pos  { color: #4ade80; font-weight: bold; }
+    .neg  { color: #f87171; font-weight: bold; }
+    .warn { color: #fbbf24; font-weight: bold; }
+    .info { color: #93c5fd; }
+
+    .vs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+    .vs-table th {
+      padding: 5px 10px;
+      border-bottom: 1px solid #0f3460;
+    }
+    .vs-table td { padding: 4px 10px; }
+    .vs-table tr:nth-child(even) td { background: #0f3460; }
+    .xbox-col { color: #4ade80; }
+    .ps-col   { color: #c084fc; }
+
+    .notes {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #16213e;
+      border: 1px solid #fbbf24;
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-size: 0.82rem;
+      line-height: 1.7;
+    }
+    .notes h3 { color: #fbbf24; margin-bottom: 8px; }
+    .notes code {
+      background: #0f3460;
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 0.8rem;
+      color: #93c5fd;
+    }
+    .badge {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      margin-right: 4px;
+    }
+    .badge-cross    { background:#1a3a6a; color:#60a5fa; }
+    .badge-circle   { background:#3a1a1a; color:#f87171; }
+    .badge-square   { background:#2a1a3a; color:#c084fc; }
+    .badge-triangle { background:#1a3a2a; color:#4ade80; }
+  </style>
+</head>
+<body>
+
+<h1>🎮 PS4 / PS5 Controller Axis Reference</h1>
+<p class="subtitle">FRC 2026 · RobotPy · WPILib <code>PS4Controller</code> / <code>CommandPS4Controller</code> · Team 2556</p>
+
+<!-- Row 1: Controller diagram + Button map -->
+<div class="grid">
+
+  <!-- ───────── PS CONTROLLER SVG ───────── -->
+  <div class="card">
+    <h2>Stick & Trigger Axes</h2>
+    <svg width="460" height="280" viewBox="0 0 460 280">
+
+      <!-- Controller body -->
+      <path d="M 80 80 Q 60 60 50 100 L 40 200 Q 38 240 80 250 L 140 250 Q 160 230 170 210 L 290 210 Q 300 230 320 250 L 380 250 Q 422 240 420 200 L 410 100 Q 400 60 380 80 Q 330 50 230 50 Q 130 50 80 80 Z"
+            fill="#2a2a4a" stroke="#555" stroke-width="2"/>
+
+      <!-- Left grip -->
+      <ellipse cx="90"  cy="220" rx="45" ry="35" fill="#222240" stroke="#444" stroke-width="1.5"/>
+      <!-- Right grip -->
+      <ellipse cx="370" cy="220" rx="45" ry="35" fill="#222240" stroke="#444" stroke-width="1.5"/>
+
+      <!-- Touchpad (center) -->
+      <rect x="185" y="95" width="90" height="58" rx="8" fill="#1a1a3a" stroke="#4a4a6a" stroke-width="1.5"/>
+      <text x="230" y="127" fill="#666" font-size="9" text-anchor="middle">Touchpad</text>
+      <text x="230" y="138" fill="#555" font-size="8" text-anchor="middle">Button 14 (PS4)</text>
+
+      <!-- Share / Options buttons -->
+      <circle cx="168" cy="108" r="9" fill="#1a2a3a" stroke="#3a6a9a" stroke-width="1.5"/>
+      <text x="168" y="112" fill="#60a5fa" font-size="8" text-anchor="middle">SHR</text>
+      <circle cx="292" cy="108" r="9" fill="#1a2a3a" stroke="#3a6a9a" stroke-width="1.5"/>
+      <text x="292" y="112" fill="#60a5fa" font-size="8" text-anchor="middle">OPT</text>
+
+      <!-- PS button -->
+      <circle cx="230" cy="175" r="10" fill="#1a1a3a" stroke="#4a4a7a" stroke-width="1.5"/>
+      <text x="230" y="179" fill="#888" font-size="8" text-anchor="middle">PS</text>
+
+      <!-- ─── LEFT STICK (bottom-left, PS layout) ─── -->
+      <circle cx="140" cy="175" r="22" fill="#333360" stroke="#c084fc" stroke-width="2"/>
+      <circle cx="140" cy="175" r="7"  fill="#c084fc"/>
+      <!-- arrows -->
+      <polygon points="140,149 134,162 146,162" fill="#f87171"/>
+      <text x="148" y="153" fill="#f87171" font-size="9" font-weight="bold">-1.0</text>
+      <polygon points="140,201 134,188 146,188" fill="#4ade80"/>
+      <text x="148" y="203" fill="#4ade80" font-size="9" font-weight="bold">+1.0</text>
+      <polygon points="114,175 127,169 127,181" fill="#f87171"/>
+      <text x="75"  y="172" fill="#f87171" font-size="9" font-weight="bold">-1.0</text>
+      <polygon points="166,175 153,169 153,181" fill="#4ade80"/>
+
+      <!-- Stick labels -->
+      <text x="100" y="142" fill="#c084fc" font-size="8">getLeftY()</text>
+      <text x="100" y="222" fill="#c084fc" font-size="8">getLeftX()</text>
+      <text x="100" y="132" fill="#fbbf24" font-size="8">⚠ UP = -1</text>
+
+      <!-- ─── D-PAD (top-left) ─── -->
+      <rect x="104" y="118" width="14" height="14" rx="2" fill="#2a2a4a" stroke="#555" stroke-width="1"/><!-- up -->
+      <rect x="104" y="146" width="14" height="14" rx="2" fill="#2a2a4a" stroke="#555" stroke-width="1"/><!-- down -->
+      <rect x="90"  y="132" width="14" height="14" rx="2" fill="#2a2a4a" stroke="#555" stroke-width="1"/><!-- left -->
+      <rect x="118" y="132" width="14" height="14" rx="2" fill="#2a2a4a" stroke="#555" stroke-width="1"/><!-- right -->
+      <text x="111" y="127" fill="#666" font-size="7" text-anchor="middle">▲</text>
+      <text x="111" y="157" fill="#666" font-size="7" text-anchor="middle">▼</text>
+      <text x="97"  y="142" fill="#666" font-size="7" text-anchor="middle">◄</text>
+      <text x="125" y="142" fill="#666" font-size="7" text-anchor="middle">►</text>
+
+      <!-- ─── RIGHT STICK (bottom-right, PS layout) ─── -->
+      <circle cx="310" cy="175" r="22" fill="#333360" stroke="#c084fc" stroke-width="2"/>
+      <circle cx="310" cy="175" r="7"  fill="#c084fc"/>
+      <polygon points="310,149 304,162 316,162" fill="#f87171"/>
+      <text x="318" y="153" fill="#f87171" font-size="9" font-weight="bold">-1.0</text>
+      <polygon points="310,201 304,188 316,188" fill="#4ade80"/>
+      <text x="318" y="203" fill="#4ade80" font-size="9" font-weight="bold">+1.0</text>
+      <polygon points="284,175 297,169 297,181" fill="#f87171"/>
+      <text x="252" y="172" fill="#f87171" font-size="9" font-weight="bold">-1.0</text>
+      <polygon points="336,175 323,169 323,181" fill="#4ade80"/>
+
+      <text x="278" y="142" fill="#c084fc" font-size="8">getRightY()</text>
+      <text x="278" y="222" fill="#c084fc" font-size="8">getRightX()</text>
+      <text x="278" y="132" fill="#fbbf24" font-size="8">⚠ UP = -1</text>
+
+      <!-- ─── FACE BUTTONS (top-right) ─── -->
+      <!-- Triangle (top) -->
+      <circle cx="355" cy="118" r="11" fill="#1a3a2a" stroke="#4ade80" stroke-width="2"/>
+      <text x="355" y="122" fill="#4ade80" font-size="10" text-anchor="middle" font-weight="bold">△</text>
+      <!-- Cross (bottom) -->
+      <circle cx="355" cy="154" r="11" fill="#1a2a4a" stroke="#60a5fa" stroke-width="2"/>
+      <text x="355" y="158" fill="#60a5fa" font-size="10" text-anchor="middle" font-weight="bold">✕</text>
+      <!-- Square (left) -->
+      <circle cx="333" cy="136" r="11" fill="#2a1a3a" stroke="#c084fc" stroke-width="2"/>
+      <text x="333" y="140" fill="#c084fc" font-size="10" text-anchor="middle" font-weight="bold">□</text>
+      <!-- Circle (right) -->
+      <circle cx="377" cy="136" r="11" fill="#3a1a1a" stroke="#f87171" stroke-width="2"/>
+      <text x="377" y="140" fill="#f87171" font-size="10" text-anchor="middle" font-weight="bold">○</text>
+
+      <!-- ─── SHOULDER BUTTONS ─── -->
+      <!-- L1 -->
+      <rect x="50"  y="68" width="52" height="14" rx="7" fill="#2a2a4a" stroke="#c084fc" stroke-width="1.5"/>
+      <text x="76"  y="79" fill="#c084fc" font-size="9" text-anchor="middle" font-weight="bold">L1</text>
+      <!-- R1 -->
+      <rect x="358" y="68" width="52" height="14" rx="7" fill="#2a2a4a" stroke="#c084fc" stroke-width="1.5"/>
+      <text x="384" y="79" fill="#c084fc" font-size="9" text-anchor="middle" font-weight="bold">R1</text>
+
+      <!-- ─── TRIGGERS (L2 / R2) with range ─── -->
+      <!-- L2 trigger body -->
+      <rect x="48"  y="44" width="56" height="22" rx="6" fill="#1a1a3a" stroke="#fbbf24" stroke-width="2"/>
+      <text x="76"  y="58" fill="#fbbf24" font-size="9" text-anchor="middle" font-weight="bold">L2</text>
+
+      <!-- L2 range annotation -->
+      <text x="20"  y="40" fill="#fbbf24" font-size="8">getL2Axis()</text>
+      <!-- Released -->
+      <text x="10"  y="52" fill="#f87171" font-size="9" font-weight="bold">-1.0</text>
+      <text x="10"  y="62" fill="#888" font-size="7">(released)</text>
+      <!-- Pressed -->
+      <text x="10"  y="78" fill="#4ade80" font-size="9" font-weight="bold">+1.0</text>
+      <text x="10"  y="88" fill="#888" font-size="7">(fully in)</text>
+      <!-- Arrow showing range -->
+      <line x1="46" y1="46" x2="32" y2="54" stroke="#fbbf24" stroke-width="1" stroke-dasharray="2,2"/>
+      <line x1="46" y1="64" x2="32" y2="74" stroke="#fbbf24" stroke-width="1" stroke-dasharray="2,2"/>
+
+      <!-- R2 trigger body -->
+      <rect x="356" y="44" width="56" height="22" rx="6" fill="#1a1a3a" stroke="#fbbf24" stroke-width="2"/>
+      <text x="384" y="58" fill="#fbbf24" font-size="9" text-anchor="middle" font-weight="bold">R2</text>
+
+      <!-- R2 range annotation -->
+      <text x="390" y="40" fill="#fbbf24" font-size="8">getR2Axis()</text>
+      <text x="418" y="52" fill="#f87171" font-size="9" font-weight="bold">-1.0</text>
+      <text x="418" y="62" fill="#888" font-size="7">(released)</text>
+      <text x="418" y="78" fill="#4ade80" font-size="9" font-weight="bold">+1.0</text>
+      <text x="418" y="88" fill="#888" font-size="7">(fully in)</text>
+      <line x1="412" y1="46" x2="420" y2="54" stroke="#fbbf24" stroke-width="1" stroke-dasharray="2,2"/>
+      <line x1="412" y1="64" x2="420" y2="74" stroke="#fbbf24" stroke-width="1" stroke-dasharray="2,2"/>
+
+    </svg>
+
+    <table class="key-table">
+      <tr><th>Input</th><th>Range</th><th>Note</th></tr>
+      <tr><td>getLeftY()</td>  <td><span class="neg">-1</span> to <span class="pos">+1</span></td><td><span class="warn">⚠ UP = -1</span></td></tr>
+      <tr><td>getLeftX()</td>  <td><span class="neg">-1</span> to <span class="pos">+1</span></td><td>Right = +1</td></tr>
+      <tr><td>getRightY()</td> <td><span class="neg">-1</span> to <span class="pos">+1</span></td><td><span class="warn">⚠ UP = -1</span></td></tr>
+      <tr><td>getRightX()</td> <td><span class="neg">-1</span> to <span class="pos">+1</span></td><td>Right = +1</td></tr>
+      <tr><td>getL2Axis()</td> <td><span class="neg">-1.0</span> to <span class="pos">+1.0</span></td><td><span class="warn">⚠ Released = -1 (not 0!)</span></td></tr>
+      <tr><td>getR2Axis()</td> <td><span class="neg">-1.0</span> to <span class="pos">+1.0</span></td><td><span class="warn">⚠ Released = -1 (not 0!)</span></td></tr>
+    </table>
+  </div>
+
+  <!-- ───────── BUTTON MAP ───────── -->
+  <div class="card">
+    <h2>Button Numbers &amp; Names</h2>
+    <svg width="460" height="280" viewBox="0 0 460 280">
+
+      <!-- Header row -->
+      <text x="10"  y="20" fill="#00d4ff" font-size="11" font-weight="bold">Button #</text>
+      <text x="95"  y="20" fill="#00d4ff" font-size="11" font-weight="bold">WPILib Method</text>
+      <text x="270" y="20" fill="#00d4ff" font-size="11" font-weight="bold">Symbol / Label</text>
+      <text x="380" y="20" fill="#00d4ff" font-size="11" font-weight="bold">Xbox Equiv.</text>
+      <line x1="5" y1="24" x2="455" y2="24" stroke="#0f3460" stroke-width="1.5"/>
+
+      <!-- Rows -->
+      <!-- Cross -->
+      <text x="35"  y="42" fill="#aaa" font-size="10" text-anchor="middle">2</text>
+      <text x="95"  y="42" fill="#93c5fd" font-size="10">getCrossButton()</text>
+      <text x="270" y="42" fill="#60a5fa" font-size="12" font-weight="bold">✕  Cross</text>
+      <text x="380" y="42" fill="#4ade80" font-size="10">A button</text>
+
+      <!-- Circle -->
+      <text x="35"  y="60" fill="#aaa" font-size="10" text-anchor="middle">3</text>
+      <text x="95"  y="60" fill="#93c5fd" font-size="10">getCircleButton()</text>
+      <text x="270" y="60" fill="#f87171" font-size="12" font-weight="bold">○  Circle</text>
+      <text x="380" y="60" fill="#4ade80" font-size="10">B button</text>
+
+      <!-- Square -->
+      <text x="35"  y="78" fill="#aaa" font-size="10" text-anchor="middle">1</text>
+      <text x="95"  y="78" fill="#93c5fd" font-size="10">getSquareButton()</text>
+      <text x="270" y="78" fill="#c084fc" font-size="12" font-weight="bold">□  Square</text>
+      <text x="380" y="78" fill="#4ade80" font-size="10">X button</text>
+
+      <!-- Triangle -->
+      <text x="35"  y="96" fill="#aaa" font-size="10" text-anchor="middle">4</text>
+      <text x="95"  y="96" fill="#93c5fd" font-size="10">getTriangleButton()</text>
+      <text x="270" y="96" fill="#4ade80" font-size="12" font-weight="bold">△  Triangle</text>
+      <text x="380" y="96" fill="#4ade80" font-size="10">Y button</text>
+
+      <line x1="5" y1="103" x2="455" y2="103" stroke="#0f3460" stroke-width="1"/>
+
+      <!-- L1 -->
+      <text x="35"  y="118" fill="#aaa" font-size="10" text-anchor="middle">5</text>
+      <text x="95"  y="118" fill="#93c5fd" font-size="10">getL1Button()</text>
+      <text x="270" y="118" fill="#c084fc" font-size="11">L1  (left bumper)</text>
+      <text x="380" y="118" fill="#4ade80" font-size="10">Left Bumper</text>
+
+      <!-- R1 -->
+      <text x="35"  y="136" fill="#aaa" font-size="10" text-anchor="middle">6</text>
+      <text x="95"  y="136" fill="#93c5fd" font-size="10">getR1Button()</text>
+      <text x="270" y="136" fill="#c084fc" font-size="11">R1  (right bumper)</text>
+      <text x="380" y="136" fill="#4ade80" font-size="10">Right Bumper</text>
+
+      <!-- L2 trigger click -->
+      <text x="35"  y="154" fill="#aaa" font-size="10" text-anchor="middle">7</text>
+      <text x="95"  y="154" fill="#93c5fd" font-size="10">getL2Button()</text>
+      <text x="270" y="154" fill="#fbbf24" font-size="11">L2  (trigger click)</text>
+      <text x="380" y="154" fill="#888"   font-size="10">L Trigger btn</text>
+
+      <!-- R2 trigger click -->
+      <text x="35"  y="172" fill="#aaa" font-size="10" text-anchor="middle">8</text>
+      <text x="95"  y="172" fill="#93c5fd" font-size="10">getR2Button()</text>
+      <text x="270" y="172" fill="#fbbf24" font-size="11">R2  (trigger click)</text>
+      <text x="380" y="172" fill="#888"   font-size="10">R Trigger btn</text>
+
+      <line x1="5" y1="179" x2="455" y2="179" stroke="#0f3460" stroke-width="1"/>
+
+      <!-- Share -->
+      <text x="35"  y="194" fill="#aaa" font-size="10" text-anchor="middle">9</text>
+      <text x="95"  y="194" fill="#93c5fd" font-size="10">getShareButton()</text>
+      <text x="270" y="194" fill="#60a5fa" font-size="11">Share / Create</text>
+      <text x="380" y="194" fill="#4ade80" font-size="10">Back / View</text>
+
+      <!-- Options -->
+      <text x="35"  y="212" fill="#aaa" font-size="10" text-anchor="middle">10</text>
+      <text x="95"  y="212" fill="#93c5fd" font-size="10">getOptionsButton()</text>
+      <text x="270" y="212" fill="#60a5fa" font-size="11">Options / Menu</text>
+      <text x="380" y="212" fill="#4ade80" font-size="10">Start / Menu</text>
+
+      <!-- L3 -->
+      <text x="35"  y="230" fill="#aaa" font-size="10" text-anchor="middle">11</text>
+      <text x="95"  y="230" fill="#93c5fd" font-size="10">getL3Button()</text>
+      <text x="270" y="230" fill="#c084fc" font-size="11">L3  (left stick click)</text>
+      <text x="380" y="230" fill="#4ade80" font-size="10">Left Stick Click</text>
+
+      <!-- R3 -->
+      <text x="35"  y="248" fill="#aaa" font-size="10" text-anchor="middle">12</text>
+      <text x="95"  y="248" fill="#93c5fd" font-size="10">getR3Button()</text>
+      <text x="270" y="248" fill="#c084fc" font-size="11">R3  (right stick click)</text>
+      <text x="380" y="248" fill="#4ade80" font-size="10">Right Stick Click</text>
+
+      <!-- Touchpad -->
+      <text x="35"  y="266" fill="#aaa" font-size="10" text-anchor="middle">13</text>
+      <text x="95"  y="266" fill="#93c5fd" font-size="10">getTouchpad()</text>
+      <text x="270" y="266" fill="#60a5fa" font-size="11">Touchpad click</text>
+      <text x="380" y="266" fill="#888"   font-size="10">—</text>
+
+    </svg>
+  </div>
+</div>
+
+<!-- Row 2: PS vs Xbox, Raw Axes, Trigger Normalisation -->
+<div class="grid-3">
+
+  <!-- PS vs Xbox comparison -->
+  <div class="card">
+    <h2>⚡ PS vs Xbox — Key Differences</h2>
+    <table class="vs-table">
+      <tr>
+        <th></th>
+        <th class="xbox-col">Xbox</th>
+        <th class="ps-col">PS4 / PS5</th>
+      </tr>
+      <tr>
+        <td>Class</td>
+        <td class="xbox-col">XboxController</td>
+        <td class="ps-col">PS4Controller</td>
+      </tr>
+      <tr>
+        <td>Face buttons</td>
+        <td class="xbox-col">A B X Y</td>
+        <td class="ps-col">✕ ○ □ △</td>
+      </tr>
+      <tr>
+        <td>Bumpers</td>
+        <td class="xbox-col">LB / RB</td>
+        <td class="ps-col">L1 / R1</td>
+      </tr>
+      <tr>
+        <td>Trigger range</td>
+        <td class="xbox-col">0.0 → +1.0</td>
+        <td class="ps-col" style="color:#fbbf24;font-weight:bold;">-1.0 → +1.0 ⚠</td>
+      </tr>
+      <tr>
+        <td>Trigger released</td>
+        <td class="xbox-col">0.0</td>
+        <td class="ps-col" style="color:#fbbf24;font-weight:bold;">-1.0 ⚠</td>
+      </tr>
+      <tr>
+        <td>Stick Y inverted?</td>
+        <td class="xbox-col">Yes (Up = -1)</td>
+        <td class="ps-col">Yes (Up = -1)</td>
+      </tr>
+      <tr>
+        <td>Back button</td>
+        <td class="xbox-col">Back / View</td>
+        <td class="ps-col">Share / Create</td>
+      </tr>
+      <tr>
+        <td>Start button</td>
+        <td class="xbox-col">Start / Menu</td>
+        <td class="ps-col">Options</td>
+      </tr>
+      <tr>
+        <td>Extra</td>
+        <td class="xbox-col">—</td>
+        <td class="ps-col">Touchpad click</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Raw Axis Numbers -->
+  <div class="card">
+    <h2>🔢 Raw Axis Numbers (PS4)</h2>
+    <table class="key-table">
+      <tr><th>Axis #</th><th>Method</th><th>Range</th></tr>
+      <tr><td>0</td><td>getLeftX()</td>  <td><span class="neg">-1</span> ← L → <span class="pos">+1</span></td></tr>
+      <tr><td>1</td><td>getLeftY()</td>  <td><span class="neg">-1</span> ↑ up  <span class="pos">+1</span> ↓</td></tr>
+      <tr><td>2</td><td>getL2Axis()</td> <td><span class="neg">-1</span> (off) → <span class="pos">+1</span></td></tr>
+      <tr><td>3</td><td>getRightX()</td> <td><span class="neg">-1</span> ← L → <span class="pos">+1</span></td></tr>
+      <tr><td>4</td><td>getRightY()</td> <td><span class="neg">-1</span> ↑ up  <span class="pos">+1</span> ↓</td></tr>
+      <tr><td>5</td><td>getR2Axis()</td> <td><span class="neg">-1</span> (off) → <span class="pos">+1</span></td></tr>
+    </table>
+    <p style="font-size:0.75rem; color:#888; margin-top:10px;">
+      Use raw axis via <code>getRawAxis(n)</code> only if the named method isn't available.
+      Prefer the named methods — they're clearer and less error-prone.
+    </p>
+  </div>
+
+  <!-- Trigger normalisation -->
+  <div class="card">
+    <h2>🔧 Trigger Normalisation Snippet</h2>
+    <p style="font-size:0.78rem; color:#aaa; margin-bottom:8px;">
+      PS triggers return <span class="neg">-1.0</span> when released and <span class="pos">+1.0</span> when fully pressed.
+      If your code expects a <span class="xbox-col">0 → 1</span> range (like Xbox), normalise it:
+    </p>
+    <pre style="background:#0a1628; border:1px solid #0f3460; border-radius:6px; padding:10px; font-size:0.76rem; color:#93c5fd; overflow-x:auto;">
+<span style="color:#4ade80">def</span> <span style="color:#fbbf24">normalize_ps_trigger</span>(raw):
+    <span style="color:#888">"""Convert PS -1..+1 → 0..1"""</span>
+    <span style="color:#4ade80">return</span> (raw + 1.0) / 2.0
+
+<span style="color:#888"># Example usage:</span>
+r2 = controller.getR2Axis()   <span style="color:#888"># -1.0 to +1.0</span>
+r2_norm = normalize_ps_trigger(r2)  <span style="color:#888"># 0.0 to 1.0</span>
+
+<span style="color:#888"># Or just check if pressed past halfway:</span>
+<span style="color:#4ade80">if</span> r2 > 0.0:   <span style="color:#888"># equivalent to Xbox > 0.5</span>
+    <span style="color:#888">...shoot()</span>
+
+<span style="color:#888"># whileTrue trigger binding:</span>
+controller.R2()  <span style="color:#888"># works directly — no normalise needed</span>
+    </pre>
+  </div>
+
+</div>
+
+<!-- Notes -->
+<div class="notes">
+  <h3>⚠ Important Gotchas</h3>
+  <table style="width:100%; border-collapse:collapse; font-size:0.82rem; margin-top:6px;">
+    <tr style="border-bottom:1px solid #444;">
+      <td style="padding:5px 10px; width:22%; color:#fbbf24; font-weight:bold;">Trigger range is -1 → +1</td>
+      <td style="padding:5px 10px;">
+        Unlike Xbox (<code>0 → 1</code>), PS triggers start at <code>-1.0</code> when fully released.
+        A check like <code>getR2Axis() > 0.5</code> would only fire when the trigger is 75% pressed.
+        Use <code>getR2Axis() > 0.0</code> as the midpoint, or normalise with <code>(raw + 1) / 2</code>.
+      </td>
+    </tr>
+    <tr style="border-bottom:1px solid #444;">
+      <td style="padding:5px 10px; color:#fbbf24; font-weight:bold;">Stick Y still inverted</td>
+      <td style="padding:5px 10px;">
+        Same as Xbox — <code>getLeftY()</code> returns <code>-1.0</code> when pushed <strong>forward/up</strong>.
+        Always negate: <code>velocity_x = -controller.getLeftY()</code>.
+      </td>
+    </tr>
+    <tr style="border-bottom:1px solid #444;">
+      <td style="padding:5px 10px; color:#fbbf24; font-weight:bold;">Button numbers differ from Xbox</td>
+      <td style="padding:5px 10px;">
+        Cross = btn <strong>2</strong>, Circle = btn <strong>3</strong>, Square = btn <strong>1</strong>, Triangle = btn <strong>4</strong>.
+        Use named methods (<code>getCrossButton()</code>) not raw numbers to avoid confusion.
+      </td>
+    </tr>
+    <tr style="border-bottom:1px solid #444;">
+      <td style="padding:5px 10px; color:#fbbf24; font-weight:bold;">Right stick Y = axis 4</td>
+      <td style="padding:5px 10px;">
+        PS4 right stick Y is on raw <strong>axis 4</strong>, not axis 3 like Xbox right X.
+        The right stick X is axis 3, Y is axis 4. The triggers occupy axes 2 and 5.
+        This raw-axis order is: <code>LeftX(0), LeftY(1), L2(2), RightX(3), RightY(4), R2(5)</code>.
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:5px 10px; color:#4ade80; font-weight:bold;">WPILib import (RobotPy)</td>
+      <td style="padding:5px 10px;">
+        <code>from commands2.button import CommandPS4Controller</code><br/>
+        <code>controller = CommandPS4Controller(port=0)</code><br/>
+        Binding example: <code>controller.cross().whileTrue(myCommand)</code> &nbsp;·&nbsp;
+        <code>controller.R2().whileTrue(shootCommand)</code>
+      </td>
+    </tr>
+  </table>
+</div>
+
+</body>
+</html>

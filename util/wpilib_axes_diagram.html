@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WPILib Axis Reference — FRC 2026</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #1a1a2e;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      padding: 24px;
+    }
+    h1 {
+      text-align: center;
+      color: #00d4ff;
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #888;
+      font-size: 0.85rem;
+      margin-bottom: 28px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto 28px auto;
+    }
+    .card {
+      background: #16213e;
+      border: 1px solid #0f3460;
+      border-radius: 12px;
+      padding: 18px 14px 14px;
+    }
+    .card h2 {
+      text-align: center;
+      font-size: 1rem;
+      margin-bottom: 14px;
+      color: #00d4ff;
+      letter-spacing: 0.5px;
+    }
+    svg { display: block; margin: 0 auto; }
+
+    /* Key tables */
+    .key-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      margin-top: 12px;
+    }
+    .key-table th {
+      color: #00d4ff;
+      border-bottom: 1px solid #0f3460;
+      padding: 4px 6px;
+      text-align: left;
+    }
+    .key-table td { padding: 3px 6px; }
+    .key-table tr:nth-child(even) td { background: #0f3460; }
+    .pos { color: #4ade80; font-weight: bold; }
+    .neg { color: #f87171; font-weight: bold; }
+    .warn { color: #fbbf24; font-weight: bold; }
+
+    /* Bottom note box */
+    .notes {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #16213e;
+      border: 1px solid #fbbf24;
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-size: 0.82rem;
+      line-height: 1.7;
+    }
+    .notes h3 { color: #fbbf24; margin-bottom: 6px; }
+    .notes code {
+      background: #0f3460;
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 0.8rem;
+      color: #93c5fd;
+    }
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+  </style>
+</head>
+<body>
+
+<h1>⚡ WPILib Axis &amp; Direction Reference</h1>
+<p class="subtitle">FRC 2026 · RobotPy / Phoenix 6 · Team 2556</p>
+
+<div class="grid">
+
+  <!-- ───────────────── CONTROLLER CARD ───────────────── -->
+  <div class="card">
+    <h2>🎮 Xbox Controller</h2>
+    <svg width="260" height="230" viewBox="0 0 260 230">
+      <!-- Controller body -->
+      <ellipse cx="130" cy="130" rx="110" ry="80" fill="#2a2a4a" stroke="#444" stroke-width="2"/>
+      <ellipse cx="80"  cy="150" rx="35"  ry="30" fill="#222240" stroke="#555" stroke-width="1.5"/>
+      <ellipse cx="180" cy="150" rx="35"  ry="30" fill="#222240" stroke="#555" stroke-width="1.5"/>
+
+      <!-- Left stick -->
+      <circle cx="80" cy="150" r="18" fill="#333360" stroke="#00d4ff" stroke-width="2"/>
+      <circle cx="80" cy="150" r="6"  fill="#00d4ff"/>
+      <!-- Left stick arrows -->
+      <!-- Up arrow (Y axis negative in WPILib) -->
+      <polygon points="80,128 75,137 85,137" fill="#f87171"/>
+      <text x="87" y="132" fill="#f87171" font-size="9" font-weight="bold">-1.0</text>
+      <!-- Down arrow (Y axis positive) -->
+      <polygon points="80,172 75,163 85,163" fill="#4ade80"/>
+      <text x="87" y="174" fill="#4ade80" font-size="9" font-weight="bold">+1.0</text>
+      <!-- Left arrow (X axis negative) -->
+      <polygon points="58,150 67,145 67,155" fill="#f87171"/>
+      <text x="28" y="145" fill="#f87171" font-size="9" font-weight="bold">-1.0</text>
+      <!-- Right arrow (X axis positive) -->
+      <polygon points="102,150 93,145 93,155" fill="#4ade80"/>
+      <!-- No label right since cramped -->
+
+      <!-- Left stick labels -->
+      <text x="52" y="116" fill="#aaa" font-size="8">getLeftY()</text>
+      <text x="52" y="125" fill="#fbbf24" font-size="8">⚠ UP = negative</text>
+      <text x="46" y="195" fill="#aaa" font-size="8">getLeftX()</text>
+
+      <!-- Right stick -->
+      <circle cx="180" cy="150" r="18" fill="#333360" stroke="#a78bfa" stroke-width="2"/>
+      <circle cx="180" cy="150" r="6"  fill="#a78bfa"/>
+      <!-- Right stick arrows -->
+      <polygon points="180,128 175,137 185,137" fill="#f87171"/>
+      <text x="187" y="132" fill="#f87171" font-size="9" font-weight="bold">-1.0</text>
+      <polygon points="180,172 175,163 185,163" fill="#4ade80"/>
+      <text x="187" y="174" fill="#4ade80" font-size="9" font-weight="bold">+1.0</text>
+      <polygon points="158,150 167,145 167,155" fill="#f87171"/>
+      <text x="128" y="145" fill="#f87171" font-size="9" font-weight="bold">-1.0</text>
+      <polygon points="202,150 193,145 193,155" fill="#4ade80"/>
+
+      <!-- Right stick labels -->
+      <text x="152" y="116" fill="#aaa" font-size="8">getRightY()</text>
+      <text x="146" y="195" fill="#aaa" font-size="8">getRightX()</text>
+
+      <!-- Triggers at top -->
+      <rect x="30"  y="58" width="45" height="18" rx="9" fill="#1a1a3e" stroke="#fbbf24" stroke-width="1.5"/>
+      <rect x="185" y="58" width="45" height="18" rx="9" fill="#1a1a3e" stroke="#fbbf24" stroke-width="1.5"/>
+      <text x="35"  y="71" fill="#fbbf24" font-size="9">L Trigger</text>
+      <text x="190" y="71" fill="#fbbf24" font-size="9">R Trigger</text>
+      <text x="35"  y="54" fill="#4ade80" font-size="8">0.0 → 1.0</text>
+      <text x="190" y="54" fill="#4ade80" font-size="8">0.0 → 1.0</text>
+
+      <!-- Bumpers -->
+      <rect x="30"  y="82" width="40" height="12" rx="4" fill="#2a4a2a" stroke="#4ade80" stroke-width="1"/>
+      <rect x="190" y="82" width="40" height="12" rx="4" fill="#2a4a2a" stroke="#4ade80" stroke-width="1"/>
+      <text x="36"  y="91" fill="#4ade80" font-size="8">L Bump</text>
+      <text x="196" y="91" fill="#4ade80" font-size="8">R Bump</text>
+
+      <!-- center label -->
+      <text x="112" y="128" fill="#666" font-size="8">Left Stick</text>
+      <text x="165" y="128" fill="#666" font-size="8">Right Stick</text>
+    </svg>
+
+    <table class="key-table">
+      <tr><th>Input</th><th>Range</th><th>Note</th></tr>
+      <tr><td>getLeftY()</td><td><span class="neg">-1</span> to <span class="pos">+1</span></td><td><span class="warn">⚠ UP = -1</span></td></tr>
+      <tr><td>getLeftX()</td><td><span class="neg">-1</span> to <span class="pos">+1</span></td><td>Right = +1</td></tr>
+      <tr><td>getRightY()</td><td><span class="neg">-1</span> to <span class="pos">+1</span></td><td><span class="warn">⚠ UP = -1</span></td></tr>
+      <tr><td>getRightX()</td><td><span class="neg">-1</span> to <span class="pos">+1</span></td><td>Right = +1</td></tr>
+      <tr><td>L/R Trigger</td><td><span class="pos">0.0</span> to <span class="pos">1.0</span></td><td>Released = 0</td></tr>
+    </table>
+  </div>
+
+  <!-- ───────────────── ROBOT CARD ───────────────── -->
+  <div class="card">
+    <h2>🤖 Robot Frame (Top-Down)</h2>
+    <svg width="240" height="230" viewBox="0 0 240 230">
+      <!-- Robot body -->
+      <rect x="70" y="60" width="100" height="110" rx="8" fill="#1e3a5f" stroke="#00d4ff" stroke-width="2.5"/>
+      <!-- Front indicator -->
+      <rect x="95" y="56" width="50" height="10" rx="3" fill="#00d4ff"/>
+      <text x="107" y="64" fill="#1a1a2e" font-size="8" font-weight="bold">FRONT</text>
+
+      <!-- Robot center cross -->
+      <circle cx="120" cy="115" r="5" fill="#ffffff" opacity="0.6"/>
+
+      <!-- X axis (robot forward = positive) -->
+      <line x1="120" y1="115" x2="120" y2="45" stroke="#4ade80" stroke-width="2.5" stroke-dasharray="4,2"/>
+      <polygon points="120,30 114,45 126,45" fill="#4ade80"/>
+      <text x="125" y="36" fill="#4ade80" font-size="11" font-weight="bold">+X</text>
+      <text x="94" y="28" fill="#4ade80" font-size="9">Forward</text>
+
+      <!-- X negative (backward) -->
+      <line x1="120" y1="115" x2="120" y2="185" stroke="#f87171" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.7"/>
+      <polygon points="120,200 114,185 126,185" fill="#f87171" opacity="0.7"/>
+      <text x="125" y="200" fill="#f87171" font-size="10">-X</text>
+
+      <!-- Y axis (robot left = positive) -->
+      <line x1="120" y1="115" x2="45" y2="115" stroke="#4ade80" stroke-width="2.5" stroke-dasharray="4,2"/>
+      <polygon points="30,115 45,109 45,121" fill="#4ade80"/>
+      <text x="10" y="112" fill="#4ade80" font-size="11" font-weight="bold">+Y</text>
+      <text x="4"  y="123" fill="#4ade80" font-size="9">Left</text>
+
+      <!-- Y negative (right) -->
+      <line x1="120" y1="115" x2="195" y2="115" stroke="#f87171" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.7"/>
+      <polygon points="210,115 195,109 195,121" fill="#f87171" opacity="0.7"/>
+      <text x="213" y="119" fill="#f87171" font-size="10">-Y</text>
+
+      <!-- Rotation arc (CCW = positive) -->
+      <path d="M 120 90 A 28 28 0 0 0 148 115" fill="none" stroke="#a78bfa" stroke-width="2.5"/>
+      <polygon points="148,115 140,106 153,108" fill="#a78bfa"/>
+      <text x="140" y="88" fill="#a78bfa" font-size="9" font-weight="bold">+ω CCW</text>
+
+      <!-- Wheels corners -->
+      <rect x="62"  y="60"  width="12" height="20" rx="3" fill="#444" stroke="#666" stroke-width="1"/>
+      <rect x="166" y="60"  width="12" height="20" rx="3" fill="#444" stroke="#666" stroke-width="1"/>
+      <rect x="62"  y="150" width="12" height="20" rx="3" fill="#444" stroke="#666" stroke-width="1"/>
+      <rect x="166" y="150" width="12" height="20" rx="3" fill="#444" stroke="#666" stroke-width="1"/>
+    </svg>
+
+    <table class="key-table">
+      <tr><th>Axis</th><th>Positive Direction</th><th>Units</th></tr>
+      <tr><td>X</td><td><span class="pos">→ Forward (front of robot)</span></td><td>m/s</td></tr>
+      <tr><td>Y</td><td><span class="pos">→ Left side of robot</span></td><td>m/s</td></tr>
+      <tr><td>ω (omega)</td><td><span class="pos">→ CCW (viewed from above)</span></td><td>rad/s</td></tr>
+      <tr><td>Heading</td><td>0° = facing <span class="pos">+X field</span></td><td>degrees</td></tr>
+    </table>
+  </div>
+
+  <!-- ───────────────── FIELD CARD ───────────────── -->
+  <div class="card">
+    <h2>🏟 Field (Top-Down, Blue Origin)</h2>
+    <svg width="260" height="230" viewBox="0 0 260 230">
+      <!-- Field boundary -->
+      <rect x="10" y="20" width="240" height="190" rx="4" fill="#0a2a0a" stroke="#4a6a4a" stroke-width="2"/>
+
+      <!-- Half-field line -->
+      <line x1="130" y1="20" x2="130" y2="210" stroke="#4a6a4a" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+      <!-- Blue alliance wall (left) -->
+      <rect x="10" y="20" width="8" height="190" fill="#1a3a6a"/>
+      <text x="14" y="120" fill="#60a5fa" font-size="8" transform="rotate(-90,14,120)">BLUE ALLIANCE</text>
+
+      <!-- Red alliance wall (right) -->
+      <rect x="242" y="20" width="8" height="190" fill="#5a1a1a"/>
+      <text x="246" y="120" fill="#f87171" font-size="8" transform="rotate(90,246,120)">RED ALLIANCE</text>
+
+      <!-- Origin dot (bottom-left from blue POV = blue driver station corner) -->
+      <circle cx="18" cy="210" r="5" fill="#fbbf24" stroke="#fff" stroke-width="1.5"/>
+      <text x="21" y="222" fill="#fbbf24" font-size="8">(0,0) Blue Origin</text>
+
+      <!-- +X axis (toward red = positive) -->
+      <line x1="18" y1="185" x2="215" y2="185" stroke="#4ade80" stroke-width="2.5" stroke-dasharray="5,3"/>
+      <polygon points="228,185 212,179 212,191" fill="#4ade80"/>
+      <text x="220" y="182" fill="#4ade80" font-size="11" font-weight="bold">+X</text>
+      <text x="190" y="178" fill="#4ade80" font-size="8">Downfield</text>
+
+      <!-- +Y axis (toward blue top = positive) -->
+      <line x1="18" y1="185" x2="18" y2="38" stroke="#4ade80" stroke-width="2.5" stroke-dasharray="5,3"/>
+      <polygon points="18,26 12,42 24,42" fill="#4ade80"/>
+      <text x="22" y="32" fill="#4ade80" font-size="11" font-weight="bold">+Y</text>
+      <text x="26" y="42" fill="#4ade80" font-size="8">Left (Blue POV)</text>
+
+      <!-- Heading / rotation indicator near center -->
+      <circle cx="130" cy="115" r="30" fill="none" stroke="#a78bfa" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+      <line x1="130" y1="115" x2="160" y2="115" stroke="#a78bfa" stroke-width="2"/>
+      <polygon points="160,115 150,110 150,120" fill="#a78bfa"/>
+      <text x="155" y="108" fill="#a78bfa" font-size="8">0° heading</text>
+      <text x="153" y="116" fill="#a78bfa" font-size="7">(facing +X)</text>
+
+      <!-- CCW arc for positive rotation -->
+      <path d="M 160 115 A 30 30 0 0 0 130 85" fill="none" stroke="#a78bfa" stroke-width="2"/>
+      <polygon points="130,85 122,96 133,97" fill="#a78bfa"/>
+      <text x="140" y="83" fill="#a78bfa" font-size="8">+90° CCW</text>
+
+      <!-- Alliance labels -->
+      <text x="50"  y="60" fill="#60a5fa" font-size="9" font-weight="bold">BLUE</text>
+      <text x="50"  y="70" fill="#60a5fa" font-size="8">Alliance Zone</text>
+      <text x="165" y="60" fill="#f87171" font-size="9" font-weight="bold">RED</text>
+      <text x="165" y="70" fill="#f87171" font-size="8">Alliance Zone</text>
+    </svg>
+
+    <table class="key-table">
+      <tr><th>Axis</th><th>Positive Direction</th><th>Units</th></tr>
+      <tr><td>X</td><td><span class="pos">→ Toward red alliance</span></td><td>meters</td></tr>
+      <tr><td>Y</td><td><span class="pos">→ Left (from blue POV)</span></td><td>meters</td></tr>
+      <tr><td>Heading</td><td>0° = <span class="pos">facing red wall (+X)</span></td><td>degrees</td></tr>
+      <tr><td>Rotation</td><td><span class="pos">CCW positive</span>, CW negative</td><td>rad/s</td></tr>
+      <tr><td>Origin</td><td>Blue alliance <span class="warn">bottom-left corner</span></td><td>—</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ───────────────── NOTES ───────────────── -->
+<div class="notes">
+  <h3>⚠ Common Gotchas for RobotPy / your codebase</h3>
+  <table style="width:100%; border-collapse:collapse; font-size:0.82rem; margin-top:6px;">
+    <tr style="border-bottom:1px solid #444;">
+      <td style="padding:5px 10px; width:30%"><span class="warn">Controller Y is inverted</span></td>
+      <td style="padding:5px 10px;">
+        <code>getLeftY()</code> returns <span class="neg">-1.0</span> when stick is pushed <b>up/forward</b>.
+        That's why <code>drivetrain.py</code> uses <code>-controller.getLeftY()</code> for <code>velocity_x</code>.
+      </td>
+    </tr>
+    <tr style="border-bottom:1px solid #444;">
+      <td style="padding:5px 10px;"><span class="warn">Field flipping (Red alliance)</span></td>
+      <td style="padding:5px 10px;">
+        On Red alliance, <code>FlipUtil.fieldPose()</code> mirrors X only (<code>field_length - x</code>).
+        Y should <b>not</b> be flipped — check <code>flip_util.py</code> for the Y-flip bug noted in the review.
+      </td>
+    </tr>
+    <tr style="border-bottom:1px solid #444;">
+      <td style="padding:5px 10px;"><span class="warn">Phoenix 6 velocity = RPS</span></td>
+      <td style="padding:5px 10px;">
+        <code>motor.get_velocity().value</code> returns <b>rotations per second</b>, not RPM.
+        Divide RPM constants by 60: <code>kShooterMotor.TARGET_RPM / 60</code>.
+        The <code>is_charged</code> comparison in <code>dual_shooter.py</code> still compares RPS to RPM directly — needs fix.
+      </td>
+    </tr>
+    <tr style="border-bottom:1px solid #444;">
+      <td style="padding:5px 10px;"><span class="warn">Swerve rotation = rad/s</span></td>
+      <td style="padding:5px 10px;">
+        <code>with_rotational_rate()</code> takes <b>radians/second</b>. Your code multiplies the PID output by
+        <code>kDriveConfig.MAX_ANGULAR_RATE</code> to scale from <code>[-1,1]</code> to rad/s — correct.
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:5px 10px;"><span class="warn">Heading convention</span></td>
+      <td style="padding:5px 10px;">
+        <code>drive_state.heading</code> is degrees <b>(-180 to +180)</b>, CCW positive, 0° = facing +X field direction.
+        The PID uses <code>enableContinuousInput(-180, 180)</code> — that's correct, and the accuracy check now uses
+        the angle-wrap fix <code>(error + 180) % 360 - 180</code>.
+      </td>
+    </tr>
+  </table>
+</div>
+
+</body>
+</html>
