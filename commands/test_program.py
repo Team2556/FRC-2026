@@ -137,46 +137,48 @@ class TestProgramCommand(commands2.Command):
 
     def _setup_orchestra(self):
         """
-        Setup CTRE Orchestra with available TalonFX motors for victory music.
+        Setup CTRE Orchestra using existing motor instances from robot subsystems.
+        This avoids configuration conflicts by reusing already-configured motors.
         """
         try:
             self.orchestra = Orchestra("Test Orchestra")
-            
-            # Try to add drive motors from swerve modules
-            drive_motor_ids = []
-            
-            # Try to get motor IDs from TunerConstants first
-            tuner_motor_attrs = [
-                '_front_left_drive_motor_id',
-                '_front_right_drive_motor_id', 
-                '_back_left_drive_motor_id',
-                '_back_right_drive_motor_id'
-            ]
-            
-            for attr in tuner_motor_attrs:
-                try:
-                    motor_id = getattr(TunerConstants, attr, None)
-                    if motor_id is not None:
-                        drive_motor_ids.append(motor_id)
-                except AttributeError:
-                    pass
-            
-            # Fallback to common swerve motor IDs if none found
-            if not drive_motor_ids:
-                drive_motor_ids = [1, 3, 5, 7]  # Common drive motor IDs
-                print("  🎼 Using fallback motor IDs for orchestra")
-            
-            # Add TalonFX motors to orchestra (limit to 4 for safety)
             instruments_added = 0
-            for motor_id in drive_motor_ids[:4]:  
-                try:
-                    motor = TalonFX(motor_id, "rio")
-                    self.orchestra.add_instrument(motor)
-                    self.orchestra_instruments.append(motor)
+            
+            # Use shooter motors (these are easily accessible)
+            try:
+                if hasattr(self.shooter, '_top_motor'):
+                    self.orchestra.add_instrument(self.shooter._top_motor)
+                    self.orchestra_instruments.append(self.shooter._top_motor)
                     instruments_added += 1
-                    print(f"  🎼 Added TalonFX {motor_id} to orchestra")
-                except Exception as e:
-                    print(f"  🎼 Could not add motor {motor_id}: {e}")
+                    print(f"  🎼 Added shooter top motor to orchestra")
+                    
+                if hasattr(self.shooter, '_bottom_motor'):
+                    self.orchestra.add_instrument(self.shooter._bottom_motor)
+                    self.orchestra_instruments.append(self.shooter._bottom_motor)
+                    instruments_added += 1
+                    print(f"  🎼 Added shooter bottom motor to orchestra")
+            except Exception as e:
+                print(f"  🎼 Could not add shooter motors: {e}")
+            
+            # Try to add hood motor if accessible
+            try:
+                if hasattr(self.hood, 'hood_motor'):
+                    self.orchestra.add_instrument(self.hood.hood_motor)
+                    self.orchestra_instruments.append(self.hood.hood_motor)
+                    instruments_added += 1
+                    print(f"  🎼 Added hood motor to orchestra")
+            except Exception as e:
+                print(f"  🎼 Could not add hood motor: {e}")
+                
+            # Try to add intake motors if accessible  
+            try:
+                if hasattr(self.intake, 'deployer_motor'):
+                    self.orchestra.add_instrument(self.intake.deployer_motor)
+                    self.orchestra_instruments.append(self.intake.deployer_motor)
+                    instruments_added += 1
+                    print(f"  🎼 Added intake deployer motor to orchestra")
+            except Exception as e:
+                print(f"  🎼 Could not add intake motors: {e}")
             
             if instruments_added > 0:
                 print(f"  🎼 Orchestra ready with {instruments_added} instruments!")
