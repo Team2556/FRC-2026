@@ -3,7 +3,7 @@ from phoenix6 import CANBus, configs, hardware, signals, swerve, units
 from wpimath.units import inchesToMeters
 
 if TYPE_CHECKING:
-    from subsystems.drivetrain.command_swerve_drive import CommandSwerveDrivetrain
+    from subsystems.command_swerve_drivetrain import CommandSwerveDrivetrain
 
 
 class TunerConstants:
@@ -83,8 +83,7 @@ class TunerConstants:
 
     # Every 1 rotation of the azimuth results in _couple_ratio drive motor turns;
     # This may need to be tuned to your individual robot
-    _couple_ratio = (2 + (9 / 45)) / 5 # MAKE SURE to probably use this when testing new robot
-    # _couple_ratio = 3.5714285714285716
+    _couple_ratio = 3.5714285714285716
 
     _drive_gear_ratio = 8.142857142857142
     _steer_gear_ratio = 12.8
@@ -139,10 +138,10 @@ class TunerConstants:
 
 
     # Front Left
-    _front_left_drive_motor_id = 4
+    _front_left_drive_motor_id = 1
     _front_left_steer_motor_id = 5
     _front_left_encoder_id = 6
-    _front_left_encoder_offset: units.rotation = -0.052978515625
+    _front_left_encoder_offset: units.rotation = -0.05419921875
     _front_left_steer_motor_inverted = False
     _front_left_encoder_inverted = False
 
@@ -150,10 +149,10 @@ class TunerConstants:
     _front_left_y_pos: units.meter = inchesToMeters(10)
 
     # Front Right
-    _front_right_drive_motor_id = 1
-    _front_right_steer_motor_id = 2
-    _front_right_encoder_id = 3
-    _front_right_encoder_offset: units.rotation = -0.395263671875
+    _front_right_drive_motor_id = 2
+    _front_right_steer_motor_id = 6
+    _front_right_encoder_id = 10
+    _front_right_encoder_offset: units.rotation = -0.39306640625
     _front_right_steer_motor_inverted = False
     _front_right_encoder_inverted = False
 
@@ -161,10 +160,10 @@ class TunerConstants:
     _front_right_y_pos: units.meter = inchesToMeters(-10)
 
     # Back Left
-    _back_left_drive_motor_id = 10
-    _back_left_steer_motor_id = 11
-    _back_left_encoder_id = 12
-    _back_left_encoder_offset: units.rotation = -0.30126953125
+    _back_left_drive_motor_id = 3
+    _back_left_steer_motor_id = 7
+    _back_left_encoder_id = 11
+    _back_left_encoder_offset: units.rotation = -0.3037109375
     _back_left_steer_motor_inverted = False
     _back_left_encoder_inverted = False
 
@@ -172,10 +171,10 @@ class TunerConstants:
     _back_left_y_pos: units.meter = inchesToMeters(10)
 
     # Back Right
-    _back_right_drive_motor_id = 7
+    _back_right_drive_motor_id = 4
     _back_right_steer_motor_id = 8
-    _back_right_encoder_id = 9
-    _back_right_encoder_offset: units.rotation = 0.18994140625
+    _back_right_encoder_id = 12
+    _back_right_encoder_offset: units.rotation = 0.190185546875
     _back_right_steer_motor_inverted = False
     _back_right_encoder_inverted = False
 
@@ -234,7 +233,7 @@ class TunerConstants:
         Creates a CommandSwerveDrivetrain instance.
         This should only be called once in your robot program.
         """
-        from subsystems.drivetrain.command_swerve_drive import CommandSwerveDrivetrain
+        from subsystems.command_swerve_drivetrain import CommandSwerveDrivetrain
 
         return CommandSwerveDrivetrain(
             cls.drivetrain_constants,
