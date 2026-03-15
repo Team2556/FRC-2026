@@ -20,10 +20,9 @@ import commands2
 import wpilib
 from wpimath import units
 from wpimath.geometry import Rotation2d
-from phoenix6.controls import DutyCycleOut
+from phoenix6.orchestra import Orchestra
+from phoenix6.hardware import TalonFX
 import math
-import threading
-import time
 
 from phoenix6.hardware.pigeon2 import Pigeon2
 
@@ -58,24 +57,11 @@ class TestProgramCommand(commands2.Command):
     MIN_DRIVETRAIN_MOVEMENT = 0.01  # rotations per module
     MIN_TURN_ANGLE = 5.0  # degrees per module
     
-    # Musical notes (frequency in Hz for motor oscillation)
-    NOTES = {
-        "C4": 261.63, "D4": 293.66, "E4": 329.63, "F4": 349.23, 
-        "G4": 392.00, "A4": 440.00, "B4": 493.88,
-        "C5": 523.25, "D5": 587.33, "E5": 659.25, "F5": 698.46,
-        "G5": 783.99, "A5": 880.00, "B5": 987.77,
-        "REST": 0.0
-    }
-    
-    # Victory song: "We Are The Champions" opening
-    VICTORY_SONG = [
-        ("E4", 0.5), ("E4", 0.5), ("F4", 0.5), ("G4", 0.5),
-        ("G4", 0.5), ("F4", 0.5), ("E4", 1.0),
-        ("REST", 0.2),
-        ("C5", 0.8), ("B4", 0.4), ("A4", 0.4), ("G4", 1.2),
-        ("REST", 0.2),
-        ("E4", 0.5), ("E4", 0.5), ("F4", 0.5), ("G4", 1.5)
-    ]
+    # Victory song in CTRE Orchestra format: "We Are The Champions" opening
+    # Notes: c, d, e, f, g, a, b for natural notes
+    # Add # for sharp (e.g., c# for C sharp)
+    # Add number for octave (e.g., c4 for middle C)
+    VICTORY_SONG_CHRP = """T120 L8 o4 e e f g g f e2 r4 o5 c4 o4 b a g2 r4 o4 e e f g2"""
 
     def __init__(self,
                  drivetrain,
@@ -128,9 +114,10 @@ class TestProgramCommand(commands2.Command):
         self.drivetrain_movement_result = {"avg_moved": 0.0, "passed": False}
         self.turn_motor_result = {"avg_turned": 0.0, "passed": False}
         
-        # Music control
-        self.music_thread = None
-        self.stop_music = False
+        # CTRE Orchestra for victory music
+        self.orchestra = None
+        self.orchestra_instruments = []
+        self._setup_orchestra()
 
         # Add subsystem requirements
         self.addRequirements(
@@ -141,6 +128,59 @@ class TestProgramCommand(commands2.Command):
             self.hood,
             self.led
         )
+
+    def _setup_orchestra(self):
+        """
+        Setup CTRE Orchestra with available TalonFX motors for victory music.
+        """
+        try:
+            self.orchestra = Orchestra("Victory Orchestra")
+            
+            # Try to add drive motors from swerve modules
+            drive_motor_ids = []
+            for i in range(4):  # 4 swerve modules typical
+                try:
+                    # Get drive motor ID from swerve tuner constants
+                    if hasattr(TunerConstants, f'_front_left_drive_motor_id'):
+                        # Add known motor IDs if available
+                        motor_ids = [
+                            getattr(TunerConstants, '_front_left_drive_motor_id', None),
+                            getattr(TunerConstants, '_front_right_drive_motor_id', None),
+                            getattr(TunerConstants, '_back_left_drive_motor_id', None),
+                            getattr(TunerConstants, '_back_right_drive_motor_id', None)
+                        ]
+                        drive_motor_ids.extend([id for id in motor_ids if id is not None])
+                        break
+                except:
+                    pass
+            
+            # Fallback: try common swerve motor IDs (adjust for your robot)
+            if not drive_motor_ids:
+                drive_motor_ids = [1, 3, 5, 7]  # Common drive motor IDs
+            
+            # Add TalonFX motors to orchestra
+            instruments_added = 0
+            for motor_id in drive_motor_ids[:4]:  # Limit to 4 motors
+                try:
+                    motor = TalonFX(motor_id, "rio")
+                    self.orchestra.add_instrument(motor)
+                    self.orchestra_instruments.append(motor)
+                    instruments_added += 1
+                    print(f"  🎼 Added TalonFX {motor_id} to orchestra")
+                except Exception as e:
+                    print(f"  🎼 Could not add motor {motor_id}: {e}")
+            
+            if instruments_added > 0:
+                # Load the victory song
+                self.orchestra.load_music(self.VICTORY_SONG_CHRP)
+                print(f"  🎼 Orchestra ready with {instruments_added} instruments!")
+            else:
+                print("  🎼 No motors available for orchestra")
+                self.orchestra = None
+                
+        except Exception as e:
+            print(f"  🎼 Orchestra setup failed: {e}")
+            self.orchestra = None
 
     def initialize(self):
         """Called when the command is initially scheduled."""
@@ -617,7 +657,7 @@ class TestProgramCommand(commands2.Command):
         # Display overall result on LEDs
         if tests_passed == total_tests:
             # All tests passed - play victory music!
-            self._start_victory_music()
+            self._play_victory_song()
             self.test_state = self.led.create_state(
                 state_key="test_program",
                 animation_request=ColorFactories.rainbow(brightness=1.0, speed=0.5),
@@ -653,109 +693,31 @@ class TestProgramCommand(commands2.Command):
             print("\nAll motors stopped")
             print("=" * 50)
 
-    def _play_note_on_motors(self, frequency, duration):
+    def _play_victory_song(self):
         """
-        Play a musical note using drive motor oscillation.
-        Uses duty cycle oscillation to create audible tones.
+        Play the victory song using CTRE Orchestra.
         """
-        if frequency == 0.0:  # REST note
-            time.sleep(duration)
+        if not self.orchestra:
+            print("🎵 No orchestra available for victory song")
             return
             
         try:
-            # Get drive motors from swerve modules
-            drive_motors = []
-            for i in range(4):  # 4 swerve modules
-                try:
-                    module = self.drivetrain._drivetrain.get_module(i)
-                    drive_motor = module.get_drive_motor()
-                    drive_motors.append(drive_motor)
-                except:
-                    pass  # Skip if can't access motor
-            
-            if not drive_motors:
-                print(f"  🎵 Note {frequency:.1f}Hz (no motors available)")
-                time.sleep(duration)
-                return
-                
-            # Calculate oscillation parameters
-            period = 1.0 / frequency if frequency > 0 else 0.1
-            half_period = period / 2.0
-            cycles = int(duration / period)
-            
-            # Create duty cycle requests
-            high_request = DutyCycleOut(0.05)  # Small positive duty cycle
-            low_request = DutyCycleOut(-0.05)  # Small negative duty cycle
-            stop_request = DutyCycleOut(0.0)
-            
-            print(f"  🎵 Playing {frequency:.1f}Hz for {duration:.1f}s on {len(drive_motors)} motors")
-            
-            # Oscillate motors to create tone
-            for cycle in range(cycles):
-                if self.stop_music:
-                    break
-                    
-                # High phase
-                for motor in drive_motors:
-                    try:
-                        motor.set_control(high_request)
-                    except:
-                        pass
-                time.sleep(half_period)
-                
-                # Low phase  
-                for motor in drive_motors:
-                    try:
-                        motor.set_control(low_request)
-                    except:
-                        pass
-                time.sleep(half_period)
-            
-            # Stop motors
-            for motor in drive_motors:
-                try:
-                    motor.set_control(stop_request)
-                except:
-                    pass
-                    
+            print("\n🎉 ALL TESTS PASSED! Playing victory song... 🎵")
+            self.orchestra.play()
+            print("🎵 Victory song started! Motors are singing! 🎶")
         except Exception as e:
-            print(f"  🎵 Music error: {e}")
-            time.sleep(duration)
-
-    def _play_victory_song(self):
-        """
-        Play the victory song in a separate thread to avoid blocking the main robot loop.
-        """
-        print("\n🎉 ALL TESTS PASSED! Playing victory song... 🎵")
-        
-        for note_name, duration in self.VICTORY_SONG:
-            if self.stop_music:
-                break
-                
-            frequency = self.NOTES.get(note_name, 0.0)
-            self._play_note_on_motors(frequency, duration)
-            
-        print("🎵 Victory song complete! 🎉")
-
-    def _start_victory_music(self):
-        """
-        Start the victory song in a background thread.
-        """
-        if self.music_thread and self.music_thread.is_alive():
-            self.stop_music = True
-            self.music_thread.join(timeout=1.0)
-            
-        self.stop_music = False
-        self.music_thread = threading.Thread(target=self._play_victory_song, daemon=True)
-        self.music_thread.start()
+            print(f"🎵 Error playing victory song: {e}")
 
     def _stop_victory_music(self):
         """
-        Stop the victory music.
+        Stop the victory music using CTRE Orchestra.
         """
-        self.stop_music = True
-        if self.music_thread and self.music_thread.is_alive():
-            self.music_thread.join(timeout=1.0)
+        if self.orchestra:
+            try:
+                self.orchestra.stop()
+                print("🎵 Victory song stopped")
+            except Exception as e:
+                print(f"🎵 Error stopping music: {e}")
 
     def _update_tilt_leds(self):
         """Update LED color based on IMU tilt measurements"""
