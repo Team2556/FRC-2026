@@ -43,7 +43,6 @@ class IntakeSubsystem(commands2.Subsystem):
             kCANId.intake.LEFT_PIVOT, MotorAlignmentValue.OPPOSED
         )
 
-        # Skip configuration in simulation/tests to prevent hanging
         if not wpilib.RobotBase.isSimulation():
             self.left_deployer.configurator.apply(self.deployer_cfg)
             self.right_deployer.configurator.apply(self.deployer_cfg)  # ABSOLUTLY need this, sets the 'config info' for the motor
@@ -99,6 +98,5 @@ class IntakeSubsystem(commands2.Subsystem):
         kIntakeDeployer.DEPLOYED_POSITION = self.nt.get("Target Deployer Position")
         kIntakeSpinner.TARGET_RPM = self.nt.get("Target Spinny RPM")
 
-        # EditablePID only applies config when values change and skips simulation
         self.deploy_editable_pid.periodic()
         self.spinny_editable_pid.periodic()

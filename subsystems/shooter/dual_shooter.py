@@ -31,7 +31,6 @@ class DualMotorShooter(commands2.Subsystem):
         self.cfg = kShooterMotor._CONFIG
         self.cfg.motor_output.neutral_mode = signals.NeutralModeValue.COAST
 
-        # Skip configuration in simulation/tests to prevent hanging
         if not wpilib.RobotBase.isSimulation():
             self._top_motor.configurator.apply(self.cfg)
 
@@ -73,7 +72,6 @@ class DualMotorShooter(commands2.Subsystem):
         self.is_charged = False
 
     def periodic(self):
-        # EditablePID only applies config when values change and skips simulation
         self.editable_PID.periodic()
         
         motor_velocity_rpm = self._top_motor.get_velocity().value * 60
