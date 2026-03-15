@@ -36,14 +36,14 @@
 - **RoboRIO** - 0
 
 ### Drive (1-13)
-- **FL Drive** - 1
-- **FR Drive** - 2
-- **BL Drive** - 3
-- **BR Drive** - 4
-- **FL Steer** - 5
-- **FR Steer** - 6
-- **BL Steer** - 7
-- **BR Steer** - 8
+- **FL Drive Motor** - 1
+- **FR Drive Motor** - 2
+- **BL Drive Motor** - 3
+- **BR Drive Motor** - 4
+- **FL Steer Motor** - 5
+- **FR Steer Motor** - 6
+- **BL Steer Motor** - 7
+- **BR Steer Motor** - 8
 - **FL CANCoder** - 9
 - **FR CANCoder** - 10
 - **BL CANCoder** - 11
@@ -51,9 +51,9 @@
 - **Pigeon** - 13
 
 ### Intake (16-20)
-- **Spinny Intake Motor** - 16
-- **Left Intake Deploy** - 17
-- **Right Intake Deploy** - 18
+- **Roller Motor** - 16
+- **Left Pivot Motor** - 17
+- **Right Pivot Motor** - 18
 
 ### Transfer (21-25)
 - **Spindexer** - 21
