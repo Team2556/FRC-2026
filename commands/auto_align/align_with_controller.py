@@ -74,6 +74,7 @@ class HubAlign(alignio.TurretTargetWithVelocity):
         )
 
         rotation_rate = self.calculate_rotation()
+        # print(rotation_rate)
         self._drivetrain.set_target_align_rotation_rate(
             rotation_rate * kDriveConfig.MAX_ANGULAR_RATE
         )
