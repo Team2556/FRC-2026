@@ -16,7 +16,7 @@
 - **Letter Buttons** - Specific paths
 
 ### Controller 2
-- **Right Trigger** *(hold)* - Toggle intake
+- **Right Trigger** *(hold)* - Deploy intake
 - **POV Up** *(press)* - Climb up
 
 - **POV Down** *(press)* - Climb down
