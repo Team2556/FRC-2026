@@ -1,4 +1,3 @@
-import numpy as np
 import wpilib
 
 from commands2 import Subsystem
@@ -15,6 +14,7 @@ from util.math_helpers import distanceFromPose2dtoPose2d
 
 from constants.shooter import kHoodMotor, kShooterData
 from constants.canbus import kCANId
+# import numpy as np
 
 
 class ShooterHood(Subsystem):

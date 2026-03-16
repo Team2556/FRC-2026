@@ -22,6 +22,7 @@ from constants.led import kLED
 
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
+from subsystems.vision import rpi_vision
 from subsystems.intake.intake import IntakeSubsystem
 from subsystems.climb.climb_subsystem import ClimbSubsystem
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
@@ -50,6 +51,8 @@ class RobotContainer:
         self.shooter_subsystem = DualMotorShooter()
         self.hood_subsystem = ShooterHood()
         # self.climb_subsystem = ClimbSubsystem()
+
+        self.rpi_vision = rpi_vision.RpiVision()
 
         self.mono_vision = mono_limelight.Vision(kCamera.BACK_LL, kCamera.SHOOTER_LL)
         self.LED_controller = CANdleLEDController()
