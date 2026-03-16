@@ -147,5 +147,9 @@ class SwerveDriveTrain(commands2.Subsystem):
             "Distance to Hub",
             distanceFromPose2dtoPose2d(pose, FlipUtil.fieldPose(kHub.POS)),
         )
+        
+        if self.do_target_align and wpilib.DriverStation.isAutonomousEnabled():
+            self.drive_with_values() # Only rotate to do hub align and shoot
+        
         self.nt.set("Do Target Align", self.do_target_align)
         self.nt.set("Target Align Rotation Rate", self.target_align_rotation_rate)

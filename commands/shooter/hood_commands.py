@@ -37,7 +37,6 @@ class ResetShooterHood(Command):
 
         self.nt.set("Resetting", False)
 
-
 class ManualShooterHood(Command):
     def __init__(self, shooter_hood: ShooterHood, _controller: XboxController,
                  get_pose_and_target: Callable[[], Tuple[Pose2d, Pose2d]]):
