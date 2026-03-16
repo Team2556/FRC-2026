@@ -13,7 +13,6 @@ class TransferSubsystem(Subsystem):
         self.spindex_motor = TalonFX(kCANId.hopper.SPINDEXER, "rio")
         self.up_transfer_motor = TalonFX(kCANId.hopper.TRASNFER, "rio")
         
-        # Skip configuration in simulation/tests to prevent hanging
         if not wpilib.RobotBase.isSimulation():
             self.spindex_motor.configurator.apply(kSpindexer._CONFIG)
             self.up_transfer_motor.configurator.apply(kTransfer._CONFIG)
@@ -57,7 +56,6 @@ class TransferSubsystem(Subsystem):
         self.nt.set("Active", False)
     
     def periodic(self):    
-        # EditablePID only applies config when values change and skips simulation
         self.spindex_editable_pid.periodic()
         self.up_transfer_editable_pid.periodic()
         

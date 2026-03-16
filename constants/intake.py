@@ -2,7 +2,7 @@ from phoenix6.configs import TalonFXConfiguration, Slot0Configs, TalonFXSConfigu
 from phoenix6.signals import MotorArrangementValue
 
 
-class kIntakeDeployer:
+class kIntakePivot:
     _CONFIG = TalonFXSConfiguration()
     _CONFIG.commutation.motor_arrangement = MotorArrangementValue.MINION_JST
     _CONFIG.slot0.k_p = 15.75
@@ -20,7 +20,7 @@ class kIntakeDeployer:
     DEPLOYED_POSITION = 10.0
 
 
-class kIntakeSpinner:
+class kIntakeRoller:
     _CONFIG = TalonFXConfiguration()
     _CONFIG.slot0.k_p = 5
     _CONFIG.slot0.k_i = 5

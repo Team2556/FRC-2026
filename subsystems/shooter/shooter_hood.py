@@ -17,15 +17,12 @@ from constants.shooter import kHoodMotor, kShooterData
 from constants.canbus import kCANId
 
 
-# Currently not tested yet. Also there is no "shooter hood" command as all the controlling for
-# this subsystem will be in the hub align command (eventually)
 class ShooterHood(Subsystem):
     def __init__(self):
         self.hood_motor = TalonFXS(kCANId.shooter.HOOD_CONTROL, "rio")
-# Apply configuration once during initialization only
+        
         if not wpilib.RobotBase.isSimulation():
             self.hood_motor.configurator.apply(kHoodMotor._CONFIG)
-            # Set neutral mode once during initialization only
             self.hood_motor.setNeutralMode(NeutralModeValue.BRAKE)
 
         self.position_request = MotionMagicVoltage(position=0, enable_foc=False)
@@ -103,5 +100,4 @@ class ShooterHood(Subsystem):
         kHoodMotor.INCREMENT_AMOUNT = self.nt.get("Increment Amount")
         kHoodMotor.MAX_POSITION = self.nt.get("Max Hood Position (deg)") * kHoodMotor.REVOLUTIONS_PER_DEGREE
 
-        # EditablePID only applies config when values change and skips simulation
         self.editable_pid.periodic()

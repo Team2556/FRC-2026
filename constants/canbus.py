@@ -20,7 +20,7 @@ class kCANId:
         PIGEON = 13
 
     class intake:
-        SPINNER = 16
+        ROLLER = 16
         LEFT_PIVOT = 17
         RIGHT_PIVOT = 18
 
