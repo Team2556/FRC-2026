@@ -12,10 +12,7 @@ class RunTransferCommand(commands2.Command):
         self.addRequirements(transfer_sybsystem)
 
     def execute(self):
-        if self.shooter.is_charged:
-            self.transfer_sybsystem.activate()
-        else:
-            self.transfer_sybsystem.stop()
+        self.transfer_sybsystem.activate()
 
     def end(self, interrupted):
         self.transfer_sybsystem.stop()
