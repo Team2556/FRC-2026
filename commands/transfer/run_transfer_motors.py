@@ -16,3 +16,16 @@ class RunTransferCommand(commands2.Command):
 
     def end(self, interrupted):
         self.transfer_sybsystem.stop()
+
+class ReverseTransferCommand(commands2.Command):
+    def __init__(self, transfer_sybsystem: TransferSubsystem, shooter: DualMotorShooter):
+        super().__init__()
+        self.transfer_sybsystem = transfer_sybsystem
+        self.shooter = shooter
+        self.addRequirements(transfer_sybsystem)
+
+    def execute(self):
+        self.transfer_sybsystem.reverse()
+
+    def end(self, interrupted):
+        self.transfer_sybsystem.stop()

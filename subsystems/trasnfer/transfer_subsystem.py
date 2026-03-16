@@ -32,6 +32,7 @@ class TransferSubsystem(Subsystem):
         self.spindexer_nt.float("RPM", 0.0)
         self.spindexer_nt.float("Target RPM", kSpindexer.TARGET_RPM)
         self.spindexer_nt.float("Ideal RPM", 0.0)
+        self.spindexer_nt.float("Current", 0.0)
         
         self.up_transfer_nt = NTTable("Transfer").get_subtable("Up Transfer")
         self.up_transfer_nt.float("RPM", 0.0)
@@ -47,6 +48,13 @@ class TransferSubsystem(Subsystem):
         self.spindexer_nt.set("Ideal RPM", kSpindexer.TARGET_RPM / 60)
         self.up_transfer_nt.set("Ideal RPM", kTransfer.TARGET_RPM / 60)
         self.nt.set("Active", True)
+    
+    def reverse(self):
+        self.spindex_motor.set_control(self.spindex_velocity_voltage.with_velocity(kSpindexer.TARGET_RPM / -60))
+        self.up_transfer_motor.set_control(self.up_transfer_velocity_voltage.with_velocity(kTransfer.TARGET_RPM / -60))
+        self.spindexer_nt.set("Ideal RPM", kSpindexer.TARGET_RPM / -60)
+        self.up_transfer_nt.set("Ideal RPM", kTransfer.TARGET_RPM / -60)
+        self.nt.set("Active", True)
 
     def stop(self):
         self.spindex_motor.set_control(self._neutral)
@@ -61,6 +69,7 @@ class TransferSubsystem(Subsystem):
         
         self.spindexer_nt.set("RPM", self.spindex_motor.get_velocity().value)
         kSpindexer.TARGET_RPM = self.spindexer_nt.get("Target RPM")
+        self.spindexer_nt.set("Current", self.spindex_motor.get_torque_current())
         
         self.up_transfer_nt.set("RPM", self.up_transfer_motor.get_velocity().value)
         kTransfer.TARGET_RPM = self.up_transfer_nt.get("Target RPM")
