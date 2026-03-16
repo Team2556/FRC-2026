@@ -31,11 +31,11 @@ class IntakeSubsystem(commands2.Subsystem):
         self.roller_cfg = kIntakeRoller._CONFIG
         self.roller_cfg.motor_output.neutral_mode = signals.NeutralModeValue.COAST
 
-        self.right_pivot_motor.set_control(
-            phoenix6.controls.Follower(
-                kCANId.intake.LEFT_PIVOT, MotorAlignmentValue.OPPOSED
-            )
-        )
+        # self.right_pivot_motor.set_control(
+        #     phoenix6.controls.Follower(
+        #         kCANId.intake.LEFT_PIVOT, MotorAlignmentValue.OPPOSED
+        #     )
+        # )
 
         if not wpilib.RobotBase.isSimulation():
             self.left_pivot_motor.configurator.apply(self.pivot_cfg)
@@ -59,6 +59,9 @@ class IntakeSubsystem(commands2.Subsystem):
         self.nt.float("Target Roller RPM", kIntakeRoller.TARGET_RPM)
         self.nt.float("Ideal Roller RPM", 0.0)
         self.nt.string("State", self.state)
+        
+        self.nt.bool("Forward Limit Switch", False)
+        self.nt.bool("Reverse Limit Switch", False)
 
         self.pivot_editable_pid = EditablePID(
             "Intake/PivotPID",
@@ -72,6 +75,7 @@ class IntakeSubsystem(commands2.Subsystem):
 
     def set_deployer_position(self, pos):
         self.left_pivot_motor.set_control(self.position_request.with_position(pos))
+        self.right_pivot_motor.set_control(self.position_request.with_position(pos))
         self.nt.set("Ideal Pivot Position", pos)
 
     def set_internal_deployer_position(self, pos):
@@ -80,6 +84,7 @@ class IntakeSubsystem(commands2.Subsystem):
 
     def change_deployer_slot(self, slot=0):
         self.left_pivot_motor.set_control(self.position_request.with_slot(slot))
+        self.right_pivot_motor.set_control(self.position_request.with_slot(slot))
         self.nt.set("Current Slot", slot)
 
     def set_roller_speed(self, rpm):
@@ -107,6 +112,9 @@ class IntakeSubsystem(commands2.Subsystem):
         self.nt.set("State", self.state)
         kIntakePivot.DEPLOYED_POSITION = self.nt.get("Target Pivot Position")
         kIntakeRoller.TARGET_RPM = self.nt.get("Target Roller RPM")
+        
+        self.nt.set("Forward Limit Switch", self.left_pivot_motor.get_forward_limit() == signals.ForwardLimitValue.CLOSED_TO_GROUND)
+        self.nt.set("Reverse Limit Switch", self.left_pivot_motor.get_reverse_limit() == signals.ReverseLimitValue.CLOSED_TO_GROUND)
 
         self.pivot_editable_pid.periodic()
         self.roller_editable_pid.periodic()

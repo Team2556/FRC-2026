@@ -8,6 +8,7 @@ from commands.auto_align import align_with_controller
 from commands.drive import drive_commands
 from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
+from util.auto_chooser import AutoChooser
 
 from commands.vision import vision_odometry
 from commands.path_commands import custom_path_commands, go_back_with_path
@@ -64,9 +65,17 @@ class RobotContainer:
 
         self.custom_path_commands = custom_path_commands.CustomPathCommands(
             self._drivetrain,
+            intake_subsystem=self.intake_subsystem,
+            transfer_subsystem=self.transfer_subsystem,
             shooter_subsystem=self.shooter_subsystem,
+            hood_subsystem=self.hood_subsystem,
+            led_controller=self.LED_controller,
             # climb_subsyetem=self.climb_subsystem,
         )
+        
+        self.auto_chooser = AutoChooser(self.custom_path_commands.get_autos())
+        self.auto_chooser.make_dropdown()
+        
         self.time_manager = SendFMSData()
 
         self.configureButtonBindings()
@@ -97,7 +106,6 @@ class RobotContainer:
         self._controller_1.rightTrigger().whileTrue(
             align_with_controller.ConditionalAlignAndShoot(
                 self._drivetrain,
-                self._controller_1,
                 self.shooter_subsystem,
                 self.transfer_subsystem,
                 self.hood_subsystem,
@@ -127,13 +135,15 @@ class RobotContainer:
 
         # =========================
         #        TESTING ONLY
-        self.hood_subsystem.setDefaultCommand(
-            hood_commands.ManualShooterHood(
-                self.hood_subsystem,
-                self._controller_2,
-                self._get_hood_pose_and_target,
-            )
-        )
+        # self.hood_subsystem.setDefaultCommand(
+        #     hood_commands.ManualShooterHood(
+        #         self.hood_subsystem,
+        #         self._controller_2,
+        #         self._get_hood_pose_and_target,
+        #     )
+        # )
+        # =========================
+        
         # Retracts hood in danger zone (bumps/trench); interrupts default command _FCC_
         Trigger(self._drivetrain.should_stop_shooting).whileTrue(
             RunCommand(
@@ -145,11 +155,8 @@ class RobotContainer:
                 self.hood_subsystem,
             )
         )
-        # =========================
-
-        self._controller_2.b().whileTrue(
-            RunTransferCommand(self.transfer_subsystem, self.shooter_subsystem)
-        )
+        
+        self._controller_2.b().whileTrue(RunTransferCommand(self.transfer_subsystem, self.shooter_subsystem))
 
         self._controller_2.y().whileTrue(
             shooter_commands.EnableShooter(self.shooter_subsystem)
@@ -167,13 +174,6 @@ class RobotContainer:
         )
 
         self._controller_2.povDown().onTrue(IntakeForceRetract(self.intake_subsystem))
-
-        # Controller 1: both bumpers together — intake deploy
-        _c1_intake = self._controller_1.leftBumper().and_(
-            self._controller_1.rightBumper()
-        )
-        _c1_intake.onTrue(IntakeCommandDeploy(self.intake_subsystem))
-        _c1_intake.onFalse(IntakeCommandUndeploy(self.intake_subsystem))
 
         # Dev only: Back + Start force-pushes all dashboard PID values to motors
         (self._controller_1.back().and_(self._controller_1.start())).onTrue(
@@ -198,4 +198,4 @@ class RobotContainer:
         self.shooter_subsystem.editable_PID.force_apply()
 
     def getAutonomousCommand(self):
-        return self.custom_path_commands.test_auto
+        return self.auto_chooser.choose_auto()
