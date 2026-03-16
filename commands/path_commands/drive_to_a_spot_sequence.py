@@ -48,8 +48,6 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         kPath.path_transition_slow_multiplier = SmartDashboard.getNumber("Sequence Path/Slow Transition Multiplier", kPath.path_transition_slow_multiplier)
         
         for command in self._commands:
-            if not command == self._commands[-1]:
-                command = command.with_sequence_pose_values() # In case of SmartDashboard Change
             if command.do_override_speed:
                 command.max_speed = command.better_max_speed
             else:
