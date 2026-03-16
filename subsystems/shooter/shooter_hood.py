@@ -20,7 +20,7 @@ from constants.canbus import kCANId
 class ShooterHood(Subsystem):
     def __init__(self):
         self.hood_motor = TalonFXS(kCANId.shooter.HOOD_CONTROL, "rio")
-        
+
         if not wpilib.RobotBase.isSimulation():
             self.hood_motor.configurator.apply(kHoodMotor._CONFIG)
             self.hood_motor.setNeutralMode(NeutralModeValue.BRAKE)
@@ -28,76 +28,91 @@ class ShooterHood(Subsystem):
         self.position_request = MotionMagicVoltage(position=0, enable_foc=False)
         self.home_request = DutyCycleOut(0)
 
-        self.nt = NTTable("Shooter").get_subtable("Hood")
-        self.nt.float("Hood Position", 0.0)
-        self.nt.float("Ideal Hood Position", 0.0)
-        self.nt.float("Reset Home Speed", kHoodMotor.RESET_HOME_SPEED)
-        self.nt.float("Increment Amount", kHoodMotor.INCREMENT_AMOUNT)
-        self.nt.float("Max Hood Position (deg)", kHoodMotor.MAX_POSITION_DEG)
-
-        # Command hood to hold at home position on startup
-        self.set_position(kHoodMotor.HOME_POSITION)
-
+        self._target_angle_deg = kHoodMotor.HOME_ANGLE_DEG
+        self.force_hide = False
         self._was_hard_stopped = False
+
+        self.nt = NTTable("Shooter").get_subtable("Hood")
+        self.nt.float("Hood Position (deg)", 0.0)
+        self.nt.float("Target Angle (deg)", 0.0)
+        self.nt.float("Reset Home Speed", kHoodMotor.RESET_HOME_SPEED)
+        self.nt.float("Max Hood Position (deg)", kHoodMotor.MAX_ANGLE_DEG)
+        self.nt.bool("Override Enabled", kHoodMotor.OVERRIDE_ENABLED)
+        self.nt.float("Override Angle (deg)", kHoodMotor.OVERRIDE_ANGLE_DEG)
+        self.nt.bool("Force Hide", False)
 
         self.editable_pid = EditablePID(
             "Shooter/Hood", self.hood_motor, kHoodMotor._CONFIG
         )
 
-    def set_speed(self, speed):
+        self.set_position(kHoodMotor.to_revs(kHoodMotor.HOME_ANGLE_DEG))
+
+    def set_target_angle(self, degrees: float) -> None:
+        self._target_angle_deg = degrees
+        self._apply_angle()
+
+    def set_speed(self, speed: float) -> None:
         self.hood_motor.set_control(self.home_request.with_output(speed))
 
-    def increment(self, mult):
-        self.set_position(
-            self.hood_motor.get_position().value
-            + ((kHoodMotor.INCREMENT_AMOUNT / 20) * mult)
-        )
-
-    def set_position(self, position):
-        # Clamp to MAX_POSITION to prevent mechanical over-travel _FCC_
-        position = min(position, kHoodMotor.MAX_POSITION)
-        self._target_position = position
-        self.hood_motor.set_control(self.position_request.with_position(position))
-        self.nt.set("Ideal Hood Position", position * kHoodMotor.DEGREES_PER_REVOLUTION)
+    def set_position(self, position_revs: float) -> None:
+        max_revs = kHoodMotor.to_revs(self.nt.get("Max Hood Position (deg)"))
+        position_revs = min(position_revs, max_revs)
+        self._target_position_revs = position_revs
+        self.hood_motor.set_control(self.position_request.with_position(position_revs))
 
     def is_at_angle(self) -> bool:
-        current_deg = self.hood_motor.get_position().value * kHoodMotor.DEGREES_PER_REVOLUTION
-        target_deg = self._target_position * kHoodMotor.DEGREES_PER_REVOLUTION
+        current_deg = kHoodMotor.to_deg(self.hood_motor.get_position().value)
+        target_deg = kHoodMotor.to_deg(self._target_position_revs)
         return abs(current_deg - target_deg) <= kHoodMotor.REACH_TARGET_ANGLE_ERROR
 
-    def is_hard_stopped(self):
+    def is_hard_stopped(self) -> bool:
         return (
             self.hood_motor.get_reverse_limit().value
             is ReverseLimitValue.CLOSED_TO_GROUND
         )
 
-    def reset(self):
-        self.set_position(kHoodMotor.HOME_POSITION)
-        self.nt.set("Ideal Hood Position", kHoodMotor.HOME_POSITION)
+    def reset(self) -> None:
+        self._target_angle_deg = kHoodMotor.HOME_ANGLE_DEG
+        self.set_position(kHoodMotor.to_revs(kHoodMotor.HOME_ANGLE_DEG))
+    
+    def toggle_force_hide(self, is_enabled: bool) -> None:
+        self.force_hide = is_enabled
 
     def angle_by_position(self, robot_pose: Pose2d, target_pose: Pose2d) -> None:
         distance_to_target = distanceFromPose2dtoPose2d(robot_pose, target_pose)
-
         interpolation_distance_data, interpolation_position_data = zip(
             *kShooterData.SHOT_ANGLES
         )
-        target_hood_degrees = np.interp(
+        target_deg = np.interp(
             distance_to_target, interpolation_distance_data, interpolation_position_data
         )
+        self.set_target_angle(target_deg)
 
-        self.set_position(target_hood_degrees * kHoodMotor.REVOLUTIONS_PER_DEGREE)
+    def _apply_angle(self) -> None:
+        if self.force_hide:
+            angle_deg = kHoodMotor.HOME_ANGLE_DEG
+        elif self.nt.get("Override Enabled"):
+            angle_deg = self.nt.get("Override Angle (deg)")
+        else:
+            angle_deg = self._target_angle_deg
+            
+        self.set_position(kHoodMotor.to_revs(angle_deg))
 
-    def periodic(self):
-        # On rising edge of reverse limit, re-zero encoder to HOME so position stays accurate _FCC_
+    def periodic(self) -> None:
+        self._apply_angle()
+
         hard_stopped = self.is_hard_stopped()
         if hard_stopped and not self._was_hard_stopped:
-            self.hood_motor.set_position(kHoodMotor.HOME_POSITION)
+            self.hood_motor.set_position(kHoodMotor.to_revs(kHoodMotor.HOME_ANGLE_DEG))
         self._was_hard_stopped = hard_stopped
 
-        # All NT values are in degrees for human readability; internal math uses revolutions _FCC_
-        self.nt.set("Hood Position", self.hood_motor.get_position().value * kHoodMotor.DEGREES_PER_REVOLUTION)
+        self.nt.set(
+            "Hood Position (deg)",
+            kHoodMotor.to_deg(self.hood_motor.get_position().value),
+        )
+        self.nt.set("Target Angle (deg)", kHoodMotor.to_deg(self._target_position_revs))
+        self.nt.set("Force Hide", self.force_hide)
+
         kHoodMotor.RESET_HOME_SPEED = self.nt.get("Reset Home Speed")
-        kHoodMotor.INCREMENT_AMOUNT = self.nt.get("Increment Amount")
-        kHoodMotor.MAX_POSITION = self.nt.get("Max Hood Position (deg)") * kHoodMotor.REVOLUTIONS_PER_DEGREE
 
         self.editable_pid.periodic()
