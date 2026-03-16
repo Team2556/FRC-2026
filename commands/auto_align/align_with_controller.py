@@ -17,6 +17,7 @@ from commands.auto_align import alignio
 
 from commands.shooter.hood_commands import ResetShooterHood
 
+
 class TurretToPose(alignio.TurretTargetWithVelocity):
     def __init__(
         self,
@@ -37,14 +38,18 @@ class TurretToPose(alignio.TurretTargetWithVelocity):
     def end(self, interrupted):
         self._drivetrain.stop_target_align()
 
+
 class HubAlign(alignio.TurretTargetWithVelocity):
     def __init__(
         self,
         drivetrain,
         shooter: DualMotorShooter,
+        hood: ShooterHood,
         LED_Controller: CANdleLEDController | None = None,
     ):
         super().__init__(drivetrain, shooter, kHub.POS)
+        self._controller = controller
+        self._hood = hood
 
         SmartDashboard.putNumber(
             "Hub Align Flight Time Scalar", self.flight_time_scalar
@@ -73,6 +78,10 @@ class HubAlign(alignio.TurretTargetWithVelocity):
             rotation_rate * kDriveConfig.MAX_ANGULAR_RATE
         )
 
+        self._hood.angle_by_position(
+            self._drivetrain.get_state().pose, self._estimated_target_pose
+        )
+
     def end(self, interrupted):
         if self._LED_Controller:
             self.LED_state.disable()
@@ -86,7 +95,7 @@ class ConditionalAlignAndShoot(HubAlign):
         self,
         drivetrain,
         shooter: DualMotorShooter,
-        transfer_subsystem : TransferSubsystem,
+        transfer_subsystem: TransferSubsystem,
         hood: ShooterHood,
         LED_controller: CANdleLEDController | None = None,
     ):
@@ -102,13 +111,14 @@ class ConditionalAlignAndShoot(HubAlign):
     def execute(self):
         super().execute()
         robot_pose = self._drivetrain.get_state().pose
-        
+
         self.find_target(robot_pose)
-        self._hood.angle_by_position(robot_pose, self.target)
-        
+
         # Don't fire until BOTH yaw and hood angle are on target _FCC_
-        if (self.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES
-                and self._hood.is_at_angle()):
+        if (
+            self.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES
+            and self._hood.is_at_angle()
+        ):
             self.transfer_subsystem.activate()
         else:
             self.transfer_subsystem.stop()
@@ -121,13 +131,13 @@ class ConditionalAlignAndShoot(HubAlign):
         if RobotZoneChecker.is_in_alliance_zone(pose):
             self.target = FlipUtil.fieldPose(kHub.POS)
         self.with_target(self.target)
-    
+
     def isFinished(self):
         return self._drivetrain.should_stop_shooting()
 
     def end(self, interrupted):
         super().end(interrupted)
-        
+
         ResetShooterHood(self._hood).schedule()
         self.transfer_subsystem.stop()
         self._shooter.disable()

@@ -4,15 +4,18 @@ import commands2
 
 import numpy as np
 
-from wpimath.geometry import Pose2d
+import wpilib
+from wpimath.geometry import Pose2d, Translation2d
 from wpimath.controller import PIDController
 from wpimath.units import degrees, meters
+from wpilib import SmartDashboard
 
 from constants.drive import kAutoAlign
 from constants.shooter import kShooterConfig, kShooterData
 
 from util.flip_util import FlipUtil
 from util import math_helpers
+from util.nt_util import NTTable
 
 from subsystems.shooter.dual_shooter import DualMotorShooter
 from subsystems.drivetrain.drivetrain import SwerveDriveTrain
@@ -60,26 +63,40 @@ class TurretTargetWithVelocity(TurretTargetBase):
         super().__init__(drivetrain, target)
         self._shooter = shooter
         self.flight_time_scalar = kAutoAlign.FLIGHT_TIME_SCALAR
+        
+        self._estimated_target_pose = Pose2d()
 
     def calculate_rotation(self) -> float:
         drive_state = self._drivetrain.get_state()
-
         hub_translation = self.target.translation()
-        distance_to_hub = hub_translation.distance(drive_state.pose.translation())
+        robot_translation = drive_state.pose.translation()
 
+        distance_to_hub = hub_translation.distance(robot_translation)
         ball_flight_time = (
             self.estimate_flight_time(distance_to_hub) * self.flight_time_scalar
         )
 
-        lead_ball_offset = drive_state.velocity * ball_flight_time * -1
-        target_pose = self.target.transformBy(lead_ball_offset)
+        robot_rotation = drive_state.pose.rotation()
+        vel = drive_state.velocity.translation()
+        field_vel = vel.rotateBy(robot_rotation)
+        vel_offset = Translation2d(
+            field_vel.x * ball_flight_time, field_vel.y * ball_flight_time
+        )
+
+        lead_translation = Translation2d(
+            hub_translation.x - vel_offset.x, hub_translation.y - vel_offset.y
+        )
+        target_pose = Pose2d(lead_translation, self.target.rotation())
+        self._estimated_target_pose = target_pose
 
         target_yaw = self.get_target_yaw(drive_state.pose, target_pose)
         rotation_rate = self.rotation_PID.calculate(drive_state.heading, target_yaw)
-
+        
         error = drive_state.heading - target_yaw
         self.current_accuracy = abs((error + 180) % 360 - 180)
-
+        if self.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES:
+            return 0
+        
         return math_helpers.clamp(rotation_rate, -1.0, 1.0)
 
     @staticmethod

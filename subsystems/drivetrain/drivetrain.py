@@ -2,6 +2,7 @@ import commands2
 
 import wpilib
 from wpimath.units import rotationsToRadians
+from wpimath.geometry import Transform2d, Rotation2d
 
 from phoenix6 import swerve
 
@@ -112,15 +113,22 @@ class SwerveDriveTrain(commands2.Subsystem):
 
     def should_stop_shooting(self):
         """Uses a bit of velocity projection to detect if robot should stop shooting to transition between bump/trench"""
-        projected_pose = self.get_state().pose.transformBy(
-            self.get_state().velocity * kDriveConfig.LOOKAHEAD_SECONDS
+        state = self.get_state()
+        robot_pose = state.pose
+        robot_velocity_raw = state.velocity.translation().rotateBy(robot_pose.rotation())
+        robot_velocity = Transform2d(robot_velocity_raw, Rotation2d())
+
+        projected_pose = robot_pose.transformBy(
+            robot_velocity * kDriveConfig.LOOKAHEAD_SECONDS
         )
-        half_projected_pose = self.get_state().pose.transformBy(
-            self.get_state().velocity * kDriveConfig.LOOKAHEAD_SECONDS * 0.5
+        half_projected_pose = robot_pose.transformBy(
+            robot_velocity * kDriveConfig.LOOKAHEAD_SECONDS * 0.5
         )
-        return RobotZoneChecker.is_near_transition_zone(
-            projected_pose
-        ) or RobotZoneChecker.is_near_transition_zone(half_projected_pose)
+        return (
+            RobotZoneChecker.is_near_transition_zone(projected_pose)
+            or RobotZoneChecker.is_near_transition_zone(half_projected_pose)
+            or RobotZoneChecker.is_near_transition_zone(robot_pose)
+        )
 
     def _stop(self):
         self.drive_with_values(velocity_x=0, velocity_y=0, rotation_rate=0)
