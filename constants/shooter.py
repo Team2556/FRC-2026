@@ -49,7 +49,7 @@ class kShooterMotor:
     _CONFIG.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
     
     IDLE_RPM = -1000
-    TARGET_RPM = -3500
+    TARGET_RPM = -3000
     
     REACH_TARGET_VELOCITY_ERROR = 20
     '''Defines an interval for when the shooter motor "REACHES" a goal RPM (in RPM)'''

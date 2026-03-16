@@ -13,7 +13,7 @@ from constants.intake import kIntakePivot, kIntakeRoller
 class IntakeCommandDeploy(Command):
     def __init__(self, intake_subsystem: IntakeSubsystem):
         self.intake_subsystem = intake_subsystem
-        self.forward_limit = self.intake_subsystem.left_pivot_motor.get_forward_limit()
+        self.reverse_limit = self.intake_subsystem.left_pivot_motor.get_reverse_limit()
         self.addRequirements(intake_subsystem)
 
     def initialize(self):
@@ -23,17 +23,17 @@ class IntakeCommandDeploy(Command):
         self.intake_subsystem.state = "deploying"
 
     def isFinished(self):
-        return self.forward_limit.value == signals.ForwardLimitValue.CLOSED_TO_GROUND
+        return self.reverse_limit.value == signals.ReverseLimitValue.CLOSED_TO_GROUND
 
     def end(self, interrupted):
-        self.intake_subsystem.change_deployer_slot(1)
+        # self.intake_subsystem.change_deployer_slot(1)
         self.intake_subsystem.state = "deployed"
 
 
 class IntakeCommandUndeploy(Command):
     def __init__(self, intake_subsystem: IntakeSubsystem):
         self.intake_subsystem = intake_subsystem
-        self.reverse_limit = self.intake_subsystem.left_pivot_motor.get_reverse_limit()
+        self.foward_limit = self.intake_subsystem.left_pivot_motor.get_forward_limit()
         self.addRequirements(intake_subsystem)
 
     def initialize(self):
@@ -44,7 +44,7 @@ class IntakeCommandUndeploy(Command):
         self.intake_subsystem.state = "undeploying"
 
     def isFinished(self):
-        return self.reverse_limit.value == signals.ReverseLimitValue.CLOSED_TO_GROUND
+        return self.foward_limit.value == signals.ForwardLimitValue.CLOSED_TO_GROUND
 
     def end(self, interrupted):
         self.intake_subsystem.set_internal_deployer_position(0)
