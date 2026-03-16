@@ -12,7 +12,11 @@ from util.send_fms_data import SendFMSData
 from commands.vision import vision_odometry
 from commands.path_commands import custom_path_commands, go_back_with_path
 from commands.transfer.run_transfer_motors import RunTransferCommand
-from commands.intake.intake_commands import IntakeCommandDeploy, IntakeCommandUndeploy, IntakeForceRetract
+from commands.intake.intake_commands import (
+    IntakeCommandDeploy,
+    IntakeCommandUndeploy,
+    IntakeForceRetract,
+)
 from commands.climb.climb import ClimbDown, ClimbUp
 from commands.shooter import shooter_commands, hood_commands
 
@@ -40,8 +44,12 @@ from constants.field import kHub, kPassSpots
 
 class RobotContainer:
     def __init__(self) -> None:
-        self._controller_1 = XboxController(port=0).with_deadband(0.3).with_power(5).with_mult(0.6)
-        self._controller_2 = XboxController(port=1).with_deadband(0.3).with_power(5).with_mult(0.6)
+        self._controller_1 = (
+            XboxController(port=0).with_deadband(0.3).with_power(5).with_mult(0.6)
+        )
+        self._controller_2 = (
+            XboxController(port=1).with_deadband(0.3).with_power(5).with_mult(0.6)
+        )
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
 
@@ -77,7 +85,9 @@ class RobotContainer:
         )
 
         # .negate() guards prevent firing when both bumpers are held (that's intake) _FCC_
-        self._controller_1.rightBumper().and_(self._controller_1.leftBumper().negate()).whileTrue(
+        self._controller_1.rightBumper().and_(
+            self._controller_1.leftBumper().negate()
+        ).whileTrue(
             ParallelCommandGroup(
                 RunTransferCommand(self.transfer_subsystem, self.shooter_subsystem),
                 shooter_commands.EnableShooter(self.shooter_subsystem),
@@ -95,9 +105,9 @@ class RobotContainer:
             )
         )
 
-        self._controller_1.leftBumper().and_(self._controller_1.rightBumper().negate()).whileTrue(
-            go_back_with_path.GoBackWithPath(self._drivetrain)
-        )
+        self._controller_1.leftBumper().and_(
+            self._controller_1.rightBumper().negate()
+        ).whileTrue(go_back_with_path.GoBackWithPath(self._drivetrain))
 
         self._controller_1.leftTrigger().whileTrue(
             cmd.runEnd(
@@ -126,11 +136,20 @@ class RobotContainer:
         )
         # Retracts hood in danger zone (bumps/trench); interrupts default command _FCC_
         Trigger(self._drivetrain.should_stop_shooting).whileTrue(
-            RunCommand(lambda: self.hood_subsystem.reset(), self.hood_subsystem)
+            RunCommand(
+                lambda: self.hood_subsystem.toggle_force_hide(True), self.hood_subsystem
+            )
+        ).whileFalse(
+            RunCommand(
+                lambda: self.hood_subsystem.toggle_force_hide(False),
+                self.hood_subsystem,
+            )
         )
         # =========================
-        
-        self._controller_2.b().whileTrue(RunTransferCommand(self.transfer_subsystem, self.shooter_subsystem))
+
+        self._controller_2.b().whileTrue(
+            RunTransferCommand(self.transfer_subsystem, self.shooter_subsystem)
+        )
 
         self._controller_2.y().whileTrue(
             shooter_commands.EnableShooter(self.shooter_subsystem)
@@ -147,12 +166,12 @@ class RobotContainer:
             IntakeCommandUndeploy(self.intake_subsystem)
         )
 
-        self._controller_2.povDown().onTrue(
-            IntakeForceRetract(self.intake_subsystem)
-        )
+        self._controller_2.povDown().onTrue(IntakeForceRetract(self.intake_subsystem))
 
         # Controller 1: both bumpers together — intake deploy
-        _c1_intake = self._controller_1.leftBumper().and_(self._controller_1.rightBumper())
+        _c1_intake = self._controller_1.leftBumper().and_(
+            self._controller_1.rightBumper()
+        )
         _c1_intake.onTrue(IntakeCommandDeploy(self.intake_subsystem))
         _c1_intake.onFalse(IntakeCommandUndeploy(self.intake_subsystem))
 

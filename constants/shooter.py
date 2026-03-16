@@ -11,23 +11,32 @@ class kHoodMotor:
     _CONFIG.slot0.k_p = 1.9
     _CONFIG.slot0.k_i = 0.1
     _CONFIG.slot0.k_d = 0.1
+    _CONFIG.motion_magic.motion_magic_cruise_velocity = 240
+    _CONFIG.motion_magic.motion_magic_acceleration = 480
+    _CONFIG.motion_magic.motion_magic_jerk = 2400
 
-    _CONFIG.motion_magic.motion_magic_cruise_velocity = 240  # rotations/sec
-    _CONFIG.motion_magic.motion_magic_acceleration = 480     # rotations/sec²
-    _CONFIG.motion_magic.motion_magic_jerk = 2400            # rotations/sec³
+    RESET_HOME_SPEED = -0.03
 
-    # Rotor position value/second when Driver 2 is manually moving it
-    INCREMENT_AMOUNT = 0.1
+    # Gear ratio: 15.1 motor revolutions = 35 degrees of hood travel
+    GEAR_RATIO = 15.1 / 35.0          # revolutions per degree
+    DEGREES_PER_REVOLUTION = 1 / GEAR_RATIO
 
-    RESET_HOME_SPEED = -0.03  # Negative: drives hood down toward reverse limit
+    # Positions in degrees — converted to revolutions where needed
+    HOME_ANGLE_DEG    = 5.0
+    MAX_ANGLE_DEG     = 35.0
+    REACH_TARGET_ANGLE_ERROR = 2.0    # degrees
 
-    # Gear ratio: 15.1 motor revolutions = 35 degrees of hood travel _FCC_
-    DEGREES_PER_REVOLUTION = 35.0 / 15.1
-    REVOLUTIONS_PER_DEGREE = 15.1 / 35.0
-    HOME_POSITION = 5.0 * (15.1 / 35.0)   # 5 degrees in motor revolutions
-    MAX_POSITION_DEG = 35.0                # editable via dashboard
-    MAX_POSITION = 35.0 * (15.1 / 35.0)   # 35 degrees in motor revolutions
-    REACH_TARGET_ANGLE_ERROR = 2.0         # degrees; hood must be within this of target before transfer fires
+    # Dashboard override defaults
+    OVERRIDE_ENABLED   = False
+    OVERRIDE_ANGLE_DEG = 25.0
+
+    @staticmethod
+    def to_revs(degrees: float) -> float:
+        return degrees * kHoodMotor.GEAR_RATIO
+
+    @staticmethod
+    def to_deg(revs: float) -> float:
+        return revs * kHoodMotor.DEGREES_PER_REVOLUTION
 
 class kShooterMotor:
     _CONFIG = TalonFXConfiguration()
