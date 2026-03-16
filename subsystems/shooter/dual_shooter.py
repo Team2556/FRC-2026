@@ -11,9 +11,8 @@ from util.nt_util import NTTable
 from util.editable_pid import EditablePID
 
 from constants.canbus import kCANId
-from constants.shooter import kShooterMotor, kShooterConfig
+from constants.shooter import kShooterMotor
 
-from wpimath.geometry import Translation2d
 
 class ShooterState(Enum):
     IDLE = 0
@@ -59,9 +58,6 @@ class DualMotorShooter(commands2.Subsystem):
         self.nt_sub.float("Target RPM", default=kShooterMotor.TARGET_RPM)
         self.nt_sub.float("Idle RPM", default=kShooterMotor.IDLE_RPM)
         self.nt_sub.float("Reach Target Velocity Error", default=kShooterMotor.REACH_TARGET_VELOCITY_ERROR)
-        self.nt_sub.float("Shooter Direction Angle", kShooterConfig.SHOOTER_DIRECTION)
-        self.nt_sub.float("Shooter Offset X", kShooterConfig.SHOOTER_OFFSET.X())
-        self.nt_sub.float("Shooter Offset Y", kShooterConfig.SHOOTER_OFFSET.Y())
 
         self.editable_PID = EditablePID(
             "Shooter/Motor", self._top_motor, self.cfg, use_slot0=True, use_slot1=True
@@ -114,8 +110,3 @@ class DualMotorShooter(commands2.Subsystem):
         kShooterMotor.IDLE_RPM = self.nt_sub.get('Idle RPM')
         kShooterMotor.TARGET_RPM = self.nt_sub.get('Target RPM')
         kShooterMotor.REACH_TARGET_VELOCITY_ERROR = self.nt_sub.get('Reach Target Velocity Error')
-        kShooterConfig.SHOOTER_DIRECTION = self.nt_sub.get("Shooter Direction Angle")
-        kShooterConfig.SHOOTER_OFFSET = Translation2d(
-            self.nt_sub.get("Shooter Offset X"),
-            self.nt_sub.get("Shooter Offset Y")
-        )
