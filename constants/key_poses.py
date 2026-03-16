@@ -12,7 +12,7 @@ class kPath:
     default_smoothing_time = 0.5 # Try 15-20% of path speed maybe
     default_smoothing_radius = 0.6 * default_path_speed * default_smoothing_time
     
-    # High quality variable name
+    # High quality variable names; also NOTE: These values need re-enabling to modify on SmartDashboard
     percent_slow_distance_proportional_to_max_speed_for_sequence_path = 0.25
     path_transition_slow_multiplier = 0.5 # In percent from 0 to 1
 
