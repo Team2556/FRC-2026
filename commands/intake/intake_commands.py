@@ -26,7 +26,7 @@ class IntakeCommandDeploy(Command):
         return self.forward_limit.value == signals.ForwardLimitValue.CLOSED_TO_GROUND
 
     def end(self, interrupted):
-        self.intake_subsystem.change_deployer_slot(1)
+        # self.intake_subsystem.change_deployer_slot(1)
         self.intake_subsystem.state = "deployed"
 
 

@@ -44,7 +44,7 @@ class CustomPathCommands:
         
         self.make_path_commands()
         
-    def make_autos(self):
+    def get_autos(self):
         
         return {
         "self.test_auto" : SequentialCommandGroup(
