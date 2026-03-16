@@ -127,13 +127,13 @@ class RobotContainer:
 
         # =========================
         #        TESTING ONLY
-        self.hood_subsystem.setDefaultCommand(
-            hood_commands.ManualShooterHood(
-                self.hood_subsystem,
-                self._controller_2,
-                self._get_hood_pose_and_target,
-            )
-        )
+        # self.hood_subsystem.setDefaultCommand(
+        #     hood_commands.ManualShooterHood(
+        #         self.hood_subsystem,
+        #         self._controller_2,
+        #         self._get_hood_pose_and_target,
+        #     )
+        # )
         # Retracts hood in danger zone (bumps/trench); interrupts default command _FCC_
         Trigger(self._drivetrain.should_stop_shooting).whileTrue(
             RunCommand(
