@@ -19,6 +19,7 @@ from constants.drive import kAutoAlign
 from constants.field import kHub
 
 from .driveio import CustomSwerve
+from .slip_filter import WheelSlipOdometryFilter, SlipDetectorConfig
 
 
 class SwerveDriveTrain(commands2.Subsystem):
@@ -41,6 +42,8 @@ class SwerveDriveTrain(commands2.Subsystem):
 
         self.target_align_rotation_rate = 0
         self.do_target_align = False
+
+        self.slip_filter = WheelSlipOdometryFilter(SlipDetectorConfig(), self._drivetrain)
 
         self.nt = NTTable("Drivetrain")
         self.nt.bool("Do Target Align")
@@ -132,6 +135,8 @@ class SwerveDriveTrain(commands2.Subsystem):
         return self._drivetrain.seed_field_centric()
 
     def periodic(self):
+        self.slip_filter.update()
+
         pose = self.get_state().pose
         self._field.setRobotPose(pose)
 
