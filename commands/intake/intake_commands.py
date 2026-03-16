@@ -38,7 +38,7 @@ class IntakeCommandUndeploy(Command):
 
     def initialize(self):
         self._start_time = wpilib.Timer.getFPGATimestamp()
-        self.intake_subsystem.set_roller_speed(0)
+        self.intake_subsystem.stop_roller()
         self.intake_subsystem.set_deployer_position(0)
         self.intake_subsystem.change_deployer_slot(0)
         self.intake_subsystem.state = "undeploying"
@@ -48,7 +48,7 @@ class IntakeCommandUndeploy(Command):
 
     def end(self, interrupted):
         self.intake_subsystem.set_internal_deployer_position(0)
-        self.intake_subsystem.set_roller_speed(0)
+        self.intake_subsystem.stop_roller()
         self.intake_subsystem.state = "undeployed"
 
 
@@ -62,7 +62,7 @@ class IntakeForceRetract(Command):
         self.addRequirements(intake_subsystem)
 
     def initialize(self):
-        self.intake_subsystem.set_roller_speed(0)
+        self.intake_subsystem.stop_roller()
         self.intake_subsystem.state = "force_retracting"
 
     def execute(self):

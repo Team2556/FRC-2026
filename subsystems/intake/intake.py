@@ -86,6 +86,12 @@ class IntakeSubsystem(commands2.Subsystem):
         self.roller_motor.set_control(self.velocity_request.with_velocity(rpm / 60))
         self.nt.set("Ideal Roller RPM", rpm)
 
+    def stop_roller(self):
+        # NeutralOut fully disables the motor; VelocityVoltage(0) leaves the PID integrator running
+        # which causes sporadic twitching _FCC_
+        self.roller_motor.set_control(phoenix6.controls.NeutralOut())
+        self.nt.set("Ideal Roller RPM", 0)
+
     def periodic(self):
         at_reverse_limit = (
             self.left_pivot_motor.get_reverse_limit().value
