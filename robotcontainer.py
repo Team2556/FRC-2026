@@ -11,7 +11,7 @@ from util.send_fms_data import SendFMSData
 from commands import drive_commands, vision_odometry
 from commands.path_commands import custom_path_commands, go_back_with_path
 from commands.run_transfer_motors import RunTransferCommand
-from commands.intake_commands import IntakeCommandDeploy, IntakeCommandUndeploy
+from commands.intake_commands import IntakeCommandDeploy, IntakeCommandUndeploy, IntakeForceRetract
 from commands.climb import ClimbDown, ClimbUp
 from commands.shooter import shooter_commands, hood_commands
 
@@ -144,6 +144,10 @@ class RobotContainer:
         )
         self._controller_2.rightTrigger().onFalse(
             IntakeCommandUndeploy(self.intake_subsystem)
+        )
+
+        self._controller_2.povDown().onTrue(
+            IntakeForceRetract(self.intake_subsystem)
         )
 
         # Controller 1: both bumpers together — intake deploy

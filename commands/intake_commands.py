@@ -40,10 +40,34 @@ class IntakeCommandUndeploy(Command):
 
     def isFinished(self):
         # 3s timeout prevents getting stuck if reverse limit never triggers _FCC_
-        timed_out = (wpilib.Timer.getFPGATimestamp() - self._start_time) > 3.0
+        timed_out = False # this can get the intake stuck in the deployed position... (wpilib.Timer.getFPGATimestamp() - self._start_time) > 3.0
         return self.reverse_limit.value == signals.ReverseLimitValue.CLOSED_TO_GROUND or timed_out
 
     def end(self, interrupted):
         self.intake_subsystem.set_internal_deployer_position(0)
         self.intake_subsystem.stop_spinny()
         self.intake_subsystem.state = "undeployed"
+
+class IntakeForceRetract(Command):
+    """Slowly drives the deployer backward until the reverse limit switch triggers, then zeros the encoder."""
+    RETRACT_SPEED = -0.15  # gentle duty cycle toward home
+
+    def __init__(self, intake_subsystem: IntakeSubsystem):
+        self.intake_subsystem = intake_subsystem
+        self.reverse_limit = self.intake_subsystem.left_deployer.get_reverse_limit()
+        self.addRequirements(intake_subsystem)
+
+    def initialize(self):
+        self.intake_subsystem.stop_spinny()
+        self.intake_subsystem.state = "force_retracting"
+
+    def execute(self):
+        self.intake_subsystem.left_deployer.set(self.RETRACT_SPEED)
+
+    def isFinished(self):
+        return self.reverse_limit.value == signals.ReverseLimitValue.CLOSED_TO_GROUND
+
+    def end(self, interrupted):
+        self.intake_subsystem.left_deployer.set(0)
+        self.intake_subsystem.set_internal_deployer_position(0)
+        self.intake_subsystem.state = "force_retracted" if not interrupted else "undeployed"
