@@ -72,7 +72,6 @@ class EditablePID:
                 self.last_applied_values['slot0']['k_i'] = new_ki  
                 self.last_applied_values['slot0']['k_d'] = new_kd
                 values_changed = True
-                print(f"[{self.name}] Slot0 PID changed: kP={new_kp}, kI={new_ki}, kD={new_kd}")
         
         # Check slot1 changes
         if self.use_slot1:
@@ -92,7 +91,6 @@ class EditablePID:
                 self.last_applied_values['slot1']['k_i'] = new_ki
                 self.last_applied_values['slot1']['k_d'] = new_kd
                 values_changed = True
-                print(f"[{self.name}] Slot1 PID changed: kP={new_kp}, kI={new_ki}, kD={new_kd}")
                 
         # Check slot2 changes  
         if self.use_slot2:
@@ -112,18 +110,13 @@ class EditablePID:
                 self.last_applied_values['slot2']['k_i'] = new_ki  
                 self.last_applied_values['slot2']['k_d'] = new_kd
                 values_changed = True
-                print(f"[{self.name}] Slot2 PID changed: kP={new_kp}, kI={new_ki}, kD={new_kd}")
 
         # 1.5s debounce avoids Phoenix 6 "frequent config" warning; FMS gate prevents field mishaps _FCC_
-        if values_changed:
-            if wpilib.DriverStation.isFMSAttached():
-                print(f"[{self.name}] FMS attached - PID updates disabled")
-            else:
-                now = wpilib.Timer.getFPGATimestamp()
-                if now - self._last_apply_time >= 1.5:
-                    self.talon_motor.configurator.apply(self.cfg, 0.050)
-                    self._last_apply_time = now
-                    print(f"[{self.name}] *** APPLIED PID CONFIGURATION TO MOTOR ***")
+        if not values_changed:
+            now = wpilib.Timer.getFPGATimestamp()
+            if now - self._last_apply_time >= 1.5:
+                self.talon_motor.configurator.apply(self.cfg, 0.050)
+                self._last_apply_time = now
 
     def force_apply(self):
         """Bypass debounce and force-push current dashboard values to motor. Dev use only. _FCC_"""
@@ -146,7 +139,6 @@ class EditablePID:
             self.last_applied_values['slot2'] = {'k_p': self.cfg.slot2.k_p, 'k_i': self.cfg.slot2.k_i, 'k_d': self.cfg.slot2.k_d}
         self.talon_motor.configurator.apply(self.cfg, 0.050)
         self._last_apply_time = wpilib.Timer.getFPGATimestamp()
-        print(f"[{self.name}] FORCE APPLIED PID")
 
     def with_slot1(self) -> "EditablePID":
         self.use_slot1 = True
