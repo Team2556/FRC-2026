@@ -136,3 +136,4 @@ class ConditionalAlignAndShoot(HubAlign):
         
         ResetShooterHood(self._hood).schedule()
         self.transfer_subsystem.stop()
+        self._shooter.disable()

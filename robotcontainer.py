@@ -117,18 +117,19 @@ class RobotContainer:
 
         # =========================
         #        TESTING ONLY
-        self.hood_subsystem.setDefaultCommand(
-            hood_commands.ManualShooterHood(
-                self.hood_subsystem,
-                self._controller_2,
-                self._get_hood_pose_and_target,
-            )
-        )
+        # self.hood_subsystem.setDefaultCommand(
+        #     hood_commands.ManualShooterHood(
+        #         self.hood_subsystem,
+        #         self._controller_2,
+        #         self._get_hood_pose_and_target,
+        #     )
+        # )
+        # =========================
+        
         # Retracts hood in danger zone (bumps/trench); interrupts default command _FCC_
         Trigger(self._drivetrain.should_stop_shooting).whileTrue(
             RunCommand(lambda: self.hood_subsystem.reset(), self.hood_subsystem)
         )
-        # =========================
         
         self._controller_2.b().whileTrue(RunTransferCommand(self.transfer_subsystem, self.shooter_subsystem))
 
@@ -150,11 +151,6 @@ class RobotContainer:
         self._controller_2.povDown().onTrue(
             IntakeForceRetract(self.intake_subsystem)
         )
-
-        # Controller 1: both bumpers together — intake deploy
-        _c1_intake = self._controller_1.leftBumper().and_(self._controller_1.rightBumper())
-        _c1_intake.onTrue(IntakeCommandDeploy(self.intake_subsystem))
-        _c1_intake.onFalse(IntakeCommandUndeploy(self.intake_subsystem))
 
         # Dev only: Back + Start force-pushes all dashboard PID values to motors
         (self._controller_1.back().and_(self._controller_1.start())).onTrue(

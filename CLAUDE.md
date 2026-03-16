@@ -80,7 +80,7 @@ class MySubsystem(commands2.Subsystem):
         super().__init__()   # REQUIRED — must be first
 ```
 
-### `periodic()` is for telemetry only — not hardware control
+### `periodic()` is for telemetry only — not hardware control edit: (but actually for hardware control sometimes)
 `periodic()` is called every 20ms by the scheduler in all modes. Use it **only** for:
 - SmartDashboard / NetworkTables telemetry updates
 - Odometry updates
