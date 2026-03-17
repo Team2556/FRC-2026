@@ -30,6 +30,8 @@ class kHoodMotor:
     # Dashboard override defaults
     OVERRIDE_ENABLED = False
     OVERRIDE_ANGLE_DEG = 25.0
+    
+    OPPOSING_ANGLE_DEG = 35.0
 
     @staticmethod
     def to_revs(degrees: float) -> float:

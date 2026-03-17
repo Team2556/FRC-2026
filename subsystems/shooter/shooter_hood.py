@@ -46,6 +46,7 @@ class ShooterHood(Subsystem):
         )
 
         self.set_position(kHoodMotor.to_revs(kHoodMotor.HOME_ANGLE_DEG))
+        self.robot_zone = "alliance"
 
     def set_target_angle(self, degrees: float) -> None:
         self._target_angle_deg = degrees
@@ -93,6 +94,8 @@ class ShooterHood(Subsystem):
             angle_deg = kHoodMotor.HOME_ANGLE_DEG
         elif self.nt.get("Override Enabled"):
             angle_deg = self.nt.get("Override Angle (deg)")
+        elif self.robot_zone == "opposing":
+            angle_deg = kHoodMotor.OPPOSING_ANGLE_DEG
         else:
             angle_deg = self._target_angle_deg
             
@@ -116,3 +119,6 @@ class ShooterHood(Subsystem):
         kHoodMotor.RESET_HOME_SPEED = self.nt.get("Reset Home Speed")
 
         self.editable_pid.periodic()
+        
+        from wpilib import SmartDashboard
+        SmartDashboard.putString("Robot Zone", self.robot_zone)
