@@ -231,3 +231,4 @@ cython_debug/
 .pytest_cache
 
 .claude/
+.docs/
