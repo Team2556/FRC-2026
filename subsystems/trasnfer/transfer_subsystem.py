@@ -54,6 +54,11 @@ class TransferSubsystem(Subsystem):
         self.spindexer_nt.set("Ideal RPM", kSpindexer.TARGET_RPM / -60)
         self.up_transfer_nt.set("Ideal RPM", kTransfer.TARGET_RPM / -60)
         self.nt.set("Active", True)
+    
+    def spindex_only(self):
+        self.spindex_motor.set_control(self.spindex_velocity_voltage.with_velocity(kSpindexer.TARGET_RPM / -60))
+        self.spindexer_nt.set("Ideal RPM", kSpindexer.TARGET_RPM / 60)
+        self.nt.set("Active", True)
 
     def stop(self):
         self.spindex_motor.set_control(self._neutral)

@@ -47,7 +47,9 @@ class kPoses:
     neutral_grab_right1 = Pose2d(7.5, from_edge, Rotation2d(-pi/2))
     neutral_grab_right2 = Pose2d(7.8, 1.0, Rotation2d(-pi/2))
     neutral_grab_right3 = Pose2d(7.8, 3.5, Rotation2d(-pi/2))
-    neutral_grab_right4 = Pose2d(2, 1.5, Rotation2d(pi))
+    neutral_grab_right4 = Pose2d(6.0, 0.6, Rotation2d(pi))
+    neutral_grab_right5 = Pose2d(3.0, 0.5, Rotation2d(pi))
+    neutral_grab_right6 = Pose2d(2, 1.5, Rotation2d(pi))
     
     auto0 = Pose2d(4.5, 0.6, Rotation2d())
     auto1 = Pose2d(6, 0.6, Rotation2d())

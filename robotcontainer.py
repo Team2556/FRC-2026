@@ -13,7 +13,7 @@ from util.robot_zone_checker import RobotZoneChecker
 
 from commands.vision import vision_odometry
 from commands.path_commands import custom_path_commands, go_back_with_path
-from commands.transfer.run_transfer_motors import RunTransferCommand
+from commands.transfer.run_transfer_motors import RunTransferCommand, ReverseTransferCommand, SpindexOnlyCommand
 from commands.intake.intake_commands import (
     IntakeCommandDeploy,
     IntakeCommandUndeploy,
@@ -154,15 +154,19 @@ class RobotContainer:
         # =========================
 
         self._controller_2.b().whileTrue(
-            RunTransferCommand(self.transfer_subsystem, self.shooter_subsystem)
+            RunTransferCommand(self.transfer_subsystem)
         )
         
         self._controller_2.a().whileTrue(
-            RunTransferCommand(self.transfer_subsystem, self.shooter_subsystem)
+            ReverseTransferCommand(self.transfer_subsystem)
         )
 
         self._controller_2.y().whileTrue(
             shooter_commands.EnableShooter(self.shooter_subsystem)
+        )
+        
+        self._controller_2.x().whileTrue(
+            SpindexOnlyCommand(self.transfer_subsystem)
         )
 
         # self._controller_2.povUp().onTrue(ClimbUp(self.climb_subsystem))
