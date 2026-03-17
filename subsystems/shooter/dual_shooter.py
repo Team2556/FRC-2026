@@ -44,8 +44,8 @@ class DualMotorShooter(commands2.Subsystem):
 
         self.idle_request = VelocityVoltage(velocity=kShooterMotor.IDLE_RPM / 60, slot=0)
         self.coast_request = NeutralOut()
-        self.charge_request = VelocityVoltage(velocity=kShooterMotor.TARGET_RPM / 60, slot=0)
-        self.shoot_request = VelocityVoltage(velocity=kShooterMotor.TARGET_RPM / 60, slot=1)
+        self.charge_request = VelocityVoltage(velocity=kShooterMotor.TARGET_RPM / 60, slot=1)
+        self.shoot_request = VelocityVoltage(velocity=kShooterMotor.TARGET_RPM / 60, slot=2)
 
         self._state: ShooterState = ShooterState.IDLE
         self.is_charged = False
@@ -61,7 +61,7 @@ class DualMotorShooter(commands2.Subsystem):
         self.nt_sub.float("Reach Target Velocity Error", default=kShooterMotor.REACH_TARGET_VELOCITY_ERROR)
 
         self.editable_PID = EditablePID(
-            "Shooter/Motor", self._top_motor, self.cfg, use_slot0=True, use_slot1=True
+            "Shooter/Motor", self._top_motor, self.cfg, use_slot0=True, use_slot1=True, use_slot2=True
         )
 
     def disable(self) -> None:
@@ -77,20 +77,14 @@ class DualMotorShooter(commands2.Subsystem):
         
         motor_velocity_rpm = self._top_motor.get_velocity().value * 60
         if self._state == ShooterState.IDLE:
-            # at_idle_RPM = motor_velocity_rpm > kShooterMotor.IDLE_RPM
-            self._top_motor.set_control(
-                self.idle_request
-            )
+            self._top_motor.set_control(self.idle_request)
             
             self.nt.set('State', 'IDLE')
 
         elif self._state == ShooterState.ENABLED and not self.is_charged:
             self._top_motor.set_control(self.charge_request)
 
-            self.is_charged = (
-                abs(motor_velocity_rpm - kShooterMotor.TARGET_RPM)
-                < kShooterMotor.REACH_TARGET_VELOCITY_ERROR
-            )
+            self.is_charged = (motor_velocity_rpm > kShooterMotor.TARGET_RPM - kShooterMotor.REACH_TARGET_VELOCITY_ERROR)
             
             self.nt.set('State', 'CHARGING')
 
