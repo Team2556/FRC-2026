@@ -63,14 +63,14 @@ class CustomPathCommands:
         "neutral_grab_right" : SequentialCommandGroup(
             InitialPose(self.drivetrain, pose=kPoses.neutral_grab_right0),
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right1),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right2
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right1
                              ).with_parallel_command(IntakeCommandManualForward(self.intake_subsystem)),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right2),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right3).with_override_speed(0.7),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right4
-                             ).with_parallel_command(IntakeCommandManualReverse(self.intake_subsystem)),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right4),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right5),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right6),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right6
+                             ).with_parallel_command(IntakeCommandManualReverse(self.intake_subsystem)),
             ),
             ParallelRaceGroup(
                 ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, 

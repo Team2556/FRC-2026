@@ -46,7 +46,7 @@ class TurretTargetBase(commands2.Command):
     def initialize(self):
         self.target = FlipUtil.fieldPose(self.target_pose_blue)
     
-    def pereodic(self):
+    def periodic(self):
         self.rotation_PID.setP(self.nt.get("k_p"))
         self.rotation_PID.setI(self.nt.get("k_i"))
         self.rotation_PID.setD(self.nt.get("k_d"))

@@ -108,7 +108,7 @@ class ConditionalAlignAndShoot(HubAlign):
         self._shooter.enable()
 
     def execute(self):
-        self.pereodic()
+        self.periodic()
         super().execute()
         robot_pose = self._drivetrain.get_state().pose
 

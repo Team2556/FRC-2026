@@ -16,7 +16,7 @@ class DriveToASpot(commands2.Command):
         subsystem: drivetrain.SwerveDriveTrain, 
         target_pose : Pose2d = Pose2d(),
         max_speed : float = 1.0, 
-        max_rps : float = 0.5, 
+        max_rps : float = 0.75, 
         end_tolerance : float = 0.1,
         end_rotation_tolerance : float = 0.1,
         goal_end_velocity : float = 0.0,
