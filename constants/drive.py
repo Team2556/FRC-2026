@@ -2,7 +2,7 @@ from wpimath.units import rotationsToRadians
 
 class kAutoAlign:
     class ROTATION_PID:
-        p = 0.00167
+        p = 0.003
         i = 0.0
         d = 0.00001
 
@@ -27,4 +27,5 @@ class kDriveConfig:
     SPEED_MULT = 1.0
     ROTATION_MULT = 1.0
     """Speed at 12v"""
-    MAX_ANGULAR_RATE = rotationsToRadians(6)
+    MAX_ANGULAR_RATE = rotationsToRadians(3)
+
