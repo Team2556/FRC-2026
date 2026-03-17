@@ -72,12 +72,12 @@ class IntakeSubsystem(commands2.Subsystem):
 
     def set_deployer_position(self, pos):
         self.left_pivot_motor.set_control(self.position_request.with_position(pos))
-        self.right_pivot_motor.set_control(self.position_request.with_position(pos))
+        self.right_pivot_motor.set_control(self.position_request.with_position(-pos))
         self.nt.set("Ideal Pivot Position", pos)
 
     def set_internal_deployer_position(self, pos):
         self.left_pivot_motor.set_position(pos)
-        self.right_pivot_motor.set_position(pos)
+        self.right_pivot_motor.set_position(-pos)
         self.nt.set("Ideal Pivot Position", 0)
 
     def change_deployer_slot(self, slot=0):
