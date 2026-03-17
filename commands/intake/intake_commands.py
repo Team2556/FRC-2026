@@ -83,7 +83,7 @@ class IntakeCommandManualForward(Command):
         
     def initialize(self):
         self.intake_subsystem.set_deployer_speed(kIntakePivot.DEPLOYED_SPEED)
-        self.intake_subsystem.state = "manual forward"
+        self.intake_subsystem.state = "deployed"
         self.intake_subsystem.set_roller_speed(kIntakeRoller.TARGET_RPM)
     
     def isFinished(self):
@@ -91,7 +91,6 @@ class IntakeCommandManualForward(Command):
     
     def end(self, interrupted):
         self.intake_subsystem.set_deployer_speed(0)
-        self.intake_subsystem.state = "deployed"
     
 class IntakeCommandManualReverse(Command):
     def __init__(self, intake_subsystem : IntakeSubsystem):
@@ -100,7 +99,7 @@ class IntakeCommandManualReverse(Command):
         
     def initialize(self):
         self.intake_subsystem.set_deployer_speed(kIntakePivot.DEPLOYED_SPEED * -1)
-        self.intake_subsystem.state = "manual reverse"
+        self.intake_subsystem.state = "undeployed"
         self.intake_subsystem.stop_roller()
     
     def isFinished(self):
@@ -108,7 +107,6 @@ class IntakeCommandManualReverse(Command):
     
     def end(self, interrupted):
         self.intake_subsystem.set_deployer_speed(0)
-        self.intake_subsystem.state = "undeployed"
 
 class IntakeDefaultCommand(Command):
     def __init__(self, intake_subsystem : IntakeSubsystem):
