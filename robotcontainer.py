@@ -20,7 +20,9 @@ from commands.intake.intake_commands import (
     IntakeForceRetract, 
     IntakeCommandManualForward,
     IntakeCommandManualReverse,
-    IntakeDefaultCommand
+    IntakeDefaultCommand,
+    IntakeRollerForward, 
+    IntakeRollerBackward
 )
 from commands.climb.climb import ClimbDown, ClimbUp
 from commands.shooter import shooter_commands, hood_commands
@@ -174,10 +176,12 @@ class RobotContainer:
         self._controller_2.rightTrigger().onFalse(
             IntakeCommandManualReverse(self.intake_subsystem)
         )
+        self._controller_2.leftTrigger().onTrue(hood_commands.ResetShooterHood(self.hood_subsystem))
+        
+        self._controller_2.rightBumper().whileTrue(IntakeRollerForward(self.intake_subsystem))
+        self._controller_2.leftBumper().whileTrue(IntakeRollerBackward(self.intake_subsystem))
 
         self._controller_2.povDown().onTrue(IntakeForceRetract(self.intake_subsystem))
-
-        self._controller_2.leftBumper().onTrue(hood_commands.ResetShooterHood(self.hood_subsystem))
         
         # Controller 1: both bumpers together — intake deploy
         # _c1_intake = self._controller_1.leftBumper().and_(
