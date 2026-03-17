@@ -111,6 +111,7 @@ class TurretTargetWithVelocity(TurretTargetBase):
 
     @staticmethod
     def estimate_flight_time(distance: meters) -> float:
+        return 1
         interpolation_distance_data, interpolation_time_data = zip(
             *kShooterData.SHOT_TIME
         )
