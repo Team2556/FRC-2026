@@ -31,11 +31,11 @@ class IntakeSubsystem(commands2.Subsystem):
         self.roller_cfg = kIntakeRoller._CONFIG
         self.roller_cfg.motor_output.neutral_mode = signals.NeutralModeValue.COAST
 
-        self.right_pivot_motor.set_control(
-            phoenix6.controls.Follower(
-                kCANId.intake.LEFT_PIVOT, MotorAlignmentValue.OPPOSED
-            )
-        )
+        # self.right_pivot_motor.set_control(
+        #     phoenix6.controls.Follower(
+        #         kCANId.intake.LEFT_PIVOT, MotorAlignmentValue.OPPOSED
+        #     )
+        # )
 
         if not wpilib.RobotBase.isSimulation():
             self.left_pivot_motor.configurator.apply(self.pivot_cfg)
@@ -72,14 +72,17 @@ class IntakeSubsystem(commands2.Subsystem):
 
     def set_deployer_position(self, pos):
         self.left_pivot_motor.set_control(self.position_request.with_position(pos))
+        self.right_pivot_motor.set_control(self.position_request.with_position(pos))
         self.nt.set("Ideal Pivot Position", pos)
 
     def set_internal_deployer_position(self, pos):
         self.left_pivot_motor.set_position(pos)
+        self.right_pivot_motor.set_position(pos)
         self.nt.set("Ideal Pivot Position", 0)
 
     def change_deployer_slot(self, slot=0):
         self.left_pivot_motor.set_control(self.position_request.with_slot(slot))
+        self.right_pivot_motor.set_control(self.position_request.with_slot(slot))
         self.nt.set("Current Slot", slot)
 
     def set_roller_speed(self, rpm):
