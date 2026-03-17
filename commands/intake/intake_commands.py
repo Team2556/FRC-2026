@@ -98,7 +98,7 @@ class IntakeCommandManualReverse(Command):
         self.addRequirements(intake_subsystem)
         
     def initialize(self):
-        self.intake_subsystem.set_deployer_speed(kIntakePivot.DEPLOYED_SPEED * -1)
+        self.intake_subsystem.set_deployer_speed(kIntakePivot.DEPLOYED_SPEED * -1 * 1.5)
         self.intake_subsystem.state = "undeployed"
         self.intake_subsystem.stop_roller()
     
@@ -117,7 +117,7 @@ class IntakeDefaultCommand(Command):
         if ((self.intake_subsystem.left_pivot_motor.get_reverse_limit().value == signals.ReverseLimitValue.OPEN
              or self.intake_subsystem.right_pivot_motor.get_reverse_limit().value == signals.ReverseLimitValue.OPEN)
         and not self.intake_subsystem.state == "deployed"):
-            self.intake_subsystem.set_deployer_speed(kIntakePivot.DEPLOYED_SPEED * -0.8)
+            self.intake_subsystem.set_deployer_speed(kIntakePivot.DEPLOYED_SPEED * -1.5)
             self.intake_subsystem.state = "default reverse"
             # self.intake_subsystem.stop_roller()
 

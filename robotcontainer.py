@@ -130,10 +130,28 @@ class RobotContainer:
             )
         )
 
-        self._controller_1.x().whileTrue(self.custom_path_commands.left_trench)
-        self._controller_1.a().whileTrue(self.custom_path_commands.left_bump)
-        self._controller_1.y().whileTrue(self.custom_path_commands.right_bump)
-        self._controller_1.b().whileTrue(self.custom_path_commands.right_trench)
+        self._controller_1.x().whileTrue(
+            ParallelCommandGroup(
+                self.custom_path_commands.left_trench,
+                IntakeCommandManualReverse(self.intake_subsystem)
+            )
+        )
+        
+        self._controller_1.a().whileTrue(
+            self.custom_path_commands.left_bump
+        )
+        
+        self._controller_1.y().whileTrue(
+            self.custom_path_commands.right_bump
+        )
+        
+        self._controller_1.b().whileTrue(
+            ParallelCommandGroup(
+                self.custom_path_commands.right_trench,
+                IntakeCommandManualReverse(self.intake_subsystem)
+            )
+        )
+        
 
         # CONTROLLER 2
 
