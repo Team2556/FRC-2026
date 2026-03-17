@@ -15,7 +15,7 @@ class kAutoAlign:
     # because it takes some time for fuels to start going up from transfer and them actually shooting at an angle
     # But ALSO keep in mind that there might be fuel just before the flywheel for example when quickly switching
     # between alliance/neutral zones
-    REQUIRED_SHOOT_ACCURACY_DEGREES = 10
+    REQUIRED_SHOOT_ACCURACY_DEGREES = 2
     AUTO_ALIGN_MAX_ANGULAR_RATE = rotationsToRadians(1.5)
 
 class kDriveConfig:
