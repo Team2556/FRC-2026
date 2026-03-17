@@ -1,9 +1,11 @@
-from commands2 import cmd, ConditionalCommand, WaitCommand, SequentialCommandGroup
+from commands2 import cmd, ConditionalCommand, WaitCommand, SequentialCommandGroup, ParallelRaceGroup
 from wpimath.geometry import Pose2d, Rotation2d
 
 from commands.path_commands.drive_to_a_spot import DriveToASpot
 from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
 from commands.auto_align.path_with_align import DriveWithAlign
+from commands.auto_align.align_with_controller import ConditionalAlignAndShoot
+from commands.drive.drive_commands import InitialPose, AutoDrive
 
 from util.robot_zone_checker import RobotZoneChecker
 from util.flip_util import FlipUtil
@@ -14,25 +16,50 @@ from constants.field import kHub
 from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.shooter.dual_shooter import DualMotorShooter
+from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
+from subsystems.intake.intake import IntakeSubsystem
+from subsystems.led.LED_controller import CANdleLEDController
 
 class CustomPathCommands:
     '''"Container" that has all the custom useful path commands'''
     def __init__(
         self,
         drivetrain : SwerveDriveTrain = None,
+        intake_subsystem : IntakeSubsystem = None,
+        transfer_subsystem : TransferSubsystem = None,
         shooter_subsystem : DualMotorShooter = None,
+        hood_subsystem : ShooterHood = None,
+        led_subsystem : CANdleLEDController = None,
         climb_subsyetem : None = None,
         ):
         
         self.drivetrain = drivetrain
         self.shooter_subsystem = shooter_subsystem
+        self.transfer_subsystem = transfer_subsystem
+        self.intake_subsystem = intake_subsystem
+        self.hood_subsystem = hood_subsystem
+        self.led_subsystem = led_subsystem
         
         self.make_path_commands()
         self.make_autos()
         
     def make_autos(self):
         return {
-        "test_auto" : SequentialCommandGroup(
+        "simple_right" : SequentialCommandGroup(
+            InitialPose(self.drivetrain, pose=kPoses.auto0),
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.simple_right1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.simple_right2),
+            ),
+            ParallelRaceGroup(
+                ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, 
+                                         self.hood_subsystem, self.led_subsystem),
+                AutoDrive(self.drivetrain),
+                WaitCommand(5)
+            )
+        ),
+        "maybe_good_auto" : SequentialCommandGroup(
+            InitialPose(self.drivetrain, pose=kPoses.auto0),
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.auto1),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.auto2),
@@ -47,7 +74,7 @@ class CustomPathCommands:
                 ).with_end_tolerance(0.5).with_goal_end_velocity(0).with_override_speed(0.35),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.auto6).with_precise_values()
             )
-        )
+        ),
         }
         
     def make_path_commands(self):
