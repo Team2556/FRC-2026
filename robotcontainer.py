@@ -8,6 +8,7 @@ from commands.auto_align import align_with_controller
 from commands.drive import drive_commands
 from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
+from util.auto_chooser import AutoChooser
 
 from commands.vision import vision_odometry
 from commands.path_commands import custom_path_commands, go_back_with_path
@@ -25,6 +26,7 @@ from commands.shooter import shooter_commands, hood_commands
 from constants.vision import kCamera
 from constants.drive import kDriveConfig
 from constants.led import kLED
+from constants.key_poses import kPoses
 
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
@@ -70,6 +72,8 @@ class RobotContainer:
             # climb_subsyetem=self.climb_subsystem,
         )
         self.time_manager = SendFMSData()
+        self.auto_chooser = AutoChooser(self.custom_path_commands.make_autos())
+        self.auto_chooser.make_dropdown()
 
         self.configureButtonBindings()
 

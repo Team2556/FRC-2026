@@ -37,10 +37,20 @@ class TurretTargetBase(commands2.Command):
             kAutoAlign.ROTATION_PID.d,
         )
         self.rotation_PID.enableContinuousInput(-180.0, 180.0)
+        
+        self.nt = NTTable("Auto Align")
+        self.nt.float("k_p", kAutoAlign.ROTATION_PID.p)
+        self.nt.float("k_i", kAutoAlign.ROTATION_PID.i)
+        self.nt.float("k_d", kAutoAlign.ROTATION_PID.d)
 
     def initialize(self):
         self.target = FlipUtil.fieldPose(self.target_pose_blue)
-
+    
+    def pereodic(self):
+        kAutoAlign.ROTATION_PID.p = self.nt.get("k_p")
+        kAutoAlign.ROTATION_PID.i = self.nt.get("k_i")
+        kAutoAlign.ROTATION_PID.d = self.nt.get("k_d")
+            
     def get_target_yaw(self, robot_pose: Pose2d, target_pose: Pose2d) -> degrees:
         shooter_field_pos = robot_pose.translation() + self.shooter_offset.rotateBy(
             robot_pose.rotation()

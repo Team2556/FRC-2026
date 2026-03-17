@@ -31,8 +31,8 @@ class CustomPathCommands:
         self.make_autos()
         
     def make_autos(self):
-        
-        self.test_auto = SequentialCommandGroup(
+        return {
+        "test_auto" : SequentialCommandGroup(
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.auto1),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.auto2),
@@ -48,6 +48,7 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.auto6).with_precise_values()
             )
         )
+        }
         
     def make_path_commands(self):
         
