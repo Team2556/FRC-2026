@@ -66,7 +66,7 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right1),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right2
                              ).with_parallel_command(IntakeCommandDeploy(self.intake_subsystem)),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right3).with_override_speed(0.5),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right3).with_override_speed(0.7),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_right_trench
                              ).with_parallel_command(IntakeCommandUndeploy(self.intake_subsystem)),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_right_trench),
