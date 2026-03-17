@@ -4,7 +4,7 @@ class kAutoAlign:
     class ROTATION_PID:
         p = 0.006
         i = 0.00005
-        d = 0.00006
+        d = 0.00008
 
     DIRECTION_TUNING = 0.0
     SHOOTER_ACCURACY = 2

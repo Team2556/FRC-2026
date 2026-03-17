@@ -82,6 +82,6 @@ class kShooterData:
 
 class kShooterConfig:
     # Negative X = toward back of robot where shooter sits _FCC_
-    SHOOTER_OFFSET = Translation2d(-10.432 * kMath.MetersPerInch, 0)  # Meters
+    SHOOTER_OFFSET = Translation2d(-12 * kMath.MetersPerInch, 0)  # Meters
     SHOOTER_DIRECTION = -90  # 180 for Reverse
     WHEEL_RADIUS = 4 * kMath.MetersPerInch

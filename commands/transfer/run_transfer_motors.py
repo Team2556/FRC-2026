@@ -35,7 +35,7 @@ class SpindexOnlyCommand(commands2.Command):
         self.addRequirements(transfer_sybsystem)
 
     def execute(self):
-        self.transfer_sybsystem.reverse()
+        self.transfer_sybsystem.spindex_only()
 
     def end(self, interrupted):
         self.transfer_sybsystem.stop()
