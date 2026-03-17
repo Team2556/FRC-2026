@@ -31,11 +31,11 @@ class IntakeSubsystem(commands2.Subsystem):
         self.roller_cfg = kIntakeRoller._CONFIG
         self.roller_cfg.motor_output.neutral_mode = signals.NeutralModeValue.COAST
 
-        self.right_pivot_motor.set_control(
-            phoenix6.controls.Follower(
-                kCANId.intake.LEFT_PIVOT, MotorAlignmentValue.OPPOSED
-            )
-        )
+        # self.right_pivot_motor.set_control(
+        #     phoenix6.controls.Follower(
+        #         kCANId.intake.LEFT_PIVOT, MotorAlignmentValue.OPPOSED
+        #     )
+        # )
 
         if not wpilib.RobotBase.isSimulation():
             self.left_pivot_motor.configurator.apply(self.pivot_cfg)
