@@ -4,7 +4,7 @@ from enum import Enum
 import commands2
 
 from phoenix6.hardware import TalonFX
-from phoenix6.controls import Follower, VelocityVoltage, CoastOut
+from phoenix6.controls import Follower, VelocityVoltage, NeutralOut
 from phoenix6 import signals
 
 from util.nt_util import NTTable
@@ -42,7 +42,7 @@ class DualMotorShooter(commands2.Subsystem):
         )
 
         self.idle_request = VelocityVoltage(velocity=kShooterMotor.IDLE_RPM / 60, slot=0)
-        self.coast_request = CoastOut()
+        self.coast_request = NeutralOut()
         self.charge_request = VelocityVoltage(velocity=kShooterMotor.TARGET_RPM / 60, slot=0)
         self.shoot_request = VelocityVoltage(velocity=kShooterMotor.TARGET_RPM / 60, slot=1)
 
@@ -76,15 +76,9 @@ class DualMotorShooter(commands2.Subsystem):
         
         motor_velocity_rpm = self._top_motor.get_velocity().value * 60
         if self._state == ShooterState.IDLE:
-            at_idle_RPM = (
-                abs(motor_velocity_rpm - kShooterMotor.IDLE_RPM)
-                < kShooterMotor.REACH_TARGET_VELOCITY_ERROR
-            )
-            # self._top_motor.set_control(
-            #     self.idle_request if at_idle_RPM else self.coast_request
-            # )
+            at_idle_RPM = motor_velocity_rpm > kShooterMotor.IDLE_RPM
             self._top_motor.set_control(
-                self.idle_request
+                self.idle_request if at_idle_RPM else self.coast_request
             )
             
             self.nt.set('State', 'IDLE')
