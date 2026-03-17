@@ -101,7 +101,7 @@ class IntakeCommandManualReverse(Command):
     def initialize(self):
         self.intake_subsystem.set_deployer_speed(kIntakePivot.DEPLOYED_SPEED * -1)
         self.intake_subsystem.state = "manual reverse"
-        self.intake_subsystem.set_roller_speed(0)
+        self.intake_subsystem.stop_roller()
     
     def isFinished(self):
         return self.intake_subsystem.left_pivot_motor.get_reverse_limit().value == signals.ReverseLimitValue.CLOSED_TO_GROUND
