@@ -67,7 +67,6 @@ class RobotContainer:
         self.hood_subsystem = ShooterHood()
         # self.climb_subsystem = ClimbSubsystem()
 
-
         self.mono_vision = mono_limelight.Vision(kCamera.BACK_LL, kCamera.SHOOTER_LL)
         self.LED_controller = CANdleLEDController()
 
@@ -176,11 +175,10 @@ class RobotContainer:
         self._controller_2.leftTrigger().whileTrue(IntakeRollerForward(self.intake_subsystem))
 
         self._controller_2.rightBumper().onTrue(
-            ConditionalCommand(
-                IntakeCommandManualForward(self.intake_subsystem),
-                IntakeCommandManualReverse(self.intake_subsystem),
-                lambda: self.intake_subsystem.state == "undeployed" or self.intake_subsystem.state == "manual reverse"
-            )
+            IntakeCommandManualForward(self.intake_subsystem),
+        )
+        self._controller_2.leftBumper().onTrue(
+            IntakeCommandManualReverse(self.intake_subsystem),
         )
         
         self._controller_2.povUp().onTrue(hood_commands.ResetShooterHood(self.hood_subsystem))

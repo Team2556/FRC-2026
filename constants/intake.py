@@ -19,7 +19,7 @@ class kIntakePivot:
 
     DEPLOYED_POSITION = 10.0
     
-    DEPLOYED_SPEED = 0.3
+    DEPLOYED_SPEED = 0.2
 
 
 class kIntakeRoller:
