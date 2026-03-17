@@ -15,7 +15,9 @@ from commands.transfer.run_transfer_motors import RunTransferCommand
 from commands.intake.intake_commands import (
     IntakeCommandDeploy,
     IntakeCommandUndeploy,
-    IntakeForceRetract,
+    IntakeForceRetract, 
+    IntakeCommandManualForward,
+    IntakeCommandManualReverse
 )
 from commands.climb.climb import ClimbDown, ClimbUp
 from commands.shooter import shooter_commands, hood_commands
@@ -164,10 +166,10 @@ class RobotContainer:
         # self._controller_2.povDown().onTrue(ClimbDown(self.climb_subsystem))
 
         self._controller_2.rightTrigger().onTrue(
-            IntakeCommandDeploy(self.intake_subsystem)
+            IntakeCommandManualForward(self.intake_subsystem)
         )
         self._controller_2.rightTrigger().onFalse(
-            IntakeCommandUndeploy(self.intake_subsystem)
+            IntakeCommandManualReverse(self.intake_subsystem)
         )
 
         self._controller_2.povDown().onTrue(IntakeForceRetract(self.intake_subsystem))

@@ -75,3 +75,35 @@ class IntakeForceRetract(Command):
         self.intake_subsystem.left_pivot_motor.set(0)
         self.intake_subsystem.set_internal_deployer_position(0)
         self.intake_subsystem.state = "force_retracted" if not interrupted else "undeployed"
+
+class IntakeCommandManualForward(Command):
+    def __init__(self, intake_subsystem : IntakeSubsystem):
+        self.intake_subsystem = intake_subsystem
+        self.addRequirements(intake_subsystem)
+        
+    def initialize(self):
+        self.intake_subsystem.set_deployer_speed(kIntakePivot.DEPLOYED_SPEED)
+        self.intake_subsystem.state = "manual forward"
+    
+    def isFinished(self):
+        return self.intake_subsystem.left_pivot_motor.get_forward_limit().value == signals.ForwardLimitValue.CLOSED_TO_GROUND
+    
+    def end(self, interrupted):
+        self.intake_subsystem.set_deployer_speed(0)
+        self.intake_subsystem.state = "deployed"
+    
+class IntakeCommandManualReverse(Command):
+    def __init__(self, intake_subsystem : IntakeSubsystem):
+        self.intake_subsystem = intake_subsystem
+        self.addRequirements(intake_subsystem)
+        
+    def initialize(self):
+        self.intake_subsystem.set_deployer_speed(kIntakePivot.DEPLOYED_SPEED * -1)
+        self.intake_subsystem.state = "manual reverse"
+    
+    def isFinished(self):
+        return self.intake_subsystem.left_pivot_motor.get_reverse_limit().value == signals.ReverseLimitValue.CLOSED_TO_GROUND
+    
+    def end(self, interrupted):
+        self.intake_subsystem.set_deployer_speed(0)
+        self.intake_subsystem.state = "undeployed"

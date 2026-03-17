@@ -18,6 +18,8 @@ class kIntakePivot:
     _CONFIG.motion_magic.motion_magic_jerk = 1013            # rotations/sec³
 
     DEPLOYED_POSITION = 10.0
+    
+    DEPLOYED_SPEED = 0.25
 
 
 class kIntakeRoller:
