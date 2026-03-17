@@ -92,14 +92,14 @@ class DualMotorShooter(commands2.Subsystem):
         motor_velocity_rpm = self._top_motor.get_velocity().value * 60
         if self._state == ShooterState.IDLE:
             self._top_motor.set_control(
-                self.idle_request.with_velocity(kShooterMotor.IDLE_RPM)
+                self.idle_request.with_velocity(kShooterMotor.IDLE_RPM / 60)
             )
 
             self.nt.set("State", "IDLE")
 
         elif self._state == ShooterState.ENABLED and not self.is_charged:
             self._top_motor.set_control(
-                self.charge_request.with_velocity(kShooterMotor.TARGET_RPM)
+                self.charge_request.with_velocity(kShooterMotor.TARGET_RPM / 60)
             )
             self.is_charged = (
                 abs(motor_velocity_rpm - kShooterMotor.TARGET_RPM)
@@ -110,7 +110,7 @@ class DualMotorShooter(commands2.Subsystem):
 
         elif self._state == ShooterState.ENABLED and self.is_charged:
             self._top_motor.set_control(
-                self.shoot_request.with_velocity(kShooterMotor.TARGET_RPM)
+                self.shoot_request.with_velocity(kShooterMotor.TARGET_RPM / 60)
             )
 
             self.nt.set("State", "CHARGED")
