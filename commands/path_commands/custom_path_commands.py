@@ -20,6 +20,8 @@ from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
 from subsystems.intake.intake import IntakeSubsystem
 from subsystems.led.LED_controller import CANdleLEDController
 
+from commands.intake.intake_commands import IntakeCommandDeploy, IntakeCommandUndeploy
+
 class CustomPathCommands:
     '''"Container" that has all the custom useful path commands'''
     def __init__(
@@ -56,6 +58,25 @@ class CustomPathCommands:
                                          self.hood_subsystem, self.led_subsystem),
                 AutoDrive(self.drivetrain),
                 WaitCommand(5)
+            )
+        ),
+        "neutral_grab_right" : SequentialCommandGroup(
+            InitialPose(self.drivetrain, pose=kPoses.neutral_grab_right0),
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right2
+                             ).with_parallel_command(IntakeCommandDeploy(self.intake_subsystem)),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right3).with_override_speed(0.5),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_right_trench
+                             ).with_parallel_command(IntakeCommandUndeploy(self.intake_subsystem)),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_right_trench),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right4),
+            ),
+            ParallelRaceGroup(
+                ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, 
+                                         self.hood_subsystem, self.led_subsystem),
+                AutoDrive(self.drivetrain),
+                WaitCommand(4)
             )
         ),
         "maybe_good_auto" : SequentialCommandGroup(

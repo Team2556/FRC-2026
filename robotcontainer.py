@@ -76,7 +76,6 @@ class RobotContainer:
             transfer_subsystem=self.transfer_subsystem,
             shooter_subsystem=self.shooter_subsystem,
             hood_subsystem=self.hood_subsystem,
-            led_subsystem=self.LED_controller
             # climb_subsyetem=self.climb_subsystem,
         )
         self.time_manager = SendFMSData()
@@ -117,7 +116,6 @@ class RobotContainer:
                 self.shooter_subsystem,
                 self.transfer_subsystem,
                 self.hood_subsystem,
-                self.LED_controller,
             )
         )
 
