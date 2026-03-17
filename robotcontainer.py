@@ -18,7 +18,8 @@ from commands.intake.intake_commands import (
     IntakeCommandUndeploy,
     IntakeForceRetract, 
     IntakeCommandManualForward,
-    IntakeCommandManualReverse
+    IntakeCommandManualReverse,
+    IntakeDefaultCommand
 )
 from commands.climb.climb import ClimbDown, ClimbUp
 from commands.shooter import shooter_commands, hood_commands
@@ -68,7 +69,11 @@ class RobotContainer:
 
         self.custom_path_commands = custom_path_commands.CustomPathCommands(
             self._drivetrain,
+            intake_subsystem=self.intake_subsystem,
+            transfer_subsystem=self.transfer_subsystem,
             shooter_subsystem=self.shooter_subsystem,
+            hood_subsystem=self.hood_subsystem,
+            led_subsystem=self.LED_controller
             # climb_subsyetem=self.climb_subsystem,
         )
         self.time_manager = SendFMSData()
@@ -83,6 +88,9 @@ class RobotContainer:
         )
         self.shooter_subsystem.setDefaultCommand(
             shooter_commands.DisableShooter(self.shooter_subsystem)
+        )
+        self.intake_subsystem.setDefaultCommand(
+            IntakeDefaultCommand(self.intake_subsystem)
         )
 
         # CONTROLLER 1
@@ -103,7 +111,6 @@ class RobotContainer:
         self._controller_1.rightTrigger().whileTrue(
             align_with_controller.ConditionalAlignAndShoot(
                 self._drivetrain,
-                self._controller_1,
                 self.shooter_subsystem,
                 self.transfer_subsystem,
                 self.hood_subsystem,
@@ -208,5 +215,4 @@ class RobotContainer:
         self.shooter_subsystem.editable_PID.force_apply()
 
     def getAutonomousCommand(self):
-        # return self.custom_path_commands.make_autos()
-        return None
+        return self.auto_chooser.choose_auto()
