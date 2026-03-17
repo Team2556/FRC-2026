@@ -3,6 +3,7 @@ from wpimath.geometry import Pose2d
 
 from constants.field import kHub, kPassSpots
 from constants.drive import kAutoAlign, kDriveConfig
+from constants.shooter import kShooterMotor
 
 from util import custom_controller
 from util.robot_zone_checker import RobotZoneChecker
@@ -122,6 +123,11 @@ class ConditionalAlignAndShoot(HubAlign):
             self.transfer_subsystem.activate()
         else:
             self.transfer_subsystem.stop()
+        
+        if RobotZoneChecker.is_in_opposing_alliance_zone(self._drivetrain.get_state().pose):
+            kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM_FAR
+        else:
+            kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM
 
     def find_target(self, pose):
         if RobotZoneChecker.is_in_left_neutral_zone(pose):
