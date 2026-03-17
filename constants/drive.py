@@ -2,14 +2,14 @@ from wpimath.units import rotationsToRadians
 
 class kAutoAlign:
     class ROTATION_PID:
-        p = 0.003
-        i = 0.0
-        d = 0.00001
+        p = 0.006
+        i = 0.00005
+        d = 0.00006
 
     DIRECTION_TUNING = 0.0
     SHOOTER_ACCURACY = 2
     ROBOT_VELOCITY_MULT = 0.5
-    FLIGHT_TIME_SCALAR: float = .75
+    FLIGHT_TIME_SCALAR: float = 1
     
     # Keep in mind this degree requirement is when the transfer motors start; it should be a bit more than normal
     # because it takes some time for fuels to start going up from transfer and them actually shooting at an angle
@@ -26,5 +26,5 @@ class kDriveConfig:
     SPEED_MULT = 1.0
     ROTATION_MULT = 1.0
     """Speed at 12v"""
-    MAX_ANGULAR_RATE = rotationsToRadians(3)
+    MAX_ANGULAR_RATE = rotationsToRadians(1.5)
 
