@@ -172,7 +172,7 @@ class RobotContainer:
 
         self._controller_2.povDown().onTrue(IntakeForceRetract(self.intake_subsystem))
 
-        self._controller_2.leftBumper().onTrue(hood_commands.ResetShooterHood())
+        self._controller_2.leftBumper().onTrue(hood_commands.ResetShooterHood(self.hood_subsystem))
         
         # Controller 1: both bumpers together — intake deploy
         # _c1_intake = self._controller_1.leftBumper().and_(
