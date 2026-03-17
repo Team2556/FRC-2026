@@ -22,7 +22,6 @@ class kDriveConfig:
     LOOKAHEAD_SECONDS = 0.25
     
     SLOW_SPEED_MULT = 0.3
-    SLOW_ROTATION_MULT = 0.3
     
     SPEED_MULT = 1.0
     ROTATION_MULT = 1.0

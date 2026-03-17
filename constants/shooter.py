@@ -16,7 +16,7 @@ class kHoodMotor:
     _CONFIG.motion_magic.motion_magic_acceleration = 480
     _CONFIG.motion_magic.motion_magic_jerk = 2400
 
-    RESET_HOME_SPEED = -0.03
+    RESET_HOME_SPEED = -0.3
 
     # Gear ratio: 15.1 motor revolutions = 35 degrees of hood travel
     GEAR_RATIO = 15.1 / 35.0  # revolutions per degree

@@ -31,6 +31,7 @@ class ShooterHood(Subsystem):
         self._target_angle_deg = kHoodMotor.HOME_ANGLE_DEG
         self.force_hide = False
         self._was_hard_stopped = False
+        self.resetting = False
 
         self.nt = NTTable("Shooter").get_subtable("Hood")
         self.nt.float("Hood Position (deg)", 0.0)
@@ -102,7 +103,8 @@ class ShooterHood(Subsystem):
         self.set_position(kHoodMotor.to_revs(angle_deg))
 
     def periodic(self) -> None:
-        self._apply_angle()
+        if not self.resetting:
+            self._apply_angle()
 
         hard_stopped = self.is_hard_stopped()
         if hard_stopped and not self._was_hard_stopped:

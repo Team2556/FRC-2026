@@ -28,6 +28,7 @@ class ResetShooterHood(Command):
 
     def initialize(self):
         self.shooter_hood.set_speed(kHoodMotor.RESET_HOME_SPEED)
+        self.shooter_hood.resetting = True
 
         self.nt.set("Resetting", True)
 
@@ -36,6 +37,7 @@ class ResetShooterHood(Command):
 
     def end(self, interrupted):
         self.shooter_hood.set_speed(0)
+        self.shooter_hood.resetting = False
 
         self.nt.set("Resetting", False)
 
