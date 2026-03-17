@@ -101,7 +101,14 @@ class IntakeCommandManualReverse(Command):
         self.intake_subsystem.set_deployer_speed(kIntakePivot.DEPLOYED_SPEED * -1 * 1.5)
         self.intake_subsystem.state = "undeployed"
         # self.intake_subsystem.stop_roller()
-        
+    
+    def isFinished(self):
+        return self.intake_subsystem.left_pivot_motor.get_reverse_limit().value == signals.ReverseLimitValue.CLOSED_TO_GROUND
+    
+    def end(self, interrupted):
+        self.intake_subsystem.set_deployer_speed(0)
+
+# Temporary Commands     
 class IntakeCommandManualForwardAuto(Command):
     def __init__(self, intake_subsystem : IntakeSubsystem):
         self.intake_subsystem = intake_subsystem
@@ -118,7 +125,6 @@ class IntakeCommandManualForwardAuto(Command):
     def end(self, interrupted):
         self.intake_subsystem.set_deployer_speed(0)
     
-# Temporary Commands
 class IntakeCommandManualReverseAuto(Command):
     def __init__(self, intake_subsystem : IntakeSubsystem):
         self.intake_subsystem = intake_subsystem
