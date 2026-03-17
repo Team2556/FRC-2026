@@ -10,10 +10,12 @@ from util.nt_util import NTTable
 from util.custom_controller import XboxController
 
 from subsystems.shooter.shooter_hood import ShooterHood
+from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 
 from constants.shooter import kHoodMotor
 from constants.shooter import kShooterData
 
+from util.robot_zone_checker import RobotZoneChecker
 
 class ResetShooterHood(Command):
     def __init__(self, shooter_hood: ShooterHood):
@@ -57,3 +59,22 @@ class ManualShooterHood(Command):
             pose, target = self._get_pose_and_target()
             self._shooter_hood.angle_by_position(pose, target)
 
+class UpdateHoodPositionVariable(Command):
+    def __init__(self, shooter_hood : ShooterHood, drivetrain : SwerveDriveTrain):
+        self.shooter_hood = shooter_hood
+        self.drivetrain = drivetrain
+        self.addRequirements(self.shooter_hood)
+    
+    def execute(self):
+        pose = self.drivetrain.get_state().pose
+        if RobotZoneChecker.is_in_alliance_zone(pose):
+            self.shooter_hood.robot_zone = "alliance"
+        if RobotZoneChecker.is_in_neutral_zone(pose):
+            self.shooter_hood.robot_zone = "neutral"
+        if RobotZoneChecker.is_in_opposing_alliance_zone(pose):
+            self.shooter_hood.robot_zone = "opposing"
+        
+        if self.drivetrain.should_stop_shooting():
+            self.shooter_hood.toggle_force_hide(True)
+        else:
+            self.shooter_hood.toggle_force_hide(False)

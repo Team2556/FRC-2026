@@ -19,6 +19,8 @@ class RobotZoneChecker:
     left_opposing_transition_zone_x = 10.86
     right_opposing_transition_zone_x = 13.07
     
+    left_opposing_alliance_zone_x = 13.00
+    
     @staticmethod
     def is_between(value, num1, num2):
         return (value > num1 and value < num2) or (value > num2 and value < num1)
@@ -60,6 +62,14 @@ class RobotZoneChecker:
             pose, 
             FlipUtil.fieldPose(Pose2d(RobotZoneChecker.left_neutral_zone_x, 0, Rotation2d())),
             FlipUtil.fieldPose(Pose2d(RobotZoneChecker.right_neutral_zone_x, RobotZoneChecker.field_height / 2, Rotation2d())),
+        )
+        
+    @staticmethod
+    def is_in_opposing_alliance_zone(pose : Pose2d):
+        return RobotZoneChecker.is_within_pose(
+            pose, 
+            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.left_opposing_alliance_zone_x, 0, Rotation2d())),
+            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.field_width, RobotZoneChecker.field_height, Rotation2d())),
         )
     
     @staticmethod

@@ -9,6 +9,7 @@ from commands.drive import drive_commands
 from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
 from util.auto_chooser import AutoChooser
+from util.robot_zone_checker import RobotZoneChecker
 
 from commands.vision import vision_odometry
 from commands.path_commands import custom_path_commands, go_back_with_path
@@ -146,15 +147,8 @@ class RobotContainer:
         #     )
         # )
         # Retracts hood in danger zone (bumps/trench); interrupts default command _FCC_
-        Trigger(self._drivetrain.should_stop_shooting).whileTrue(
-            RunCommand(
-                lambda: self.hood_subsystem.toggle_force_hide(True), self.hood_subsystem
-            )
-        ).whileFalse(
-            RunCommand(
-                lambda: self.hood_subsystem.toggle_force_hide(False),
-                self.hood_subsystem,
-            )
+        self.hood_subsystem.setDefaultCommand(
+            hood_commands.UpdateHoodPositionVariable(self.hood_subsystem, self._drivetrain)
         )
         # =========================
 
