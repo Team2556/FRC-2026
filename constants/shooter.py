@@ -63,7 +63,7 @@ class kShooterMotor:
     TARGET_RPM = -3500
     
     CURRENT_TARGET_RPM = TARGET_RPM
-    TARGET_RPM_FAR = -5800
+    TARGET_RPM_FAR = -6000
 
     REACH_TARGET_VELOCITY_ERROR = 20
     """Defines an interval for when the shooter motor "REACHES" a goal RPM (in RPM)"""

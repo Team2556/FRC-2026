@@ -42,7 +42,7 @@ from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.shooter.dual_shooter import DualMotorShooter
 
-from commands2 import ParallelCommandGroup, RunCommand, cmd, InstantCommand
+from commands2 import ParallelCommandGroup, RunCommand, cmd, InstantCommand, ConditionalCommand
 from commands2.button import Trigger
 
 from util.robot_zone_checker import RobotZoneChecker
@@ -153,12 +153,10 @@ class RobotContainer:
         )
         # =========================
 
+        # TRANSFER + SHOOTER
+
         self._controller_2.b().whileTrue(
             RunTransferCommand(self.transfer_subsystem)
-        )
-        
-        self._controller_2.a().whileTrue(
-            ReverseTransferCommand(self.transfer_subsystem)
         )
 
         self._controller_2.y().whileTrue(
@@ -168,23 +166,34 @@ class RobotContainer:
         self._controller_2.x().whileTrue(
             SpindexOnlyCommand(self.transfer_subsystem)
         )
+        
+        self._controller_2.a().whileTrue(
+            ReverseTransferCommand(self.transfer_subsystem)
+        )
+        
+        # INTAKE
+        
+        self._controller_2.leftTrigger().whileTrue(IntakeRollerForward(self.intake_subsystem))
 
+        self._controller_2.rightBumper().onTrue(
+            ConditionalCommand(
+                IntakeCommandManualForward(self.intake_subsystem),
+                IntakeCommandManualReverse(self.intake_subsystem),
+                lambda: self.intake_subsystem.state == "undeployed" or self.intake_subsystem.state == "manual reverse"
+            )
+        )
+        
+        self._controller_2.povUp().onTrue(hood_commands.ResetShooterHood(self.hood_subsystem))
+        
+        self._controller_2.povLeft().whileTrue(IntakeRollerBackward(self.intake_subsystem))
+
+        # self._controller_2.povDown().onTrue(IntakeForceRetract(self.intake_subsystem))
+        
+        
+        
         # self._controller_2.povUp().onTrue(ClimbUp(self.climb_subsystem))
 
         # self._controller_2.povDown().onTrue(ClimbDown(self.climb_subsystem))
-
-        self._controller_2.rightTrigger().onTrue(
-            IntakeCommandManualForward(self.intake_subsystem)
-        )
-        self._controller_2.rightTrigger().onFalse(
-            IntakeCommandManualReverse(self.intake_subsystem)
-        )
-        self._controller_2.leftTrigger().onTrue(hood_commands.ResetShooterHood(self.hood_subsystem))
-        
-        self._controller_2.rightBumper().whileTrue(IntakeRollerForward(self.intake_subsystem))
-        self._controller_2.leftBumper().whileTrue(IntakeRollerBackward(self.intake_subsystem))
-
-        self._controller_2.povDown().onTrue(IntakeForceRetract(self.intake_subsystem))
         
         # Controller 1: both bumpers together — intake deploy
         # _c1_intake = self._controller_1.leftBumper().and_(
