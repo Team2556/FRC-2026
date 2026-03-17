@@ -110,7 +110,7 @@ class RobotContainer:
         self._controller_1.leftTrigger().whileTrue(
             cmd.runEnd(
                 lambda: self._drivetrain.change_speed_mult(
-                    kDriveConfig.SLOW_SPEED_MULT, kDriveConfig.SLOW_ROTATION_MULT
+                    kDriveConfig.SLOW_SPEED_MULT
                 ),
                 lambda: self._drivetrain.change_speed_mult(),
             )
