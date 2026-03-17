@@ -33,6 +33,7 @@ class DualMotorShooter(commands2.Subsystem):
 
         if not wpilib.RobotBase.isSimulation():
             self._top_motor.configurator.apply(self.cfg)
+            self._bottom_motor.configurator.apply(self.cfg)
 
         self._bottom_motor.set_control(
             Follower(
