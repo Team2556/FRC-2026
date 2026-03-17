@@ -47,10 +47,10 @@ class DualMotorShooter(commands2.Subsystem):
         )
         self.coast_request = NeutralOut()
         self.charge_request = VelocityVoltage(
-            velocity=kShooterMotor.TARGET_RPM / 60, slot=1
+            velocity=kShooterMotor.CURRENT_TARGET_RPM / 60, slot=1
         )
         self.shoot_request = VelocityVoltage(
-            velocity=kShooterMotor.TARGET_RPM / 60, slot=2
+            velocity=kShooterMotor.CURRENT_TARGET_RPM / 60, slot=2
         )
 
         self._state: ShooterState = ShooterState.IDLE
@@ -63,6 +63,7 @@ class DualMotorShooter(commands2.Subsystem):
         self.nt_sub = self.nt.get_subtable("Motor")
         self.nt_sub.float("RPM", 0.0)
         self.nt_sub.float("Target RPM", default=kShooterMotor.TARGET_RPM)
+        self.nt_sub.float("Current Target RPM", default=kShooterMotor.CURRENT_TARGET_RPM)
         self.nt_sub.float("Idle RPM", default=kShooterMotor.IDLE_RPM)
         self.nt_sub.float(
             "Reach Target Velocity Error",
@@ -77,6 +78,8 @@ class DualMotorShooter(commands2.Subsystem):
             use_slot1=True,
             use_slot2=True,
         )
+        
+        self.shoot_far = False
 
     def disable(self) -> None:
         self._state = ShooterState.IDLE
@@ -85,6 +88,9 @@ class DualMotorShooter(commands2.Subsystem):
     def enable(self) -> None:
         self._state = ShooterState.ENABLED
         self.is_charged = False
+    
+    def toggle_shoot_far(self, shoot_far):
+        self.shoot_far = shoot_far
 
     def periodic(self):
         self.editable_PID.periodic()
@@ -99,10 +105,10 @@ class DualMotorShooter(commands2.Subsystem):
 
         elif self._state == ShooterState.ENABLED and not self.is_charged:
             self._top_motor.set_control(
-                self.charge_request.with_velocity(kShooterMotor.TARGET_RPM / 60)
+                self.charge_request.with_velocity(kShooterMotor.CURRENT_TARGET_RPM / 60)
             )
             self.is_charged = (
-                abs(motor_velocity_rpm - kShooterMotor.TARGET_RPM)
+                abs(motor_velocity_rpm - kShooterMotor.CURRENT_TARGET_RPM)
                 < kShooterMotor.REACH_TARGET_VELOCITY_ERROR
             )
 
@@ -110,7 +116,7 @@ class DualMotorShooter(commands2.Subsystem):
 
         elif self._state == ShooterState.ENABLED and self.is_charged:
             self._top_motor.set_control(
-                self.shoot_request.with_velocity(kShooterMotor.TARGET_RPM / 60)
+                self.shoot_request.with_velocity(kShooterMotor.CURRENT_TARGET_RPM / 60)
             )
 
             self.nt.set("State", "CHARGED")
@@ -120,6 +126,7 @@ class DualMotorShooter(commands2.Subsystem):
 
         kShooterMotor.IDLE_RPM = self.nt_sub.get("Idle RPM")
         kShooterMotor.TARGET_RPM = self.nt_sub.get("Target RPM")
+        kShooterMotor.CURRENT_TARGET_RPM = self.nt_sub.get("Current Target RPM")
         kShooterMotor.REACH_TARGET_VELOCITY_ERROR = self.nt_sub.get(
             "Reach Target Velocity Error"
         )
