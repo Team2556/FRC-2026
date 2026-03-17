@@ -33,6 +33,7 @@ class DualMotorShooter(commands2.Subsystem):
 
         if not wpilib.RobotBase.isSimulation():
             self._top_motor.configurator.apply(self.cfg)
+            self._bottom_motor.configurator.apply(self.cfg)
 
         self._bottom_motor.set_control(
             Follower(
@@ -76,9 +77,9 @@ class DualMotorShooter(commands2.Subsystem):
         
         motor_velocity_rpm = self._top_motor.get_velocity().value * 60
         if self._state == ShooterState.IDLE:
-            at_idle_RPM = motor_velocity_rpm > kShooterMotor.IDLE_RPM
+            # at_idle_RPM = motor_velocity_rpm > kShooterMotor.IDLE_RPM
             self._top_motor.set_control(
-                self.idle_request if at_idle_RPM else self.coast_request
+                self.idle_request
             )
             
             self.nt.set('State', 'IDLE')

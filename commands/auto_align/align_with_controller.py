@@ -78,7 +78,6 @@ class HubAlign(alignio.TurretTargetWithVelocity):
         )
 
         rotation_rate = self.calculate_rotation()
-        rotation_rate = 0
         self._drivetrain.set_target_align_rotation_rate(
             rotation_rate * kDriveConfig.MAX_ANGULAR_RATE
         )
@@ -113,6 +112,7 @@ class ConditionalAlignAndShoot(HubAlign):
         self._shooter.enable()
 
     def execute(self):
+        self.pereodic()
         super().execute()
         robot_pose = self._drivetrain.get_state().pose
 
@@ -122,6 +122,7 @@ class ConditionalAlignAndShoot(HubAlign):
         if (
             self.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES
             and self._hood.is_at_angle()
+            and self._shooter.is_charged
         ):
             self.transfer_subsystem.activate()
         else:

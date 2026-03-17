@@ -2,9 +2,9 @@ from wpimath.units import rotationsToRadians
 
 class kAutoAlign:
     class ROTATION_PID:
-        p = 5.0 / 180
-        i = 0
-        d = 0
+        p = 0.01
+        i = 0.0
+        d = 0.0
 
     DIRECTION_TUNING = 0.0
     SHOOTER_ACCURACY = 2

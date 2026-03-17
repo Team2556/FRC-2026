@@ -208,4 +208,5 @@ class RobotContainer:
         self.shooter_subsystem.editable_PID.force_apply()
 
     def getAutonomousCommand(self):
-        return self.custom_path_commands.test_auto
+        # return self.custom_path_commands.make_autos()
+        return None
