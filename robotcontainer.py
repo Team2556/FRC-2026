@@ -178,8 +178,8 @@ class RobotContainer:
         )
         self._controller_2.leftTrigger().onTrue(hood_commands.ResetShooterHood(self.hood_subsystem))
         
-        self._controller_2.rightBumper().onTrue(IntakeRollerForward(self.intake_subsystem))
-        self._controller_2.leftBumper().onTrue(IntakeRollerBackward(self.intake_subsystem))
+        self._controller_2.rightBumper().whileTrue(IntakeRollerForward(self.intake_subsystem))
+        self._controller_2.leftBumper().whileTrue(IntakeRollerBackward(self.intake_subsystem))
 
         self._controller_2.povDown().onTrue(IntakeForceRetract(self.intake_subsystem))
         
