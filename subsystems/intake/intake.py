@@ -78,7 +78,7 @@ class IntakeSubsystem(commands2.Subsystem):
     
     def set_deployer_speed(self, speed):
         self.left_pivot_motor.set(speed)
-        self.right_pivot_motor.set_control(speed * -1)
+        self.right_pivot_motor.set_control(speed * -1 * 1.3)
 
     def set_internal_deployer_position(self, pos):
         self.left_pivot_motor.set_position(pos)

@@ -19,13 +19,13 @@ class kIntakePivot:
 
     DEPLOYED_POSITION = 10.0
     
-    DEPLOYED_SPEED = 0.05
+    DEPLOYED_SPEED = 0.3
 
 
 class kIntakeRoller:
     _CONFIG = TalonFXConfiguration()
-    _CONFIG.slot0.k_p = 5
-    _CONFIG.slot0.k_i = 5
+    _CONFIG.slot0.k_p = 2
+    _CONFIG.slot0.k_i = 0.3
     _CONFIG.slot0.k_d = 0
 
-    TARGET_RPM = -2475
+    TARGET_RPM = -4500
