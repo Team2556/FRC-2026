@@ -11,8 +11,6 @@ import commands2
 import typing
 
 from robotcontainer import RobotContainer
-from commands.test_program import TestProgramCommand
-
 from phoenix6 import SignalLogger
 
 
@@ -23,7 +21,6 @@ class MyRobot(commands2.TimedCommandRobot):
     """
 
     autonomousCommand: typing.Optional[commands2.Command] = None
-    testCommand: typing.Optional[commands2.Command] = None
 
     def robotInit(self) -> None:
         """
@@ -38,10 +35,6 @@ class MyRobot(commands2.TimedCommandRobot):
 
         This runs after the mode specific periodic functions, but before LiveWindow and
         SmartDashboard integrated updating."""
-
-    def disabledInit(self) -> None:
-        """This function is called once each time the robot enters Disabled mode."""
-        pass
 
     def disabledPeriodic(self) -> None:
         """This function is called periodically when disabled"""
@@ -67,19 +60,11 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def testInit(self) -> None:
         commands2.CommandScheduler.getInstance().cancelAll()
+        SignalLogger.start()
 
-        # Create and schedule the test program
-        self.testCommand = TestProgramCommand(
-            drivetrain=self.container._drivetrain,
-            intake_subsystem=self.container.intake_subsystem,
-            transfer_subsystem=self.container.transfer_subsystem,
-            shooter_subsystem=self.container.shooter_subsystem,
-            hood_subsystem=self.container.hood_subsystem,
-            led_controller=self.container.LED_controller
-        )
-
-        if self.testCommand:
-            self.testCommand.schedule()
+    def disabledInit(self) -> None:
+        """This function is called once each time the robot enters Disabled mode."""
+        SignalLogger.stop()
 
     def testPeriodic(self) -> None:
         """This function is called periodically during test mode"""

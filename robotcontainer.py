@@ -40,6 +40,7 @@ from subsystems.shooter.dual_shooter import DualMotorShooter
 
 from commands2 import ParallelCommandGroup, RunCommand, cmd, InstantCommand
 from commands2.button import Trigger
+from commands2.sysid import SysIdRoutine
 
 from util.robot_zone_checker import RobotZoneChecker
 from util.flip_util import FlipUtil
@@ -54,6 +55,7 @@ class RobotContainer:
         self._controller_2 = (
             XboxController(port=1).with_deadband(0.3).with_power(5).with_mult(0.6)
         )
+        self._sysid_controller = XboxController(port=2)
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
 
@@ -76,6 +78,7 @@ class RobotContainer:
         self.auto_chooser.make_dropdown()
 
         self.configureButtonBindings()
+        self.configureSysIdBindings()
 
     def configureButtonBindings(self) -> None:
         self.mono_vision.setDefaultCommand(
@@ -189,6 +192,23 @@ class RobotContainer:
         (self._controller_1.back().and_(self._controller_1.start())).onTrue(
             InstantCommand(self._force_apply_all_pids)
         )
+
+    def configureSysIdBindings(self) -> None:
+        """SysId characterization bindings on Controller 3 (port 2)."""
+        c = self._sysid_controller
+
+        # A = Quasistatic Forward, B = Quasistatic Reverse
+        c.a().whileTrue(self._drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward))
+        c.b().whileTrue(self._drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse))
+
+        # X = Dynamic Forward, Y = Dynamic Reverse
+        c.x().whileTrue(self._drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward))
+        c.y().whileTrue(self._drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kReverse))
+
+        # POV to switch routine
+        c.povLeft().onTrue(InstantCommand(lambda: self._drivetrain.set_sys_id_routine("translation")))
+        c.povUp().onTrue(InstantCommand(lambda: self._drivetrain.set_sys_id_routine("steer")))
+        c.povRight().onTrue(InstantCommand(lambda: self._drivetrain.set_sys_id_routine("rotation")))
 
     def _get_hood_pose_and_target(self):
         # Picks hub or pass spot based on field zone; keeps drivetrain out of hood commands _FCC_
