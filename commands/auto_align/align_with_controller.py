@@ -144,6 +144,5 @@ class ConditionalAlignAndShoot(HubAlign):
     def end(self, interrupted):
         super().end(interrupted)
 
-        ResetShooterHood(self._hood).schedule()
         self.transfer_subsystem.stop()
         self._shooter.disable()

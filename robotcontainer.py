@@ -53,10 +53,10 @@ from constants.field import kHub, kPassSpots
 class RobotContainer:
     def __init__(self) -> None:
         self._controller_1 = (
-            XboxController(port=0).with_deadband(0.3).with_power(5).with_mult(0.2)
+            XboxController(port=0).with_deadband(0.3).with_power(3).with_mult(0.2)
         )
         self._controller_2 = (
-            XboxController(port=1).with_deadband(0.3).with_power(5).with_mult(0.2)
+            XboxController(port=1).with_deadband(0.3).with_power(3).with_mult(0.2)
         )
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
@@ -66,6 +66,7 @@ class RobotContainer:
         self.shooter_subsystem = DualMotorShooter()
         self.hood_subsystem = ShooterHood()
         # self.climb_subsystem = ClimbSubsystem()
+
 
         self.mono_vision = mono_limelight.Vision(kCamera.BACK_LL, kCamera.SHOOTER_LL)
         self.LED_controller = CANdleLEDController()
