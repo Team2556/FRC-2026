@@ -40,8 +40,8 @@ class kPoses:
     
     # Temporary Poses
     simple_right0 = Pose2d(3.7, from_edge, Rotation2d(pi))
-    simple_right1 = Pose2d(2.7, from_edge, Rotation2d(pi))
-    simple_right2 = Pose2d(2.7, 1.3, Rotation2d(pi+0.2))
+    simple_right1 = Pose2d(2.7, from_edge, Rotation2d((4*pi)/3))
+    simple_right2 = Pose2d(2.7, 1.3, Rotation2d((4*pi)/3))
     
     auto0 = Pose2d(4.5, 0.6, Rotation2d())
     auto1 = Pose2d(6, 0.6, Rotation2d())
