@@ -91,7 +91,8 @@ class IntakeSubsystem(commands2.Subsystem):
         self.nt.set("Current Slot", slot)
 
     def set_roller_speed(self, rpm):
-        self.roller_motor.set_control(self.velocity_request.with_velocity(rpm / 60))
+        # self.roller_motor.set_control(self.velocity_request.with_velocity(rpm / 60))
+        self.roller_motor.set(rpm / 6000)
         self.nt.set("Ideal Roller RPM", rpm)
 
     def stop_roller(self):

@@ -133,7 +133,7 @@ class RobotContainer:
         self._controller_1.x().whileTrue(
             ParallelCommandGroup(
                 self.custom_path_commands.left_trench,
-                IntakeCommandManualReverse(self.intake_subsystem)
+                IntakeCommandManualForward(self.intake_subsystem)
             )
         )
         
@@ -148,10 +148,9 @@ class RobotContainer:
         self._controller_1.b().whileTrue(
             ParallelCommandGroup(
                 self.custom_path_commands.right_trench,
-                IntakeCommandManualReverse(self.intake_subsystem)
+                IntakeCommandManualForward(self.intake_subsystem)
             )
         )
-        
 
         # CONTROLLER 2
 

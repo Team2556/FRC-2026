@@ -79,22 +79,48 @@ class CustomPathCommands:
                 WaitCommand(4)
             )
         ),
-        "maybe_good_auto" : SequentialCommandGroup(
-            InitialPose(self.drivetrain, pose=kPoses.auto0),
+        "neutral_grab_left" : SequentialCommandGroup(
+            InitialPose(self.drivetrain, pose=kPoses.neutral_grab_left0),
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.auto1),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.auto2),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.auto3).with_override_speed(1),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.auto4),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.auto5),
-                DriveWithAlign(
-                    shooter = self.shooter_subsystem,
-                    alignment_target = kHub.POS,
-                    subsystem = self.drivetrain, 
-                    target_pose = kPoses.auto6
-                ).with_end_tolerance(0.5).with_goal_end_velocity(0).with_override_speed(0.35),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.auto6).with_precise_values()
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left1
+                             ).with_parallel_command(IntakeCommandManualForwardAuto(self.intake_subsystem)),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left2),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left3).with_override_speed(0.7),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left4),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left5),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left6
+                             ).with_parallel_command(IntakeCommandManualReverseAuto(self.intake_subsystem)),
+            ),
+            ParallelRaceGroup(
+                ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, 
+                                         self.hood_subsystem, self.led_subsystem),
+                AutoDrive(self.drivetrain),
+                WaitCommand(4)
             )
+        ),
+        "depot_grab" : SequentialCommandGroup(
+            InitialPose(self.drivetrain, pose=kPoses.depot_grab0),
+            DriveWithAlign(kHub.POS, self.drivetrain, target_pose = kPoses.depot_grab1),
+            ParallelRaceGroup(
+                ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, 
+                                         self.hood_subsystem, self.led_subsystem),
+                AutoDrive(self.drivetrain),
+                WaitCommand(4)
+            ),
+            DriveToASpot(self.drivetrain, target_pose = kPoses.depot_grab2
+                         ).with_parallel_command(IntakeCommandManualForwardAuto(self.intake_subsystem)
+                         ).with_precise_values(),
+            ParallelRaceGroup(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.depot_grab3).with_precise_values(),
+                WaitCommand(5)
+            ),
+            DriveWithAlign(kHub.POS, self.drivetrain, target_pose = kPoses.depot_grab4),
+            ParallelRaceGroup(
+                ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, 
+                                         self.hood_subsystem, self.led_subsystem),
+                AutoDrive(self.drivetrain),
+                WaitCommand(4)
+            ),
         ),
         }
         
