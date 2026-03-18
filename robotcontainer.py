@@ -133,7 +133,7 @@ class RobotContainer:
         self._controller_1.x().whileTrue(
             ParallelCommandGroup(
                 self.custom_path_commands.left_trench,
-                IntakeCommandManualReverse(self.intake_subsystem)
+                IntakeCommandManualForward(self.intake_subsystem)
             )
         )
         
@@ -148,7 +148,7 @@ class RobotContainer:
         self._controller_1.b().whileTrue(
             ParallelCommandGroup(
                 self.custom_path_commands.right_trench,
-                IntakeCommandManualReverse(self.intake_subsystem)
+                IntakeCommandManualForward(self.intake_subsystem)
             )
         )
         
@@ -241,4 +241,9 @@ class RobotContainer:
         self.shooter_subsystem.editable_PID.force_apply()
 
     def getAutonomousCommand(self):
-        return self.auto_chooser.choose_auto()
+        chosen_auto = self.auto_chooser.choose_auto()
+        auto_with_hood_reset = ParallelCommandGroup(
+            chosen_auto, 
+            hood_commands.ResetShooterHood()
+        )
+        return auto_with_hood_reset

@@ -8,7 +8,7 @@ from math import pi
 from constants.field import kField
 
 class kPath:
-    default_path_speed = 3
+    default_path_speed = 1.6
     default_smoothing_time = 0.5 # Try 15-20% of path speed maybe
     default_smoothing_radius = 0.6 * default_path_speed * default_smoothing_time
     
@@ -41,23 +41,15 @@ class kPoses:
     # Temporary Poses
     simple_right0 = Pose2d(3.7, from_edge, Rotation2d(pi))
     simple_right1 = Pose2d(2.7, from_edge, Rotation2d((4*pi)/3))
-    simple_right2 = Pose2d(2.7, 1.3, Rotation2d((4*pi)/3))
+    simple_right2 = Pose2d(2.7, 3, Rotation2d((4*pi)/3))
     
     neutral_grab_right0 = Pose2d(3.7, from_edge, Rotation2d(pi))
-    neutral_grab_right1 = Pose2d(6.5, from_edge, Rotation2d())
+    neutral_grab_right1 = Pose2d(6.5, from_edge + 0.05, Rotation2d())
     neutral_grab_right2 = Pose2d(7.8, 1.0, Rotation2d(-pi/2))
-    neutral_grab_right3 = Pose2d(7.8, 3.5, Rotation2d(-pi/2))
-    neutral_grab_right4 = Pose2d(6.0, 0.6, Rotation2d(pi))
-    neutral_grab_right5 = Pose2d(3.0, 0.5, Rotation2d(pi))
-    neutral_grab_right6 = Pose2d(2, 1.5, Rotation2d(pi))
-    
-    auto0 = Pose2d(4.5, 0.6, Rotation2d())
-    auto1 = Pose2d(6, 0.6, Rotation2d())
-    auto2 = Pose2d(7.81, 1.5, Rotation2d(pi))
-    auto3 = Pose2d(7.81, 5.3, Rotation2d(pi))
-    auto4 = Pose2d(5.8, 5.5, Rotation2d(pi))
-    auto5 = Pose2d(2.3, 5.4, Rotation2d(3*pi/4))
-    auto6 = Pose2d(0.9, 4.66, Rotation2d())
+    neutral_grab_right3 = Pose2d(7.8, 4.0, Rotation2d(-pi/2))
+    neutral_grab_right4 = Pose2d(6.3, 0.49, Rotation2d(pi))
+    neutral_grab_right5 = Pose2d(3.0, 0.46, Rotation2d(pi))
+    neutral_grab_right6 = Pose2d(2, 2, Rotation2d(pi))
     
     to_outpost0 = Pose2d(1.8, 4.8, Rotation2d())
     to_outpost1 = Pose2d(1.8, 0.9, Rotation2d())

@@ -10,12 +10,13 @@ class kAutoAlign:
     SHOOTER_ACCURACY = 2
     ROBOT_VELOCITY_MULT = 0.5
     FLIGHT_TIME_SCALAR: float = 1
+    ANGLE_TUNER = 0
     
     # Keep in mind this degree requirement is when the transfer motors start; it should be a bit more than normal
     # because it takes some time for fuels to start going up from transfer and them actually shooting at an angle
     # But ALSO keep in mind that there might be fuel just before the flywheel for example when quickly switching
     # between alliance/neutral zones
-    REQUIRED_SHOOT_ACCURACY_DEGREES = 2
+    REQUIRED_SHOOT_ACCURACY_DEGREES = 10
     AUTO_ALIGN_MAX_ANGULAR_RATE = rotationsToRadians(1.5)
 
 class kDriveConfig:

@@ -60,7 +60,7 @@ class kShooterMotor:
     _CONFIG.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
 
     IDLE_RPM = -1000
-    TARGET_RPM = -3500
+    TARGET_RPM = -3700
     
     CURRENT_TARGET_RPM = TARGET_RPM
     TARGET_RPM_FAR = -6000

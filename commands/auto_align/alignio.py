@@ -76,7 +76,7 @@ class TurretTargetWithVelocity(TurretTargetBase):
         
         self._estimated_target_pose = Pose2d()
         
-        self.nt.float("Align Tuner", 0)
+        self.nt.float("Align Tuner", kAutoAlign.ANGLE_TUNER)
 
     def calculate_rotation(self) -> float:
         drive_state = self._drivetrain.get_state()
