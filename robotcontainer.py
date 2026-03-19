@@ -252,4 +252,9 @@ class RobotContainer:
         self.shooter_subsystem.editable_PID.force_apply()
 
     def getAutonomousCommand(self):
-        return self.auto_chooser.choose_auto()
+        chosen_auto = self.auto_chooser.choose_auto()
+        auto_with_hood_reset = ParallelCommandGroup(
+            chosen_auto, 
+            hood_commands.ResetShooterHood()
+        )
+        return auto_with_hood_reset

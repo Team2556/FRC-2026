@@ -117,7 +117,7 @@ class IntakeCommandManualForwardAuto(Command):
     def initialize(self):
         self.intake_subsystem.set_deployer_speed(kIntakePivot.DEPLOYED_SPEED)
         self.intake_subsystem.state = "deployed"
-        # self.intake_subsystem.set_roller_speed(kIntakeRoller.TARGET_RPM)
+        self.intake_subsystem.set_roller_speed(kIntakeRoller.TARGET_RPM)
     
     def isFinished(self):
         return self.intake_subsystem.left_pivot_motor.get_forward_limit().value == signals.ForwardLimitValue.CLOSED_TO_GROUND
@@ -131,7 +131,7 @@ class IntakeCommandManualReverseAuto(Command):
         self.addRequirements(intake_subsystem)
         
     def initialize(self):
-        self.intake_subsystem.set_deployer_speed(kIntakePivot.DEPLOYED_SPEED * -1)
+        self.intake_subsystem.set_deployer_speed(kIntakePivot.DEPLOYED_SPEED * -1 * -1.5)
         self.intake_subsystem.state = "undeployed"
         self.intake_subsystem.stop_roller()
     
@@ -152,7 +152,6 @@ class IntakeDefaultCommand(Command):
         and not self.intake_subsystem.state == "deployed"):
             self.intake_subsystem.set_deployer_speed(kIntakePivot.DEPLOYED_SPEED * -1.5)
             self.intake_subsystem.state = "default reverse"
-            self.intake_subsystem.stop_roller()
 
 class IntakeRollerForward(Command):
     def __init__(self, intake_subsystem : IntakeSubsystem):

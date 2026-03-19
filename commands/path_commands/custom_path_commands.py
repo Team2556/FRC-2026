@@ -57,7 +57,7 @@ class CustomPathCommands:
     def make_autos(self):
         return {
         "simple_right" : SequentialCommandGroup(
-            InitialPose(self.drivetrain, pose=kPoses.auto0),
+            InitialPose(self.drivetrain, pose=kPoses.simple_right0),
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.simple_right1),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.simple_right2),
@@ -78,8 +78,7 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right3).with_override_speed(0.7),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right4),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right5),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right6
-                             ).with_parallel_command(IntakeCommandManualReverseAuto(self.intake_subsystem)),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right6),
             ),
             ParallelRaceGroup(
                 ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, 
