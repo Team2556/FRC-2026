@@ -75,8 +75,6 @@ class TurretTargetWithVelocity(TurretTargetBase):
         self.flight_time_scalar = kAutoAlign.FLIGHT_TIME_SCALAR
         
         self._estimated_target_pose = Pose2d()
-        
-        self.nt.float("Align Tuner", 0)
 
     def calculate_rotation(self) -> float:
         drive_state = self._drivetrain.get_state()
@@ -101,7 +99,7 @@ class TurretTargetWithVelocity(TurretTargetBase):
         target_pose = Pose2d(lead_translation, self.target.rotation())
         self._estimated_target_pose = target_pose
 
-        target_yaw = self.get_target_yaw(drive_state.pose, target_pose) + self.nt.get("Align Tuner")
+        target_yaw = self.get_target_yaw(drive_state.pose, target_pose) + kAutoAlign.ALIGN_TUNER_OFFSET
         rotation_rate = self.rotation_PID.calculate(drive_state.heading, target_yaw)
         
         error = drive_state.heading - target_yaw

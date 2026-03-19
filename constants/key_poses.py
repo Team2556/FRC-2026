@@ -9,6 +9,7 @@ from constants.field import kField
 
 class kPath:
     default_path_speed = 3
+    auto_path_speed = 1.5
     default_smoothing_time = 0.5 # Try 15-20% of path speed maybe
     default_smoothing_radius = 0.6 * default_path_speed * default_smoothing_time
     
@@ -23,20 +24,20 @@ class kPoses:
     from_edge_neutral = 0.73
     
     alliance_zone_left_trench = Pose2d(3.0, kField.WIDTH - from_edge, Rotation2d())
-    neutral_zone_left_trench = Pose2d(6.0, kField.WIDTH - from_edge_neutral, Rotation2d())
-    opposing_zone_left_trench = Pose2d(13.2, kField.WIDTH - from_edge_neutral, Rotation2d())
+    neutral_zone_left_trench = Pose2d(6.4, kField.WIDTH - from_edge_neutral, Rotation2d())
+    opposing_zone_left_trench = Pose2d(13.6, kField.WIDTH - from_edge_neutral, Rotation2d())
     
     alliance_zone_right_trench = Pose2d(3.0, from_edge, Rotation2d())
-    neutral_zone_right_trench = Pose2d(6.0, from_edge_neutral, Rotation2d())
-    opposing_zone_right_trench = Pose2d(13.2, from_edge_neutral, Rotation2d())
+    neutral_zone_right_trench = Pose2d(6.4, from_edge_neutral, Rotation2d())
+    opposing_zone_right_trench = Pose2d(13.6, from_edge_neutral, Rotation2d())
     
-    alliance_zone_right_bump = Pose2d(3.0, 2.85, Rotation2d(pi))
-    neutral_zone_right_bump = Pose2d(6.0, 2.85, Rotation2d(pi))
-    opposing_zone_right_bump = Pose2d(13.2, 2.85, Rotation2d(pi))
+    alliance_zone_right_bump = Pose2d(3.0, 2.75, Rotation2d(pi))
+    neutral_zone_right_bump = Pose2d(6.0, 2.75, Rotation2d(pi))
+    opposing_zone_right_bump = Pose2d(13.2, 2.75, Rotation2d(pi))
     
-    alliance_zone_left_bump = Pose2d(3.0, kField.WIDTH - 2.85, Rotation2d(pi))
-    neutral_zone_left_bump = Pose2d(6.0, kField.WIDTH - 2.85, Rotation2d(pi))
-    opposing_zone_left_bump = Pose2d(13.2, kField.WIDTH - 2.85, Rotation2d(pi))
+    alliance_zone_left_bump = Pose2d(3.0, kField.WIDTH - 2.75, Rotation2d(pi))
+    neutral_zone_left_bump = Pose2d(6.0, kField.WIDTH - 2.75, Rotation2d(pi))
+    opposing_zone_left_bump = Pose2d(13.2, kField.WIDTH - 2.75, Rotation2d(pi))
     
     # Temporary Poses
     simple_right0 = Pose2d(3.7, from_edge, Rotation2d(pi))

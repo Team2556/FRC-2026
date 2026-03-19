@@ -10,6 +10,7 @@ from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
 from util.auto_chooser import AutoChooser
 from util.robot_zone_checker import RobotZoneChecker
+from util.tune_with_controller import TuneShooterSpeed, TuneAlignAngle
 
 from commands.vision import vision_odometry
 from commands.path_commands import custom_path_commands, go_back_with_path
@@ -81,6 +82,10 @@ class RobotContainer:
         self.time_manager = SendFMSData()
         self.auto_chooser = AutoChooser(self.custom_path_commands.make_autos())
         self.auto_chooser.make_dropdown()
+        
+        # In-game tuner stuff:
+        self.tune_shooter_speed = TuneShooterSpeed(self._controller_2)
+        self.tune_align_angle = TuneAlignAngle(self._controller_2)
 
         self.configureButtonBindings()
 
@@ -111,11 +116,14 @@ class RobotContainer:
         # )
 
         self._controller_1.rightTrigger().whileTrue(
-            align_with_controller.ConditionalAlignAndShoot(
+            ParallelCommandGroup(
+                cmd.runOnce(lambda: self.tune_align_angle.reset()),
+                align_with_controller.ConditionalAlignAndShoot(
                 self._drivetrain,
                 self.shooter_subsystem,
                 self.transfer_subsystem,
                 self.hood_subsystem,
+                )
             )
         )
 
@@ -190,6 +198,8 @@ class RobotContainer:
         # INTAKE
         
         self._controller_2.leftTrigger().whileTrue(IntakeRollerForward(self.intake_subsystem))
+        
+        self._controller_2.rightTrigger().whileTrue(IntakeRollerBackward(self.intake_subsystem))
 
         self._controller_2.rightBumper().onTrue(
             IntakeCommandManualForward(self.intake_subsystem),
@@ -201,6 +211,8 @@ class RobotContainer:
         self._controller_2.povUp().onTrue(hood_commands.ResetShooterHood(self.hood_subsystem))
         
         self._controller_2.povLeft().whileTrue(IntakeRollerBackward(self.intake_subsystem))
+
+        self._controller_2.leftStick().onTrue(cmd.runOnce(lambda: self.tune_shooter_speed.reset()))
 
         # self._controller_2.povDown().onTrue(IntakeForceRetract(self.intake_subsystem))
         

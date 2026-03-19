@@ -105,10 +105,10 @@ class DualMotorShooter(commands2.Subsystem):
 
         elif self._state == ShooterState.ENABLED and not self.is_charged:
             self._top_motor.set_control(
-                self.charge_request.with_velocity(kShooterMotor.CURRENT_TARGET_RPM / 60)
+                self.charge_request.with_velocity((kShooterMotor.CURRENT_TARGET_RPM + kShooterMotor.TUNED_RPM) / 60)
             )
             self.is_charged = (
-                abs(motor_velocity_rpm - kShooterMotor.CURRENT_TARGET_RPM)
+                abs(motor_velocity_rpm - (kShooterMotor.CURRENT_TARGET_RPM + kShooterMotor.TUNED_RPM))
                 < kShooterMotor.REACH_TARGET_VELOCITY_ERROR
             )
 
@@ -116,7 +116,7 @@ class DualMotorShooter(commands2.Subsystem):
 
         elif self._state == ShooterState.ENABLED and self.is_charged:
             self._top_motor.set_control(
-                self.shoot_request.with_velocity(kShooterMotor.CURRENT_TARGET_RPM / 60)
+                self.shoot_request.with_velocity((kShooterMotor.CURRENT_TARGET_RPM + kShooterMotor.TUNED_RPM) / 60)
             )
 
             self.nt.set("State", "CHARGED")
@@ -126,7 +126,7 @@ class DualMotorShooter(commands2.Subsystem):
 
         kShooterMotor.IDLE_RPM = self.nt_sub.get("Idle RPM")
         kShooterMotor.TARGET_RPM = self.nt_sub.get("Target RPM")
-        kShooterMotor.CURRENT_TARGET_RPM = self.nt_sub.get("Current Target RPM")
+        self.nt_sub.set("Current Target RPM", kShooterMotor.CURRENT_TARGET_RPM + kShooterMotor.TUNED_RPM)
         kShooterMotor.REACH_TARGET_VELOCITY_ERROR = self.nt_sub.get(
             "Reach Target Velocity Error"
         )

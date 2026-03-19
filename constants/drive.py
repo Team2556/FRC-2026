@@ -17,6 +17,8 @@ class kAutoAlign:
     # between alliance/neutral zones
     REQUIRED_SHOOT_ACCURACY_DEGREES = 2
     AUTO_ALIGN_MAX_ANGULAR_RATE = rotationsToRadians(1.5)
+    
+    ALIGN_TUNER_OFFSET = 0
 
 class kDriveConfig:
     # Specifically used for retracting hood and stopping shooter when transitioning between zones through bump/trench
