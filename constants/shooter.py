@@ -54,7 +54,7 @@ class kShooterMotor:
     _CONFIG.slot1.k_d = 0.0085
     
     _CONFIG.slot2.k_p = 0.1
-    _CONFIG.slot2.k_i = 0.2
+    _CONFIG.slot2.k_i = 5   
     _CONFIG.slot2.k_d = 0.017
     
     _CONFIG.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE

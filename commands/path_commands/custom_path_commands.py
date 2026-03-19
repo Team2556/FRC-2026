@@ -78,7 +78,7 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right3).with_override_speed(0.7),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right4),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right5),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right6),
+                DriveWithAlign(kHub.POS, self.drivetrain, target_pose = kPoses.neutral_grab_right6),
             ),
             ParallelRaceGroup(
                 ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, 
@@ -96,8 +96,8 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left3).with_override_speed(0.7),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left4),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left5),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left6
-                             ).with_parallel_command(IntakeCommandManualReverseAuto(self.intake_subsystem)),
+                DriveWithAlign(kHub.POS, self.drivetrain, target_pose = kPoses.neutral_grab_left6
+                             )
             ),
             ParallelRaceGroup(
                 ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, 
