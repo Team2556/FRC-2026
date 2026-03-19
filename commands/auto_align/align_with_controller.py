@@ -49,8 +49,9 @@ class HubAlign(alignio.TurretTargetWithVelocity):
         hood: ShooterHood,
         LED_Controller: CANdleLEDController | None = None,
     ):
-        super().__init__(drivetrain, shooter, kHub.POS)
+        super().__init__(drivetrain, kHub.POS)
         self._hood = hood
+        self._shooter = shooter
 
         SmartDashboard.putNumber(
             "Hub Align Flight Time Scalar", self.flight_time_scalar

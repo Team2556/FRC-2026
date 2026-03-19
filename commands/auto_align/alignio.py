@@ -68,15 +68,13 @@ class TurretTargetBase(commands2.Command):
 
 class TurretTargetWithVelocity(TurretTargetBase):
     def __init__(
-        self, drivetrain: SwerveDriveTrain, shooter: DualMotorShooter, target: Pose2d
+        self, drivetrain: SwerveDriveTrain, target: Pose2d
     ):
         super().__init__(drivetrain, target)
-        self._shooter = shooter
+        # self._shooter = shooter
         self.flight_time_scalar = kAutoAlign.FLIGHT_TIME_SCALAR
         
         self._estimated_target_pose = Pose2d()
-        
-        self.nt.float("Align Tuner", kAutoAlign.ANGLE_TUNER)
 
     def calculate_rotation(self) -> float:
         drive_state = self._drivetrain.get_state()
@@ -101,7 +99,7 @@ class TurretTargetWithVelocity(TurretTargetBase):
         target_pose = Pose2d(lead_translation, self.target.rotation())
         self._estimated_target_pose = target_pose
 
-        target_yaw = self.get_target_yaw(drive_state.pose, target_pose) + self.nt.get("Align Tuner")
+        target_yaw = self.get_target_yaw(drive_state.pose, target_pose) + kAutoAlign.ALIGN_TUNER_OFFSET
         rotation_rate = self.rotation_PID.calculate(drive_state.heading, target_yaw)
         
         error = drive_state.heading - target_yaw
@@ -113,7 +111,7 @@ class TurretTargetWithVelocity(TurretTargetBase):
 
     @staticmethod
     def estimate_flight_time(distance: meters) -> float:
-        return 1
+        return 0
         interpolation_distance_data, interpolation_time_data = zip(
             *kShooterData.SHOT_TIME
         )

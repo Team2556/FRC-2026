@@ -61,6 +61,7 @@ class kShooterMotor:
 
     IDLE_RPM = -1000
     TARGET_RPM = -3700
+    TUNED_RPM = 0
     
     CURRENT_TARGET_RPM = TARGET_RPM
     TARGET_RPM_FAR = -6000

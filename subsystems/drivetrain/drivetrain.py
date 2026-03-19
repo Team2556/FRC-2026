@@ -47,6 +47,7 @@ class SwerveDriveTrain(commands2.Subsystem):
         self.nt.bool("Do Target Align")
         self.nt.float("Target Align Rotation Rate")
         self.nt.float("Distance to Hub")
+        self.nt.float("Align Tuner")
 
     def drive_with_controller(
         self,
@@ -149,3 +150,4 @@ class SwerveDriveTrain(commands2.Subsystem):
         )
         self.nt.set("Do Target Align", self.do_target_align)
         self.nt.set("Target Align Rotation Rate", self.target_align_rotation_rate)
+        self.nt.set("Align Tuner", round(kAutoAlign.ALIGN_TUNER_OFFSET, 1))

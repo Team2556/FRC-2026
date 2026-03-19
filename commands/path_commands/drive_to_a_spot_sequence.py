@@ -1,7 +1,7 @@
 import commands2
 from commands.path_commands.drive_to_a_spot import DriveToASpot
 from wpimath.geometry import Pose2d
-from wpilib import Timer, SmartDashboard
+from wpilib import Timer, SmartDashboard, DriverStation
 from constants.key_poses import kPath
 
 class DriveToASpotSequence(commands2.SequentialCommandGroup):
@@ -30,6 +30,7 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
             command = command.with_sequence_pose_values()
         
         SmartDashboard.putNumber("Sequence Path/Max Speed", kPath.default_path_speed)
+        SmartDashboard.putNumber("Sequence Path/Auto Speed", kPath.auto_path_speed)
         SmartDashboard.putNumber("Sequence Path/Smoothing Radius", kPath.default_smoothing_radius)
         SmartDashboard.putNumber("Sequence Path/Smoothing Time", kPath.default_smoothing_time)
         SmartDashboard.putNumber("Sequence Path/Slow Distance Proportional to Max Speed", kPath.percent_slow_distance_proportional_to_max_speed_for_sequence_path)
@@ -41,7 +42,10 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         self.timer.reset()
         self.is_during_smoothing = False
         
-        self.max_speed = SmartDashboard.getNumber("Sequence Path/Max Speed", kPath.default_path_speed)
+        if DriverStation.isAutonomous():
+            self.max_speed = SmartDashboard.getNumber("Sequence Path/Auto Speed", kPath.default_path_speed)
+        else:
+            self.max_speed = SmartDashboard.getNumber("Sequence Path/Max Speed", kPath.default_path_speed)
         self.smoothing_radius = SmartDashboard.getNumber("Sequence Path/Smoothing Radius", kPath.default_smoothing_radius)
         self.smoothing_time = SmartDashboard.getNumber("Sequence Path/Smoothing Time", kPath.default_smoothing_time)
         kPath.percent_slow_distance_proportional_to_max_speed_for_sequence_path = SmartDashboard.getNumber("Sequence Path/Slow Distance Proportional to Max Speed", kPath.percent_slow_distance_proportional_to_max_speed_for_sequence_path)

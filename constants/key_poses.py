@@ -8,7 +8,8 @@ from math import pi
 from constants.field import kField
 
 class kPath:
-    default_path_speed = 1.6
+    default_path_speed = 3
+    auto_path_speed = 1.5
     default_smoothing_time = 0.5 # Try 15-20% of path speed maybe
     default_smoothing_radius = 0.6 * default_path_speed * default_smoothing_time
     
@@ -22,21 +23,21 @@ class kPoses:
     from_edge = 0.67
     from_edge_neutral = 0.73
     
-    alliance_zone_left_trench = Pose2d(3.0, kField.WIDTH - from_edge, Rotation2d(pi))
-    neutral_zone_left_trench = Pose2d(6.0, kField.WIDTH - from_edge_neutral, Rotation2d(pi))
-    opposing_zone_left_trench = Pose2d(13.2, kField.WIDTH - from_edge_neutral, Rotation2d(pi))
+    alliance_zone_left_trench = Pose2d(3.0, kField.WIDTH - from_edge, Rotation2d())
+    neutral_zone_left_trench = Pose2d(6.4, kField.WIDTH - from_edge_neutral, Rotation2d())
+    opposing_zone_left_trench = Pose2d(13.6, kField.WIDTH - from_edge_neutral, Rotation2d())
     
-    alliance_zone_right_trench = Pose2d(3.0, from_edge, Rotation2d(pi))
-    neutral_zone_right_trench = Pose2d(6.0, from_edge_neutral, Rotation2d(pi))
-    opposing_zone_right_trench = Pose2d(13.2, from_edge_neutral, Rotation2d(pi))
+    alliance_zone_right_trench = Pose2d(3.0, from_edge, Rotation2d())
+    neutral_zone_right_trench = Pose2d(6.4, from_edge_neutral, Rotation2d())
+    opposing_zone_right_trench = Pose2d(13.6, from_edge_neutral, Rotation2d())
     
-    alliance_zone_right_bump = Pose2d(3.0, 2.5, Rotation2d())
-    neutral_zone_right_bump = Pose2d(6.0, 2.5, Rotation2d())
-    opposing_zone_right_bump = Pose2d(13.2, 2.5, Rotation2d())
+    alliance_zone_right_bump = Pose2d(3.0, 2.75, Rotation2d(pi))
+    neutral_zone_right_bump = Pose2d(6.0, 2.75, Rotation2d(pi))
+    opposing_zone_right_bump = Pose2d(13.2, 2.75, Rotation2d(pi))
     
-    alliance_zone_left_bump = Pose2d(3.0, kField.WIDTH - 2.5, Rotation2d())
-    neutral_zone_left_bump = Pose2d(6.0, kField.WIDTH - 2.5, Rotation2d())
-    opposing_zone_left_bump = Pose2d(13.2, kField.WIDTH - 2.5, Rotation2d())
+    alliance_zone_left_bump = Pose2d(3.0, kField.WIDTH - 2.75, Rotation2d(pi))
+    neutral_zone_left_bump = Pose2d(6.0, kField.WIDTH - 2.75, Rotation2d(pi))
+    opposing_zone_left_bump = Pose2d(13.2, kField.WIDTH - 2.75, Rotation2d(pi))
     
     # Temporary Poses
     simple_right0 = Pose2d(3.7, from_edge, Rotation2d(pi))
@@ -46,10 +47,32 @@ class kPoses:
     neutral_grab_right0 = Pose2d(3.7, from_edge, Rotation2d(pi))
     neutral_grab_right1 = Pose2d(6.5, from_edge + 0.05, Rotation2d())
     neutral_grab_right2 = Pose2d(7.8, 1.0, Rotation2d(-pi/2))
-    neutral_grab_right3 = Pose2d(7.8, 4.0, Rotation2d(-pi/2))
-    neutral_grab_right4 = Pose2d(6.3, 0.49, Rotation2d(pi))
-    neutral_grab_right5 = Pose2d(3.0, 0.46, Rotation2d(pi))
-    neutral_grab_right6 = Pose2d(2, 2, Rotation2d(pi))
+    neutral_grab_right3 = Pose2d(7.8, 3.5, Rotation2d(-pi/2))
+    neutral_grab_right4 = Pose2d(6.0, 0.6, Rotation2d(pi))
+    neutral_grab_right5 = Pose2d(3.0, 0.5, Rotation2d(pi))
+    neutral_grab_right6 = Pose2d(2.5, 2.5, Rotation2d(pi))
+    
+    neutral_grab_left0 = Pose2d(3.7, kField.WIDTH - from_edge, Rotation2d(pi))
+    neutral_grab_left1 = Pose2d(6.5, kField.WIDTH - from_edge, Rotation2d())
+    neutral_grab_left2 = Pose2d(7.8, kField.WIDTH - 1.0, Rotation2d(pi/2))
+    neutral_grab_left3 = Pose2d(7.8, kField.WIDTH - 3.5, Rotation2d(pi/2))
+    neutral_grab_left4 = Pose2d(6.0, kField.WIDTH - 0.6, Rotation2d(pi))
+    neutral_grab_left5 = Pose2d(3.0, kField.WIDTH - 0.5, Rotation2d(pi))
+    neutral_grab_left6 = Pose2d(2.5, kField.WIDTH - 2.5, Rotation2d(pi))
+    
+    depot_grab0 = Pose2d(3.7, 5.5, Rotation2d())
+    depot_grab1 = Pose2d(2.0, 5.5, Rotation2d())
+    depot_grab2 = Pose2d(1.5, 5.9, Rotation2d()) # without sequence for more precision
+    depot_grab3 = Pose2d(0.55, 5.9, Rotation2d()) # Race with 3 seconds in case target not met
+    depot_grab4 = Pose2d(2.5, 5, Rotation2d())
+    
+    auto0 = Pose2d(4.5, 0.6, Rotation2d())
+    auto1 = Pose2d(6, 0.6, Rotation2d())
+    auto2 = Pose2d(7.81, 1.5, Rotation2d(pi))
+    auto3 = Pose2d(7.81, 5.3, Rotation2d(pi))
+    auto4 = Pose2d(5.8, 5.5, Rotation2d(pi))
+    auto5 = Pose2d(2.3, 5.4, Rotation2d(3*pi/4))
+    auto6 = Pose2d(0.9, 4.66, Rotation2d())
     
     to_outpost0 = Pose2d(1.8, 4.8, Rotation2d())
     to_outpost1 = Pose2d(1.8, 0.9, Rotation2d())

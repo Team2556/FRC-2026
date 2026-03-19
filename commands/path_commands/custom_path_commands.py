@@ -22,6 +22,8 @@ from subsystems.led.LED_controller import CANdleLEDController
 
 from commands.intake.intake_commands import IntakeCommandManualForwardAuto, IntakeCommandManualReverseAuto
 
+from math import pi
+
 class CustomPathCommands:
     '''"Container" that has all the custom useful path commands'''
     def __init__(
@@ -44,6 +46,13 @@ class CustomPathCommands:
         
         self.make_path_commands()
         self.make_autos()
+    
+    def opposite_pose_rotation(self, pose : Pose2d):
+        return Pose2d(
+            pose.X(),
+            pose.Y(),
+            Rotation2d(pose.rotation().radians() + pi)
+        )
         
     def make_autos(self):
         return {
@@ -78,6 +87,49 @@ class CustomPathCommands:
                 WaitCommand(4)
             )
         ),
+        "neutral_grab_left" : SequentialCommandGroup(
+            InitialPose(self.drivetrain, pose=kPoses.neutral_grab_left0),
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left1
+                             ).with_parallel_command(IntakeCommandManualForwardAuto(self.intake_subsystem)),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left2),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left3).with_override_speed(0.7),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left4),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left5),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left6
+                             ).with_parallel_command(IntakeCommandManualReverseAuto(self.intake_subsystem)),
+            ),
+            ParallelRaceGroup(
+                ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, 
+                                         self.hood_subsystem, self.led_subsystem),
+                AutoDrive(self.drivetrain),
+                WaitCommand(4)
+            )
+        ),
+        "depot_grab" : SequentialCommandGroup(
+            InitialPose(self.drivetrain, pose=kPoses.depot_grab0),
+            DriveWithAlign(kHub.POS, self.drivetrain, target_pose = kPoses.depot_grab1),
+            ParallelRaceGroup(
+                ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, 
+                                         self.hood_subsystem, self.led_subsystem),
+                AutoDrive(self.drivetrain),
+                WaitCommand(4)
+            ),
+            DriveToASpot(self.drivetrain, target_pose = kPoses.depot_grab2
+                         ).with_parallel_command(IntakeCommandManualForwardAuto(self.intake_subsystem)
+                         ).with_precise_values(),
+            ParallelRaceGroup(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.depot_grab3).with_precise_values(),
+                WaitCommand(5)
+            ),
+            DriveWithAlign(kHub.POS, self.drivetrain, target_pose = kPoses.depot_grab4),
+            ParallelRaceGroup(
+                ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, 
+                                         self.hood_subsystem, self.led_subsystem),
+                AutoDrive(self.drivetrain),
+                WaitCommand(4)
+            ),
+        ),
         }
         
     def make_path_commands(self):
@@ -107,8 +159,8 @@ class CustomPathCommands:
         
         self.right_trench = ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_right_trench),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_right_trench).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_zone_right_trench)),
+                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_zone_right_trench)).with_goal_end_velocity(0),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
@@ -123,8 +175,8 @@ class CustomPathCommands:
         
         self.right_bump = ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_right_bump),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_right_bump).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_zone_right_bump)),
+                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_zone_right_bump)).with_goal_end_velocity(0),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
@@ -139,8 +191,8 @@ class CustomPathCommands:
         
         self.left_trench = ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_left_trench),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_left_trench).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_zone_left_trench)),
+                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_zone_left_trench)).with_goal_end_velocity(0),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
@@ -155,8 +207,8 @@ class CustomPathCommands:
         
         self.left_bump = ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_zone_left_bump),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_zone_left_bump).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_zone_left_bump)),
+                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_zone_left_bump)).with_goal_end_velocity(0),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(

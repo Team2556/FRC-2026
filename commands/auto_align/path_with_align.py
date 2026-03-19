@@ -16,13 +16,12 @@ class DriveWithAlign(DriveToASpot):
 
     def __init__(
         self,
-        shooter: DualMotorShooter,
         alignment_target: Pose2d = Pose2d(),
-        **args
+        *args, **kwargs
     ):
-        DriveToASpot.__init__(self, **args)
+        DriveToASpot.__init__(self, *args, **kwargs)
         self._hub_align = alignio.TurretTargetWithVelocity(
-            self.drivetrain, shooter, alignment_target
+            self.drivetrain, alignment_target
         )
 
     def initialize(self):
@@ -33,3 +32,10 @@ class DriveWithAlign(DriveToASpot):
         rotation_rate = self._hub_align.calculate_rotation()
         rotation_radians = rotation_rate * kDriveConfig.MAX_ANGULAR_RATE
         return Rotation2d(rotation_radians)
+    
+    def isFinished(self):
+        # Translation stuff
+        distance_from_target = self.pose_estimate.translation().distance(self.target_pose.translation())
+        self.is_within_distance = distance_from_target < self.end_tolerance
+        
+        return self.is_within_distance
