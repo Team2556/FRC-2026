@@ -37,6 +37,7 @@ class ResetShooterHood(Command):
 
     def end(self, interrupted):
         self.shooter_hood.set_speed(0)
+        self.shooter_hood.hood_motor.set_position(kHoodMotor.to_revs(kHoodMotor.HOME_ANGLE_DEG))
         self.shooter_hood.resetting = False
 
         self.nt.set("Resetting", False)

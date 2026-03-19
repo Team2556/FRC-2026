@@ -255,6 +255,6 @@ class RobotContainer:
         chosen_auto = self.auto_chooser.choose_auto()
         auto_with_hood_reset = ParallelCommandGroup(
             chosen_auto, 
-            hood_commands.ResetShooterHood()
+            hood_commands.ResetShooterHood(self.hood_subsystem)
         )
         return auto_with_hood_reset

@@ -109,6 +109,7 @@ class ShooterHood(Subsystem):
         hard_stopped = self.is_hard_stopped()
         if hard_stopped and not self._was_hard_stopped:
             self.hood_motor.set_position(kHoodMotor.to_revs(kHoodMotor.HOME_ANGLE_DEG))
+            
         self._was_hard_stopped = hard_stopped
 
         self.nt.set(
