@@ -172,3 +172,13 @@ class IntakeRollerBackward(Command):
         
     def end(self, interrupted):
         self.intake_subsystem.stop_roller()
+
+class IntakeRollerStop(Command):
+    def __init__(self, intake_subsystem : IntakeSubsystem):
+        self.intake_subsystem = intake_subsystem
+        
+    def initialize(self):
+        self.intake_subsystem.stop_roller()
+        
+    def isFinished(self):
+        return True

@@ -32,6 +32,8 @@ class kHoodMotor:
     OVERRIDE_ANGLE_DEG = 25.0
     
     OPPOSING_ANGLE_DEG = 35.0
+    
+    TUNER_OFFSET = 0
 
     @staticmethod
     def to_revs(degrees: float) -> float:
@@ -60,7 +62,7 @@ class kShooterMotor:
     _CONFIG.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
 
     IDLE_RPM = -1000
-    TARGET_RPM = -3700
+    TARGET_RPM = -3500
     TUNED_RPM = 0
     
     CURRENT_TARGET_RPM = TARGET_RPM

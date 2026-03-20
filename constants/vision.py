@@ -19,4 +19,6 @@ class kOdometry:
     USE_MEGATAG_2 = False
 
     MIN_APRILTAGS = 2
-    MAX_TILT_ERROR = 1
+    MAX_TILT_ERROR = 5
+    
+    IGNORE_TILT = False

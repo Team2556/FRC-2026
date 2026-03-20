@@ -146,7 +146,7 @@ class SwerveDriveTrain(commands2.Subsystem):
 
         self.nt.set(
             "Distance to Hub",
-            distanceFromPose2dtoPose2d(pose, FlipUtil.fieldPose(kHub.POS)),
+            round(distanceFromPose2dtoPose2d(pose, FlipUtil.fieldPose(kHub.POS)), 2),
         )
         self.nt.set("Do Target Align", self.do_target_align)
         self.nt.set("Target Align Rotation Rate", self.target_align_rotation_rate)

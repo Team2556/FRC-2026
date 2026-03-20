@@ -28,4 +28,4 @@ class kIntakeRoller:
     _CONFIG.slot0.k_i = 0.3
     _CONFIG.slot0.k_d = 0
 
-    TARGET_RPM = -3500
+    TARGET_RPM = -4750

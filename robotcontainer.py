@@ -10,7 +10,7 @@ from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
 from util.auto_chooser import AutoChooser
 from util.robot_zone_checker import RobotZoneChecker
-from util.tune_with_controller import TuneShooterSpeed, TuneAlignAngle
+from util.tune_with_controller import TuneShooterSpeed, TuneAlignAngle, TuneHoodAngle
 
 from commands.vision import vision_odometry
 from commands.path_commands import custom_path_commands, go_back_with_path
@@ -27,6 +27,7 @@ from commands.intake.intake_commands import (
 )
 from commands.climb.climb import ClimbDown, ClimbUp
 from commands.shooter import shooter_commands, hood_commands
+from commands.drive.drive_commands import OverrideRotation, SetOdometryBackLeft, SetOdometryBackRight
 
 from constants.vision import kCamera
 from constants.drive import kDriveConfig
@@ -43,7 +44,7 @@ from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.shooter.dual_shooter import DualMotorShooter
 
-from commands2 import ParallelCommandGroup, RunCommand, cmd, InstantCommand, ConditionalCommand
+from commands2 import ParallelCommandGroup, RunCommand, cmd, InstantCommand, ConditionalCommand, SequentialCommandGroup
 from commands2.button import Trigger
 
 from util.robot_zone_checker import RobotZoneChecker
@@ -84,7 +85,8 @@ class RobotContainer:
         self.auto_chooser.make_dropdown()
         
         # In-game tuner stuff:
-        self.tune_shooter_speed = TuneShooterSpeed(self._controller_2)
+        # self.tune_shooter_speed = TuneShooterSpeed(self._controller_2)
+        self.tune_hood_angle = TuneHoodAngle(self._controller_2)
         self.tune_align_angle = TuneAlignAngle(self._controller_2)
 
         self.configureButtonBindings()
@@ -116,14 +118,11 @@ class RobotContainer:
         # )
 
         self._controller_1.rightTrigger().whileTrue(
-            ParallelCommandGroup(
-                cmd.runOnce(lambda: self.tune_align_angle.reset()),
-                align_with_controller.ConditionalAlignAndShoot(
+            align_with_controller.ConditionalAlignAndShoot(
                 self._drivetrain,
                 self.shooter_subsystem,
                 self.transfer_subsystem,
                 self.hood_subsystem,
-                )
             )
         )
 
@@ -158,6 +157,16 @@ class RobotContainer:
                 self.custom_path_commands.right_trench,
                 IntakeCommandManualForward(self.intake_subsystem)
             )
+        )
+        
+        self._controller_1.povUp().onTrue(
+            OverrideRotation(self._drivetrain)
+        )
+        self._controller_1.povLeft().onTrue(
+            SetOdometryBackLeft(self._drivetrain)
+        )
+        self._controller_1.povRight().onTrue(
+            SetOdometryBackRight(self._drivetrain)
         )
 
         # CONTROLLER 2
@@ -211,8 +220,18 @@ class RobotContainer:
         self._controller_2.povUp().onTrue(hood_commands.ResetShooterHood(self.hood_subsystem))
         
         self._controller_2.povLeft().whileTrue(IntakeRollerBackward(self.intake_subsystem))
+        
+        self._controller_2.povDown().onTrue(
+            SequentialCommandGroup(
+                hood_commands.ResetShooterHood(self.hood_subsystem),
+                hood_commands.ToggleOnOverrideHood()
+            )
+        )
+        self._controller_2.povDown().onFalse(hood_commands.ToggleOffOverrideHood())
 
-        self._controller_2.leftStick().onTrue(cmd.runOnce(lambda: self.tune_shooter_speed.reset()))
+        # self._controller_2.leftStick().onTrue(cmd.runOnce(lambda: self.tune_shooter_speed.reset()))
+        self._controller_2.leftStick().onTrue(cmd.runOnce(lambda: self.tune_hood_angle.reset()))
+        self._controller_2.rightStick().onTrue(cmd.runOnce(lambda: self.tune_align_angle.reset()))
 
         # self._controller_2.povDown().onTrue(IntakeForceRetract(self.intake_subsystem))
         
@@ -237,9 +256,9 @@ class RobotContainer:
     def _get_hood_pose_and_target(self):
         # Picks hub or pass spot based on field zone; keeps drivetrain out of hood commands _FCC_
         pose = self._drivetrain.get_state().pose
-        if RobotZoneChecker.is_in_left_neutral_zone(pose):
+        if RobotZoneChecker.is_in_left_passing_zone(pose):
             return pose, FlipUtil.fieldPose(kPassSpots.PASS_SPOT_LEFT)
-        if RobotZoneChecker.is_in_right_neutral_zone(pose):
+        if RobotZoneChecker.is_in_right_passing_zone(pose):
             return pose, FlipUtil.fieldPose(kPassSpots.PASS_SPOT_RIGHT)
         return pose, FlipUtil.fieldPose(kHub.POS)
 
@@ -252,9 +271,5 @@ class RobotContainer:
         self.shooter_subsystem.editable_PID.force_apply()
 
     def getAutonomousCommand(self):
-        chosen_auto = self.auto_chooser.choose_auto()
-        auto_with_hood_reset = ParallelCommandGroup(
-            chosen_auto, 
-            hood_commands.ResetShooterHood(self.hood_subsystem)
-        )
-        return auto_with_hood_reset
+        hood_commands.ResetShooterHood(self.hood_subsystem).schedule()
+        return self.auto_chooser.choose_auto()

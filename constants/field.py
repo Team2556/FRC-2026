@@ -13,6 +13,6 @@ class kHub:
     POS = Pose2d(4.6, 4.0, 0)
 
 class kPassSpots:
-    PASS_SPOT_LEFT = Pose2d(3, kField.WIDTH - 1.6, 0)
-    PASS_SPOT_RIGHT = Pose2d(3, 1.6, 0)
+    PASS_SPOT_LEFT = Pose2d(2, kField.WIDTH - 2.5, 0)
+    PASS_SPOT_RIGHT = Pose2d(2, 2.5, 0)
     

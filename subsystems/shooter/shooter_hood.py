@@ -41,6 +41,7 @@ class ShooterHood(Subsystem):
         self.nt.bool("Override Enabled", kHoodMotor.OVERRIDE_ENABLED)
         self.nt.float("Override Angle (deg)", kHoodMotor.OVERRIDE_ANGLE_DEG)
         self.nt.bool("Force Hide", False)
+        self.nt.float("Hood Offset Tuner", kHoodMotor.TUNER_OFFSET)
 
         self.editable_pid = EditablePID(
             "Shooter/Hood", self.hood_motor, kHoodMotor._CONFIG
@@ -60,7 +61,7 @@ class ShooterHood(Subsystem):
         max_revs = kHoodMotor.to_revs(self.nt.get("Max Hood Position (deg)"))
         position_revs = min(position_revs, max_revs)
         self._target_position_revs = position_revs
-        self.hood_motor.set_control(self.position_request.with_position(position_revs))
+        self.hood_motor.set_control(self.position_request.with_position(position_revs + kHoodMotor.TUNER_OFFSET))
 
     def is_at_angle(self) -> bool:
         current_deg = kHoodMotor.to_deg(self.hood_motor.get_position().value)
@@ -93,7 +94,7 @@ class ShooterHood(Subsystem):
     def _apply_angle(self) -> None:
         if self.force_hide:
             angle_deg = kHoodMotor.HOME_ANGLE_DEG
-        elif self.nt.get("Override Enabled"):
+        elif kHoodMotor.OVERRIDE_ENABLED:
             angle_deg = self.nt.get("Override Angle (deg)")
         elif self.robot_zone == "opposing":
             angle_deg = kHoodMotor.OPPOSING_ANGLE_DEG
@@ -114,10 +115,12 @@ class ShooterHood(Subsystem):
 
         self.nt.set(
             "Hood Position (deg)",
-            kHoodMotor.to_deg(self.hood_motor.get_position().value),
+            round(kHoodMotor.to_deg(self.hood_motor.get_position().value), 1),
         )
         self.nt.set("Target Angle (deg)", kHoodMotor.to_deg(self._target_position_revs))
         self.nt.set("Force Hide", self.force_hide)
+        self.nt.set("Hood Offset Tuner", round(kHoodMotor.TUNER_OFFSET, 1))
+        kHoodMotor.OVERRIDE_ENABLED = self.nt.get("Override Enabled")
 
         kHoodMotor.RESET_HOME_SPEED = self.nt.get("Reset Home Speed")
 

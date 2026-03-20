@@ -34,6 +34,7 @@ class Vision(commands2.Subsystem):
         self.nt.float("Robot Tilt")
         self.nt.float("Required April Tags", kOdometry.MIN_APRILTAGS)
         self.nt.float("Maximum Tilt Error", kOdometry.MAX_TILT_ERROR)
+        self.nt.bool("Ignore Tilt", kOdometry.IGNORE_TILT)
 
     def get_best_measurement(self, estimates: list[limelight_helpers.PoseEstimate]):
         if not estimates:
@@ -74,7 +75,7 @@ class Vision(commands2.Subsystem):
         omegaRPS = units.radiansToRotations(drive_state.speeds.omega)
         if kOdometry.MAX_RPS < abs(omegaRPS):
             return None
-        if self.tilt > kOdometry.MAX_TILT_ERROR:
+        if self.tilt > kOdometry.MAX_TILT_ERROR and kOdometry.IGNORE_TILT == False:
             return None
 
         entry_name = "botpose_orb_wpiblue" if use_megatag2 else "botpose_wpiblue"
@@ -99,3 +100,4 @@ class Vision(commands2.Subsystem):
 
         kOdometry.MAX_TILT_ERROR = self.nt.get("Maximum Tilt Error")
         kOdometry.MIN_APRILTAGS = self.nt.get("Required April Tags")
+        kOdometry.IGNORE_TILT = self.nt.get("Ignore Tilt")

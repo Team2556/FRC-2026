@@ -30,6 +30,8 @@ class IntakeSubsystem(commands2.Subsystem):
         self.pivot_cfg = kIntakePivot._CONFIG
         self.roller_cfg = kIntakeRoller._CONFIG
         self.roller_cfg.motor_output.neutral_mode = signals.NeutralModeValue.COAST
+        self.left_pivot_motor.setNeutralMode(signals.NeutralModeValue.COAST)
+        self.right_pivot_motor.setNeutralMode(signals.NeutralModeValue.COAST)
 
         self.right_pivot_motor.set_control(
             phoenix6.controls.Follower(

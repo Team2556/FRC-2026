@@ -80,3 +80,15 @@ class UpdateHoodPositionVariable(Command):
             self.shooter_hood.toggle_force_hide(True)
         else:
             self.shooter_hood.toggle_force_hide(False)
+
+class ToggleOnOverrideHood(Command):
+    def initialize(self):
+        kHoodMotor.OVERRIDE_ENABLED = True
+    def isFinished(self):
+        return True
+
+class ToggleOffOverrideHood(Command):
+    def initialize(self):
+        kHoodMotor.OVERRIDE_ENABLED = False
+    def isFinished(self):
+        return True

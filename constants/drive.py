@@ -30,6 +30,6 @@ class kDriveConfig:
     SPEED_MULT = 1.0
     ROTATION_MULT = 1.0
     """Speed at 12v"""
-    MAX_ANGULAR_RATE = rotationsToRadians(1) # This is not used for auto align rotation
+    MAX_ANGULAR_RATE = rotationsToRadians(1.3) # This is not used for auto align rotation
     
 

@@ -116,14 +116,14 @@ class ConditionalAlignAndShoot(HubAlign):
         self.find_target(robot_pose)
 
         # Don't fire until BOTH yaw and hood angle are on target _FCC_
-        if (
-            self.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES
-            and self._hood.is_at_angle()
-            and self._shooter.is_charged
-        ):
-            self.transfer_subsystem.activate()
-        else:
-            self.transfer_subsystem.stop()
+        # if (
+        #     self.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES
+        #     # and self._hood.is_at_angle() bad
+        #     and self._shooter.is_charged
+        # ):
+        #     self.transfer_subsystem.activate()
+        # else:
+        #     self.transfer_subsystem.stop()
         
         if RobotZoneChecker.is_in_opposing_alliance_zone(self._drivetrain.get_state().pose):
             kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM_FAR
@@ -131,9 +131,9 @@ class ConditionalAlignAndShoot(HubAlign):
             kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM
 
     def find_target(self, pose):
-        if RobotZoneChecker.is_in_left_neutral_zone(pose):
+        if RobotZoneChecker.is_in_left_passing_zone(pose):
             self.target = FlipUtil.fieldPose(kPassSpots.PASS_SPOT_LEFT)
-        if RobotZoneChecker.is_in_right_neutral_zone(pose):
+        if RobotZoneChecker.is_in_right_passing_zone(pose):
             self.target = FlipUtil.fieldPose(kPassSpots.PASS_SPOT_RIGHT)
         if RobotZoneChecker.is_in_alliance_zone(pose):
             self.target = FlipUtil.fieldPose(kHub.POS)
