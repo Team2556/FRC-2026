@@ -18,16 +18,20 @@ from commands.transfer.run_transfer_motors import RunTransferCommand, ReverseTra
 from commands.intake.intake_commands import (
     IntakeCommandDeploy,
     IntakeCommandUndeploy,
-    IntakeForceRetract, 
+    IntakeForceRetract,
     IntakeCommandManualForward,
     IntakeCommandManualReverse,
     IntakeDefaultCommand,
-    IntakeRollerForward, 
-    IntakeRollerBackward
+    IntakeRollerForward,
+    IntakeRollerBackward,
 )
 from commands.climb.climb import ClimbDown, ClimbUp
 from commands.shooter import shooter_commands, hood_commands
-from commands.drive.drive_commands import OverrideRotation, SetOdometryBackLeft, SetOdometryBackRight
+from commands.drive.drive_commands import (
+    OverrideRotation,
+    SetOdometryBackLeft,
+    SetOdometryBackRight,
+)
 
 from constants.vision import kCamera
 from constants.drive import kDriveConfig
@@ -40,11 +44,18 @@ from subsystems.intake.intake import IntakeSubsystem
 from subsystems.climb.climb_subsystem import ClimbSubsystem
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
 
-from subsystems.shooter.shooter_hood import ShooterHood
+from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
 from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.shooter.dual_shooter import DualMotorShooter
 
-from commands2 import ParallelCommandGroup, RunCommand, cmd, InstantCommand, ConditionalCommand, SequentialCommandGroup
+from commands2 import (
+    ParallelCommandGroup,
+    RunCommand,
+    cmd,
+    InstantCommand,
+    ConditionalCommand,
+    SequentialCommandGroup,
+)
 from commands2.button import Trigger
 
 from util.robot_zone_checker import RobotZoneChecker
@@ -83,11 +94,11 @@ class RobotContainer:
         self.time_manager = SendFMSData()
         self.auto_chooser = AutoChooser(self.custom_path_commands.make_autos())
         self.auto_chooser.make_dropdown()
-        
+
         # In-game tuner stuff:
         # self.tune_shooter_speed = TuneShooterSpeed(self._controller_2)
-        self.tune_hood_angle = TuneHoodAngle(self._controller_2)
-        self.tune_align_angle = TuneAlignAngle(self._controller_2)
+        # self.tune_hood_angle = TuneHoodAngle(self._controller_2)
+        # self.tune_align_angle = TuneAlignAngle(self._controller_2)
 
         self.configureButtonBindings()
 
@@ -147,7 +158,7 @@ class RobotContainer:
         self._controller_1.x().and_(self._controller_1.rightBumper().not_()).whileTrue(
             ParallelCommandGroup(
                 self.custom_path_commands.left_trench,
-                IntakeCommandManualForward(self.intake_subsystem)
+                IntakeCommandManualForward(self.intake_subsystem),
             )
         )
         
@@ -166,7 +177,7 @@ class RobotContainer:
         self._controller_1.b().and_(self._controller_1.rightBumper().not_()).whileTrue(
             ParallelCommandGroup(
                 self.custom_path_commands.right_trench,
-                IntakeCommandManualForward(self.intake_subsystem)
+                IntakeCommandManualForward(self.intake_subsystem),
             )
         )
         
@@ -197,33 +208,35 @@ class RobotContainer:
         # )
         # Retracts hood in danger zone (bumps/trench); interrupts default command _FCC_
         self.hood_subsystem.setDefaultCommand(
-            hood_commands.UpdateHoodPositionVariable(self.hood_subsystem, self._drivetrain)
+            hood_commands.UpdateHoodPositionVariable(
+                self.hood_subsystem, self._drivetrain
+            )
         )
         # =========================
 
         # TRANSFER + SHOOTER
 
-        self._controller_2.b().whileTrue(
-            RunTransferCommand(self.transfer_subsystem)
-        )
+        self._controller_2.b().whileTrue(RunTransferCommand(self.transfer_subsystem))
 
         self._controller_2.y().whileTrue(
             shooter_commands.EnableShooter(self.shooter_subsystem)
         )
-        
-        self._controller_2.x().whileTrue(
-            SpindexOnlyCommand(self.transfer_subsystem)
-        )
-        
+
+        self._controller_2.x().whileTrue(SpindexOnlyCommand(self.transfer_subsystem))
+
         self._controller_2.a().whileTrue(
             ReverseTransferCommand(self.transfer_subsystem)
         )
-        
+
         # INTAKE
-        
-        self._controller_2.leftTrigger().whileTrue(IntakeRollerForward(self.intake_subsystem))
-        
-        self._controller_2.rightTrigger().whileTrue(IntakeRollerBackward(self.intake_subsystem))
+
+        self._controller_2.leftTrigger().whileTrue(
+            IntakeRollerForward(self.intake_subsystem)
+        )
+
+        self._controller_2.rightTrigger().whileTrue(
+            IntakeRollerBackward(self.intake_subsystem)
+        )
 
         self._controller_2.rightBumper().onTrue(
             IntakeCommandManualForward(self.intake_subsystem),
@@ -231,31 +244,32 @@ class RobotContainer:
         self._controller_2.leftBumper().onTrue(
             IntakeCommandManualReverse(self.intake_subsystem),
         )
-        
-        self._controller_2.povUp().onTrue(hood_commands.ResetShooterHood(self.hood_subsystem))
-        
-        self._controller_2.povLeft().whileTrue(IntakeRollerBackward(self.intake_subsystem))
-        
-        self._controller_2.povDown().onTrue(
-            SequentialCommandGroup(
-                hood_commands.ResetShooterHood(self.hood_subsystem),
-                hood_commands.ToggleOnOverrideHood()
+
+        self._controller_2.povUp().onTrue(
+            hood_commands.ResetShooterHood(self.hood_subsystem)
+        )
+
+        self._controller_2.povLeft().whileTrue(
+            IntakeRollerBackward(self.intake_subsystem)
+        )
+
+        self._controller_2.povDown().whileTrue(
+            hood_commands.SetShooterHoodState(
+                self.hood_subsystem, HoodStates.OUTER_RING
             )
         )
-        self._controller_2.povDown().onFalse(hood_commands.ToggleOffOverrideHood())
+        # self._controller_2.povDown().onFalse(hood_commands.ToggleOffOverrideHood())
 
         # self._controller_2.leftStick().onTrue(cmd.runOnce(lambda: self.tune_shooter_speed.reset()))
-        self._controller_2.leftStick().onTrue(cmd.runOnce(lambda: self.tune_hood_angle.reset()))
-        self._controller_2.rightStick().onTrue(cmd.runOnce(lambda: self.tune_align_angle.reset()))
+        # self._controller_2.leftStick().onTrue(cmd.runOnce(lambda: self.tune_hood_angle.reset()))
+        # self._controller_2.rightStick().onTrue(cmd.runOnce(lambda: self.tune_align_angle.reset()))
 
         # self._controller_2.povDown().onTrue(IntakeForceRetract(self.intake_subsystem))
-        
-        
-        
+
         # self._controller_2.povUp().onTrue(ClimbUp(self.climb_subsystem))
 
         # self._controller_2.povDown().onTrue(ClimbDown(self.climb_subsystem))
-        
+
         # Controller 1: both bumpers together — intake deploy
         # _c1_intake = self._controller_1.leftBumper().and_(
         #     self._controller_1.rightBumper()

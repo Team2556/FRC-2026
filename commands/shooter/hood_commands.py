@@ -4,12 +4,12 @@ from wpilib import SmartDashboard
 from wpimath import applyDeadband
 from wpimath.geometry import Pose2d
 
-from commands2 import Command
+from commands2 import Command, InterruptionBehavior
 
 from util.nt_util import NTTable
 from util.custom_controller import XboxController
 
-from subsystems.shooter.shooter_hood import ShooterHood
+from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
 from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 
 from constants.shooter import kHoodMotor
@@ -17,30 +17,24 @@ from constants.shooter import kShooterData
 
 from util.robot_zone_checker import RobotZoneChecker
 
+
 class ResetShooterHood(Command):
     def __init__(self, shooter_hood: ShooterHood):
-        self.shooter_hood = shooter_hood
+        self._hood = shooter_hood
 
-        self.nt = NTTable("Shooter").get_subtable("Hood")
-        self.nt.bool("Resetting")
-
-        self.addRequirements(self.shooter_hood)
+        self.addRequirements(self._hood)
 
     def initialize(self):
-        self.shooter_hood.set_speed(kHoodMotor.RESET_HOME_SPEED)
-        self.shooter_hood.resetting = True
-
-        self.nt.set("Resetting", True)
+        self._hood.set_state(HoodStates.RESETTING)
+        self._hood.set_speed(kHoodMotor.RESET_HOME_SPEED)
 
     def isFinished(self):
-        return self.shooter_hood.is_hard_stopped()
+        return self._hood.is_hard_stopped()
 
     def end(self, interrupted):
-        self.shooter_hood.set_speed(0)
-        self.shooter_hood.hood_motor.set_position(kHoodMotor.to_revs(kHoodMotor.HOME_ANGLE_DEG))
-        self.shooter_hood.resetting = False
+        self._hood.set_speed(0)
+        self._hood._motor.set_position(kHoodMotor.to_revs(kHoodMotor.HOME_ANGLE_DEG))
 
-        self.nt.set("Resetting", False)
 
 # class ManualShooterHood(Command):
 #     def __init__(self, shooter_hood: ShooterHood, _controller: XboxController,
@@ -61,34 +55,33 @@ class ResetShooterHood(Command):
 #             pose, target = self._get_pose_and_target()
 #             self._shooter_hood.angle_by_position(pose, target)
 
+
 class UpdateHoodPositionVariable(Command):
-    def __init__(self, shooter_hood : ShooterHood, drivetrain : SwerveDriveTrain):
+    def __init__(self, shooter_hood: ShooterHood, drivetrain: SwerveDriveTrain):
         self.shooter_hood = shooter_hood
         self.drivetrain = drivetrain
+
         self.addRequirements(self.shooter_hood)
-    
+
     def execute(self):
-        pose = self.drivetrain.get_state().pose
-        if RobotZoneChecker.is_in_alliance_zone(pose):
-            self.shooter_hood.robot_zone = "alliance"
-        if RobotZoneChecker.is_in_neutral_zone(pose):
-            self.shooter_hood.robot_zone = "neutral"
-        if RobotZoneChecker.is_in_opposing_alliance_zone(pose):
-            self.shooter_hood.robot_zone = "opposing"
-        
-        if self.drivetrain.should_stop_shooting():
-            self.shooter_hood.toggle_force_hide(True)
-        else:
-            self.shooter_hood.toggle_force_hide(False)
+        self.shooter_hood.set_state(
+            HoodStates.HIDE
+            if self.drivetrain.should_stop_shooting()
+            else HoodStates.OUTER_RING
+        )
 
-class ToggleOnOverrideHood(Command):
-    def initialize(self):
-        kHoodMotor.OVERRIDE_ENABLED = True
-    def isFinished(self):
-        return True
 
-class ToggleOffOverrideHood(Command):
-    def initialize(self):
-        kHoodMotor.OVERRIDE_ENABLED = False
-    def isFinished(self):
-        return True
+class SetShooterHoodState(Command):
+    def __init__(self, shooter_hood: ShooterHood, state: HoodStates):
+        super().__init__()
+
+        self._hood = shooter_hood
+        self._state = state
+
+        self.addRequirements(self._hood)
+
+    def execute(self):
+        self._hood.set_state(self._state)
+
+    def getInterruptionBehavior(self):
+        return InterruptionBehavior.kCancelSelf
