@@ -39,7 +39,10 @@ class kPoses:
     neutral_zone_left_bump = Pose2d(6.2, kField.WIDTH - 2.55, Rotation2d())
     opposing_zone_left_bump = Pose2d(13.2, kField.WIDTH - 2.55, Rotation2d())
     
-    # Temporary Poses
+    left_trench_feed = Pose2d(6.4, kField.WIDTH - from_edge, Rotation2d())
+    right_trench_feed = Pose2d(6.4, from_edge, Rotation2d())
+    
+    # Auto Poses
     simple_right0 = Pose2d(3.7, from_edge, Rotation2d())
     simple_right1 = Pose2d(2.7, from_edge, Rotation2d((4*pi)/3))
     simple_right2 = Pose2d(2.7, 3, Rotation2d((4*pi)/3))

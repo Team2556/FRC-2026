@@ -94,18 +94,16 @@ class ConditionalAlignAndShoot(HubAlign):
         self.find_target(robot_pose)
 
         # Don't fire until BOTH yaw and hood angle are on target _FCC_
-        # if (
-        #     self.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES
-        #     # and self._hood.is_at_angle() bad
-        #     and self._shooter.is_charged
-        # ):
-        #     self.transfer_subsystem.activate()
-        # else:
-        #     self.transfer_subsystem.stop()
-
-        if RobotZoneChecker.is_in_opposing_alliance_zone(
-            self._drivetrain.get_state().pose
+        if (
+            self.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES
+            # and self._hood.is_at_angle() bad
+            and self._shooter.is_charged
         ):
+            self.transfer_subsystem.activate()
+        else:
+            self.transfer_subsystem.stop()
+        
+        if RobotZoneChecker.is_in_opposing_alliance_zone(self._drivetrain.get_state().pose):
             kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM_FAR
         else:
             kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM

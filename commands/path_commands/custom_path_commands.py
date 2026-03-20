@@ -6,7 +6,7 @@ from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
 from commands.auto_align.path_with_align import DriveWithAlign
 from commands.auto_align.align_with_controller import ConditionalAlignAndShoot
 from commands.drive.drive_commands import InitialPose, AutoDrive
-from commands.intake.intake_commands import IntakeCommandManualForwardAuto, IntakeCommandManualReverseAuto, IntakeRollerStop
+from commands.intake.intake_commands import IntakeCommandManualForwardAuto, IntakeCommandManualReverseAuto, IntakeRollerForward
 from commands.shooter.shooter_commands import EnableShooter, DisableShooter
 
 from util.robot_zone_checker import RobotZoneChecker
@@ -80,8 +80,7 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right3).with_override_speed(speed_intaking_middle),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right4
                              ).with_parallel_command(EnableShooter(self.shooter_subsystem)),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right5
-                             ).with_parallel_command(IntakeRollerStop(self.intake_subsystem)),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_right5),
                 DriveWithAlign(kHub.POS, self.drivetrain, target_pose = kPoses.neutral_grab_right6),
             ),
             ParallelRaceGroup(
@@ -100,8 +99,7 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left3).with_override_speed(speed_intaking_middle),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left4
                              ).with_parallel_command(EnableShooter(self.shooter_subsystem)),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left5
-                             ).with_parallel_command(IntakeRollerStop(self.intake_subsystem)),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_grab_left5),
                 DriveWithAlign(kHub.POS, self.drivetrain, target_pose = kPoses.neutral_grab_left6),
             ),
             ParallelRaceGroup(
@@ -120,8 +118,7 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_right3).with_override_speed(speed_intaking_middle),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_right4
                              ).with_parallel_command(EnableShooter(self.shooter_subsystem)),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_right5
-                             ).with_parallel_command(IntakeRollerStop(self.intake_subsystem)),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_right5),
                 DriveWithAlign(kHub.POS, self.drivetrain, target_pose = kPoses.double_grab_right6),
             ),
             ParallelRaceGroup(
@@ -138,8 +135,7 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_right10).with_override_speed(speed_intaking_middle),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_right11
                              ).with_parallel_command(EnableShooter(self.shooter_subsystem)),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_right12
-                             ).with_parallel_command(IntakeRollerStop(self.intake_subsystem)),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_right12),
                 DriveWithAlign(kHub.POS, self.drivetrain, target_pose = kPoses.double_grab_right13),
             ),
             ParallelRaceGroup(
@@ -158,8 +154,7 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_left3).with_override_speed(speed_intaking_middle),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_left4
                              ).with_parallel_command(EnableShooter(self.shooter_subsystem)),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_left5
-                             ).with_parallel_command(IntakeRollerStop(self.intake_subsystem)),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_left5),
                 DriveWithAlign(kHub.POS, self.drivetrain, target_pose = kPoses.double_grab_left6),
             ),
             ParallelRaceGroup(
@@ -176,8 +171,7 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_left10).with_override_speed(speed_intaking_middle),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_left11
                              ).with_parallel_command(EnableShooter(self.shooter_subsystem)),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_left12
-                             ).with_parallel_command(IntakeRollerStop(self.intake_subsystem)),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_left12),
                 DriveWithAlign(kHub.POS, self.drivetrain, target_pose = kPoses.double_grab_left13),
             ),
             ParallelRaceGroup(
@@ -190,7 +184,8 @@ class CustomPathCommands:
         ),
         "depot_grab" : SequentialCommandGroup(
             InitialPose(self.drivetrain, pose=kPoses.depot_grab0),
-            DriveWithAlign(kHub.POS, self.drivetrain, target_pose = kPoses.depot_grab1),
+            DriveWithAlign(kHub.POS, self.drivetrain, target_pose = kPoses.depot_grab1
+                           ).with_parallel_command(IntakeRollerForward(self.intake_subsystem)),
             ParallelRaceGroup(
                 ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, 
                                          self.hood_subsystem, self.led_subsystem),
