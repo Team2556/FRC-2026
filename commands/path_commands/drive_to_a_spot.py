@@ -216,7 +216,7 @@ class DriveToASpot(commands2.Command):
         self.max_speed = 2
         self.max_rps = 0.5
         self.end_tolerance = 0.05
-        self.end_rotation_tolerance = 0.04
+        self.end_rotation_tolerance = 0.001
         self.goal_end_velocity = 0.1
         self.slow_distance = 0.38
         return self

@@ -13,7 +13,7 @@ from util.robot_zone_checker import RobotZoneChecker
 from util.tune_with_controller import TuneShooterSpeed, TuneAlignAngle, TuneHoodAngle
 
 from commands.vision import vision_odometry
-from commands.path_commands import custom_path_commands, go_back_with_path
+from commands.path_commands import custom_path_commands, go_back_with_path, go_to_shooting_spot
 from commands.transfer.run_transfer_motors import RunTransferCommand, ReverseTransferCommand, SpindexOnlyCommand
 from commands.intake.intake_commands import (
     IntakeCommandDeploy,
@@ -126,7 +126,9 @@ class RobotContainer:
             )
         )
 
-        self._controller_1.leftBumper().whileTrue(go_back_with_path.GoBackWithPath(self._drivetrain))
+        # self._controller_1.leftBumper().whileTrue(go_back_with_path.GoBackWithPath(self._drivetrain))
+        
+        self._controller_1.leftBumper().whileTrue(go_to_shooting_spot.GoToShootingSpot(self._drivetrain))
 
         self._controller_1.leftTrigger().whileTrue(
             cmd.runEnd(
@@ -272,4 +274,5 @@ class RobotContainer:
 
     def getAutonomousCommand(self):
         hood_commands.ResetShooterHood(self.hood_subsystem).schedule()
+        IntakeRollerForward(self.intake_subsystem).schedule()
         return self.auto_chooser.choose_auto()
