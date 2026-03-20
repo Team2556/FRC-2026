@@ -26,6 +26,9 @@ class kHoodMotor:
     HOME_ANGLE_DEG = 5.0
     MAX_ANGLE_DEG = 35.0
     REACH_TARGET_ANGLE_ERROR = 2.0  # degrees
+    
+    INNER_RING_ANGLE = 13.9
+    OUTER_RING_ANGLE = 21.2
 
     # Dashboard override defaults
     OVERRIDE_ENABLED = False
@@ -33,8 +36,6 @@ class kHoodMotor:
     
     OPPOSING_ANGLE_DEG = 35.0
     
-    TUNER_OFFSET = 0
-
     @staticmethod
     def to_revs(degrees: float) -> float:
         return degrees * kHoodMotor.GEAR_RATIO
@@ -80,7 +81,8 @@ class kShooterData:
     SHOT_TIME = [ (2.66, 1.2), (2.80, 1.3), (3.60, 0.92), (4.66, 1)]
     # Distance (meters) | Hood angle (degrees)
     # Anchors: ~25° at 2m, ~35° at 4m — tune on robot
-    SHOT_ANGLES = [ (2.66, 15), (2.80, 15.5), (3.60, 18.85), (4.66, 22.0)]
+    SHOT_ANGLES_OLD = [ (2.66, 15), (2.80, 15.5), (3.60, 18.85), (4.66, 22.0)]
+    SHOT_ANGLES_MAGNOLIA = [(1.66, 13.9), (2.92, 21.2)]
 
 
 class kShooterConfig:

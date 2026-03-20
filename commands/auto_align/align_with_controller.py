@@ -12,7 +12,7 @@ from util.flip_util import FlipUtil
 from subsystems.shooter.dual_shooter import DualMotorShooter
 from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.led.LED_helpers import ColorFactories, CANdle_Color
-from subsystems.shooter.shooter_hood import ShooterHood
+from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
 
 from commands.auto_align import alignio
@@ -53,40 +53,18 @@ class HubAlign(alignio.TurretTargetWithVelocity):
         self._hood = hood
         self._shooter = shooter
 
-        SmartDashboard.putNumber(
-            "Hub Align Flight Time Scalar", self.flight_time_scalar
-        )
-
-        self._LED_Controller = LED_Controller
-        if self._LED_Controller:
-            self.LED_state = self._LED_Controller.create_state(
-                "hub_align", ColorFactories.solid_color(CANdle_Color.GREEN), 10, False
-            )
-
-        # Doesn't need requirement because to only modifies the drivetrain's override_rotation
-        # self.addRequirements(drivetrain)
-
     def initialize(self):
-        if self._LED_Controller:
-            self.LED_state.enable()
+        self._hood.set_state(HoodStates.AUTO)
 
     def execute(self):
-        self.flight_time_scalar = SmartDashboard.getNumber(
-            "Hub Align Flight Time Scalar", self.flight_time_scalar
-        )
-
         rotation_rate = self.calculate_rotation()
         self._drivetrain.set_target_align_rotation_rate(
             rotation_rate * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
         )
 
-        self._hood.angle_by_position(
-            self._drivetrain.get_state().pose, self._estimated_target_pose
-        )
+        self._hood.add_auto_hood_measurement(self._drivetrain.get_state(), self.target)
 
     def end(self, interrupted):
-        if self._LED_Controller:
-            self.LED_state.disable()
         self._drivetrain.stop_target_align()
 
 
@@ -124,8 +102,10 @@ class ConditionalAlignAndShoot(HubAlign):
         #     self.transfer_subsystem.activate()
         # else:
         #     self.transfer_subsystem.stop()
-        
-        if RobotZoneChecker.is_in_opposing_alliance_zone(self._drivetrain.get_state().pose):
+
+        if RobotZoneChecker.is_in_opposing_alliance_zone(
+            self._drivetrain.get_state().pose
+        ):
             kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM_FAR
         else:
             kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM
