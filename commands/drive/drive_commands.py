@@ -61,13 +61,22 @@ class OverrideRotation(commands2.Command):
 
     def initialize(self):
         self.pose = self._drivetrain.get_state().pose
-        self._drivetrain._drivetrain.reset_pose(
-            Pose2d(
-                self.pose.X(),
-                self.pose.Y(),
-                Rotation2d()
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            self._drivetrain._drivetrain.reset_pose(
+                Pose2d(
+                    self.pose.X(),
+                    self.pose.Y(),
+                    Rotation2d()
+                )
             )
-        )
+        else:
+            self._drivetrain._drivetrain.reset_pose(
+                Pose2d(
+                    self.pose.X(),
+                    self.pose.Y(),
+                    Rotation2d()
+                )
+            )
     
     def isFinished(self):
         return True

@@ -13,7 +13,7 @@ from util.robot_zone_checker import RobotZoneChecker
 from util.tune_with_controller import TuneShooterSpeed, TuneAlignAngle, TuneHoodAngle
 
 from commands.vision import vision_odometry
-from commands.path_commands import custom_path_commands, go_back_with_path, go_to_shooting_spot
+from commands.path_commands import custom_path_commands, go_back_with_path, go_to_shooting_spot, drive_to_a_spot
 from commands.transfer.run_transfer_motors import RunTransferCommand, ReverseTransferCommand, SpindexOnlyCommand
 from commands.intake.intake_commands import (
     IntakeCommandDeploy,
@@ -128,7 +128,12 @@ class RobotContainer:
 
         # self._controller_1.leftBumper().whileTrue(go_back_with_path.GoBackWithPath(self._drivetrain))
         
-        self._controller_1.leftBumper().whileTrue(go_to_shooting_spot.GoToShootingSpot(self._drivetrain))
+        self._controller_1.leftBumper().whileTrue(
+            ParallelCommandGroup(
+                go_to_shooting_spot.GoToShootingSpot(self._drivetrain),
+                shooter_commands.EnableShooter(self.shooter_subsystem)
+            )
+        )
 
         self._controller_1.leftTrigger().whileTrue(
             cmd.runEnd(
@@ -139,11 +144,15 @@ class RobotContainer:
             )
         )
 
-        self._controller_1.x().whileTrue(
+        self._controller_1.x().and_(self._controller_1.rightBumper().not_()).whileTrue(
             ParallelCommandGroup(
                 self.custom_path_commands.left_trench,
                 IntakeCommandManualForward(self.intake_subsystem)
             )
+        )
+        
+        self._controller_1.x().and_(self._controller_1.rightBumper()).whileTrue(
+            drive_to_a_spot.DriveToASpot(self._drivetrain, target_pose=kPoses.left_trench_feed).with_precise_values()
         )
         
         self._controller_1.a().whileTrue(
@@ -154,11 +163,15 @@ class RobotContainer:
             self.custom_path_commands.right_bump
         )
         
-        self._controller_1.b().whileTrue(
+        self._controller_1.b().and_(self._controller_1.rightBumper().not_()).whileTrue(
             ParallelCommandGroup(
                 self.custom_path_commands.right_trench,
                 IntakeCommandManualForward(self.intake_subsystem)
             )
+        )
+        
+        self._controller_1.b().and_(self._controller_1.rightBumper()).whileTrue(
+            drive_to_a_spot.DriveToASpot(self._drivetrain, target_pose=kPoses.right_trench_feed).with_precise_values()
         )
         
         self._controller_1.povUp().onTrue(
