@@ -23,21 +23,21 @@ class kPoses:
     from_edge = 0.55
     from_edge_neutral = 0.6
     
-    alliance_zone_left_trench = Pose2d(3.0, kField.WIDTH - from_edge, Rotation2d())
-    neutral_zone_left_trench = Pose2d(6.4, kField.WIDTH - from_edge_neutral, Rotation2d())
-    opposing_zone_left_trench = Pose2d(13.6, kField.WIDTH - from_edge_neutral, Rotation2d())
+    alliance_zone_left_trench = Pose2d(3.0, kField.WIDTH - from_edge, Rotation2d(pi))
+    neutral_zone_left_trench = Pose2d(6.4, kField.WIDTH - from_edge_neutral, Rotation2d(pi))
+    opposing_zone_left_trench = Pose2d(13.6, kField.WIDTH - from_edge_neutral, Rotation2d(pi))
     
-    alliance_zone_right_trench = Pose2d(3.0, from_edge, Rotation2d())
-    neutral_zone_right_trench = Pose2d(6.4, from_edge_neutral, Rotation2d())
-    opposing_zone_right_trench = Pose2d(13.6, from_edge_neutral, Rotation2d())
+    alliance_zone_right_trench = Pose2d(3.0, from_edge, Rotation2d(pi))
+    neutral_zone_right_trench = Pose2d(6.4, from_edge_neutral, Rotation2d(pi))
+    opposing_zone_right_trench = Pose2d(13.6, from_edge_neutral, Rotation2d(pi))
     
-    alliance_zone_right_bump = Pose2d(3.0, 2.55, Rotation2d(pi))
-    neutral_zone_right_bump = Pose2d(6.0, 2.55, Rotation2d(pi))
-    opposing_zone_right_bump = Pose2d(13.2, 2.55, Rotation2d(pi))
+    alliance_zone_right_bump = Pose2d(3.0, 2.55, Rotation2d())
+    neutral_zone_right_bump = Pose2d(6.2, 2.55, Rotation2d())
+    opposing_zone_right_bump = Pose2d(13.2, 2.55, Rotation2d())
     
-    alliance_zone_left_bump = Pose2d(3.0, kField.WIDTH - 2.55, Rotation2d(pi))
-    neutral_zone_left_bump = Pose2d(6.0, kField.WIDTH - 2.55, Rotation2d(pi))
-    opposing_zone_left_bump = Pose2d(13.2, kField.WIDTH - 2.55, Rotation2d(pi))
+    alliance_zone_left_bump = Pose2d(3.0, kField.WIDTH - 2.55, Rotation2d())
+    neutral_zone_left_bump = Pose2d(6.2, kField.WIDTH - 2.55, Rotation2d())
+    opposing_zone_left_bump = Pose2d(13.2, kField.WIDTH - 2.55, Rotation2d())
     
     # Temporary Poses
     simple_right0 = Pose2d(3.7, from_edge, Rotation2d())
