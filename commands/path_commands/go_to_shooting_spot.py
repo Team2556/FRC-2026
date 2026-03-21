@@ -22,20 +22,20 @@ class GoToShootingSpot(commands2.Command):
         self.drivetrain : SwerveDriveTrain = subsystem
         
         self.left_path = DriveToASpot(
-            self.drivetrain, target_pose=Pose2d(2.0, 2.67, Rotation2d(-0.927))
+            self.drivetrain, target_pose=Pose2d(2.0, 5.33, Rotation2d(-1.935))
         ).with_precise_values()
         
         self.right_path = DriveToASpot(
-            self.drivetrain, target_pose=Pose2d(2.0, 5.33, Rotation2d(-1.935))
+            self.drivetrain, target_pose=Pose2d(2.0, 2.67, Rotation2d(-0.927))
         ).with_precise_values()
 
     def initialize(self):
         pose = self.drivetrain.get_state().pose
         
-        if not RobotZoneChecker.is_in_left_alliance_zone(pose):
+        if RobotZoneChecker.is_in_left_alliance_zone(pose):
             self.left_path.schedule()
         
-        if not RobotZoneChecker.is_in_right_alliance_zone(pose):
+        if RobotZoneChecker.is_in_right_alliance_zone(pose):
             self.right_path.schedule()
     
     def calculate_target_yaw(self, pose : Pose2d):
