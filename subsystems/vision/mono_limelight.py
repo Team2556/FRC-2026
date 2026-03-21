@@ -24,6 +24,7 @@ class Vision(commands2.Subsystem):
         self._cameras = camera_names
         self._pigeon = Pigeon2(TunerConstants._pigeon_id)
         self.offset = 0
+        self.tilt = 0
         
         self.nt = NTTable('Vision')
         self.nt.bool('Drive State Provided')

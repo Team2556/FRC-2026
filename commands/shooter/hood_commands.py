@@ -64,11 +64,11 @@ class UpdateHoodPositionVariable(Command):
         self.addRequirements(self.shooter_hood)
 
     def execute(self):
-        self.shooter_hood.set_state(
-            HoodStates.HIDE
-            if self.drivetrain.should_stop_shooting()
-            else HoodStates.OUTER_RING
-        )
+        if self.drivetrain.should_stop_shooting():
+            self.shooter_hood.set_state(
+                HoodStates.HIDE
+                
+            )
 
 
 class SetShooterHoodState(Command):

@@ -3,7 +3,7 @@ from wpimath.units import rotationsToRadians
 class kAutoAlign:
     class ROTATION_PID:
         p = 0.006
-        i = 0.00005
+        i = 0.0001
         d = 0.00008
 
     DIRECTION_TUNING = 0.0

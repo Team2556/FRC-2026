@@ -108,7 +108,7 @@ class ShooterHood(Subsystem):
             case HoodStates.HIDE:
                 target_angle = kHoodMotor.HOME_ANGLE_DEG
 
-        target_revs = kHoodMotor.to_revs(target_angle)
+        target_revs = kHoodMotor.to_revs(target_angle + kHoodMotor.TUNER_OFFSET)
         self.set_position(target_revs)
 
     def periodic(self) -> None:

@@ -9,10 +9,10 @@
         "containers": [
           {
             "title": "Field",
-            "x": 512.0,
+            "x": 320.0,
             "y": 0.0,
-            "width": 832.0,
-            "height": 384.0,
+            "width": 256.0,
+            "height": 640.0,
             "type": "Field",
             "properties": {
               "topic": "/SmartDashboard/Field",
@@ -22,35 +22,18 @@
               "robot_length": 1.0,
               "show_other_objects": true,
               "show_trajectories": true,
-              "field_rotation": 0.0,
+              "field_rotation": 90.0,
               "robot_color": 4282121984,
               "trajectory_color": 4278255361,
               "show_robot_outside_widget": true
             }
           },
           {
-            "title": "Hub Active",
-            "x": 512.0,
-            "y": 384.0,
-            "width": 832.0,
-            "height": 192.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/Extra FMS Data/Hub Active",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
             "title": "Time Remaining",
             "x": 0.0,
             "y": 0.0,
-            "width": 512.0,
-            "height": 256.0,
+            "width": 320.0,
+            "height": 192.0,
             "type": "Match Time",
             "properties": {
               "topic": "/Extra FMS Data/Time Remaining",
@@ -64,9 +47,9 @@
           {
             "title": "Time Until Next Phase",
             "x": 0.0,
-            "y": 256.0,
-            "width": 512.0,
-            "height": 256.0,
+            "y": 192.0,
+            "width": 320.0,
+            "height": 192.0,
             "type": "Match Time",
             "properties": {
               "topic": "/Extra FMS Data/Time Until Next Phase",
@@ -76,25 +59,178 @@
               "red_start_time": 3,
               "yellow_start_time": 10
             }
+          },
+          {
+            "title": "Align Tuner",
+            "x": 1280.0,
+            "y": 0.0,
+            "width": 192.0,
+            "height": 192.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/Drivetrain/Align Tuner",
+              "period": 0.06,
+              "data_type": "double"
+            }
+          },
+          {
+            "title": "Hub Active",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 320.0,
+            "height": 256.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/Extra FMS Data/Hub Active",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "limelight-shooter",
+            "x": 960.0,
+            "y": 192.0,
+            "width": 512.0,
+            "height": 320.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-shooter",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "Distance to Hub",
+            "x": 576.0,
+            "y": 0.0,
+            "width": 320.0,
+            "height": 192.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/Drivetrain/Distance to Hub",
+              "period": 0.06,
+              "data_type": "double"
+            }
+          },
+          {
+            "title": "Hood Position (deg)",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 192.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/Shooter/Hood/Hood Position (deg)",
+              "period": 0.06,
+              "data_type": "double"
+            }
+          },
+          {
+            "title": "Robot Tilt",
+            "x": 896.0,
+            "y": 512.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/Vision/Robot Tilt",
+              "period": 0.06,
+              "data_type": "double"
+            }
+          },
+          {
+            "title": "limelight-back",
+            "x": 576.0,
+            "y": 192.0,
+            "width": 256.0,
+            "height": 320.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-back",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "Motor Charged",
+            "x": 0.0,
+            "y": 640.0,
+            "width": 1472.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/Shooter/Motor Charged",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Ignore Tilt",
+            "x": 1280.0,
+            "y": 512.0,
+            "width": 192.0,
+            "height": 128.0,
+            "type": "Toggle Switch",
+            "properties": {
+              "topic": "/Vision/Ignore Tilt",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "State",
+            "x": 576.0,
+            "y": 512.0,
+            "width": 320.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Shooter/Hood/State",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
           }
         ]
       }
     },
     {
-      "name": "Pathplanning",
+      "name": "Select Auto Pls",
       "grid_layout": {
         "layouts": [
           {
             "title": "Sequence Path",
-            "x": 0.0,
+            "x": 1216.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 384.0,
+            "height": 576.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
             },
             "children": [
+              {
+                "title": "Auto Speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Sequence Path/Auto Speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
               {
                 "title": "Max Speed",
                 "x": 0.0,
@@ -104,6 +240,34 @@
                 "type": "Text Display",
                 "properties": {
                   "topic": "/SmartDashboard/Sequence Path/Max Speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Slow Distance Proportional to Max Speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Sequence Path/Slow Distance Proportional to Max Speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Slow Transition Multiplier",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Sequence Path/Slow Transition Multiplier",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
@@ -136,6 +300,83 @@
                   "data_type": "double",
                   "show_submit_button": false
                 }
+              }
+            ]
+          }
+        ],
+        "containers": [
+          {
+            "title": "Autonomous Selecter",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 1216.0,
+            "height": 576.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Autonomous Selecter",
+              "period": 0.06,
+              "sort_options": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Pathplanning",
+      "grid_layout": {
+        "layouts": [
+          {
+            "title": "Sequence Path",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 384.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Max Speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Sequence Path/Max Speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Smoothing Radius",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Sequence Path/Smoothing Radius",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Smoothing Time",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/Sequence Path/Smoothing Time",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
               },
               {
                 "title": "Slow Distance Proportional to Max Speed",
@@ -148,7 +389,7 @@
                   "topic": "/SmartDashboard/Sequence Path/Slow Distance Proportional to Max Speed",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -162,7 +403,7 @@
                   "topic": "/SmartDashboard/Sequence Path/Slow Transition Multiplier",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               }
             ]
@@ -224,6 +465,133 @@
                 }
               }
             ]
+          },
+          {
+            "title": "Auto Align",
+            "x": 256.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "k_d",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Auto Align/k_d",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "k_i",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Auto Align/k_i",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "k_p",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Auto Align/k_p",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              }
+            ]
+          },
+          {
+            "title": "Vision",
+            "x": 960.0,
+            "y": 0.0,
+            "width": 512.0,
+            "height": 384.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Drive State Provided",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/Vision/Drive State Provided",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Maximum Tilt Error",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Vision/Maximum Tilt Error",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Required April Tags",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Vision/Required April Tags",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Robot Tilt",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Vision/Robot Tilt",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
           }
         ],
         "containers": [
@@ -231,8 +599,8 @@
             "title": "Field",
             "x": 256.0,
             "y": 0.0,
-            "width": 1088.0,
-            "height": 512.0,
+            "width": 704.0,
+            "height": 384.0,
             "type": "Field",
             "properties": {
               "topic": "/SmartDashboard/Field",
@@ -247,6 +615,46 @@
               "trajectory_color": 4294967295,
               "show_robot_outside_widget": true
             }
+          },
+          {
+            "title": "Align Tuner",
+            "x": 0.0,
+            "y": 640.0,
+            "width": 448.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Drivetrain/Align Tuner",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "limelight-back",
+            "x": 512.0,
+            "y": 384.0,
+            "width": 448.0,
+            "height": 384.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-back",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "limelight-shooter",
+            "x": 960.0,
+            "y": 384.0,
+            "width": 512.0,
+            "height": 384.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-shooter",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
           }
         ]
       }
@@ -260,7 +668,7 @@
             "x": 0.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 512.0,
+            "height": 576.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -305,7 +713,7 @@
                   "topic": "/Shooter/Hood/EditablePID/slot0/k_p",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -319,7 +727,7 @@
                   "topic": "/Shooter/Hood/EditablePID/slot0/k_i",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -333,7 +741,7 @@
                   "topic": "/Shooter/Hood/EditablePID/slot0/k_d",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -347,7 +755,7 @@
                   "topic": "/Shooter/Hood/Reset Home Speed",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -361,7 +769,21 @@
                   "topic": "/Shooter/Hood/Increment Amount",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Max Hood Position (deg)",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Shooter/Hood/Max Hood Position (deg)",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
                 }
               }
             ]
@@ -433,7 +855,7 @@
                   "topic": "/Shooter/Motor/Target RPM",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -447,7 +869,7 @@
                   "topic": "/Shooter/Motor/Idle RPM",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -461,7 +883,7 @@
                   "topic": "/Shooter/Motor/Reach Target Velocity Error",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               }
             ]
@@ -488,7 +910,7 @@
                   "topic": "/Shooter/Motor/EditablePID/slot0/k_d",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -502,7 +924,7 @@
                   "topic": "/Shooter/Motor/EditablePID/slot0/k_i",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -516,7 +938,7 @@
                   "topic": "/Shooter/Motor/EditablePID/slot0/k_p",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               }
             ]
@@ -543,7 +965,7 @@
                   "topic": "/Shooter/Motor/EditablePID/slot1/k_d",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -557,7 +979,7 @@
                   "topic": "/Shooter/Motor/EditablePID/slot1/k_i",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -571,7 +993,7 @@
                   "topic": "/Shooter/Motor/EditablePID/slot1/k_p",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               }
             ]
@@ -656,6 +1078,51 @@
               "trajectory_color": 4294967295,
               "show_robot_outside_widget": true
             }
+          },
+          {
+            "title": "Robot Zone",
+            "x": 1024.0,
+            "y": 320.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Robot Zone",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Override Enabled",
+            "x": 256.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/Shooter/Hood/Override Enabled",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Override Angle (deg)",
+            "x": 512.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Shooter/Hood/Override Angle (deg)",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
           }
         ]
       }
@@ -700,7 +1167,7 @@
                   "topic": "/Transfer/Spindexer/Target RPM",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -714,7 +1181,7 @@
                   "topic": "/Transfer/Spindexer/EditablePID/slot0/k_p",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -728,7 +1195,7 @@
                   "topic": "/Transfer/Spindexer/EditablePID/slot0/k_i",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -742,7 +1209,7 @@
                   "topic": "/Transfer/Spindexer/EditablePID/slot0/k_d",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -797,7 +1264,7 @@
                   "topic": "/Transfer/Up Transfer/Target RPM",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -811,7 +1278,7 @@
                   "topic": "/Transfer/Up Transfer/EditablePID/slot0/k_p",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -825,7 +1292,7 @@
                   "topic": "/Transfer/Up Transfer/EditablePID/slot0/k_i",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -839,7 +1306,7 @@
                   "topic": "/Transfer/Up Transfer/EditablePID/slot0/k_d",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -859,7 +1326,7 @@
             ]
           },
           {
-            "title": "Intake Conatants",
+            "title": "Intake Constants",
             "x": 512.0,
             "y": 256.0,
             "width": 256.0,
@@ -880,7 +1347,7 @@
                   "topic": "/Intake/Target Deployer Position",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -894,7 +1361,7 @@
                   "topic": "/Intake/Target Spinny RPM",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               }
             ]
@@ -1004,7 +1471,7 @@
                   "topic": "/Intake/DeployerPID/EditablePID/slot0/k_d",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -1018,7 +1485,7 @@
                   "topic": "/Intake/DeployerPID/EditablePID/slot0/k_i",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -1032,7 +1499,7 @@
                   "topic": "/Intake/DeployerPID/EditablePID/slot0/k_p",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               }
             ]
@@ -1059,7 +1526,7 @@
                   "topic": "/Intake/DeployerPID/EditablePID/slot1/k_d",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -1073,7 +1540,7 @@
                   "topic": "/Intake/DeployerPID/EditablePID/slot1/k_i",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -1087,7 +1554,7 @@
                   "topic": "/Intake/DeployerPID/EditablePID/slot1/k_p",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               }
             ]
@@ -1114,7 +1581,7 @@
                   "topic": "/Intake/SpinnyPID/EditablePID/slot0/k_d",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -1128,7 +1595,7 @@
                   "topic": "/Intake/SpinnyPID/EditablePID/slot0/k_i",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -1142,7 +1609,7 @@
                   "topic": "/Intake/SpinnyPID/EditablePID/slot0/k_p",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               }
             ]
@@ -1164,6 +1631,82 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "Ideal Roller RPM",
+            "x": 64.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Intake/Ideal Roller RPM",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Roller RPM",
+            "x": 192.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Intake/Roller RPM",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Target Roller RPM",
+            "x": 448.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Intake/Target Roller RPM",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "USB Camera 0",
+            "x": 768.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/USB Camera 0",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Tab 6",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "USB Camera 0",
+            "x": 64.0,
+            "y": 0.0,
+            "width": 1408.0,
+            "height": 768.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/USB Camera 0",
+              "period": 0.06,
+              "rotation_turns": 0
             }
           }
         ]

@@ -55,6 +55,8 @@ from commands2 import (
     InstantCommand,
     ConditionalCommand,
     SequentialCommandGroup,
+    ParallelRaceGroup,
+    WaitCommand
 )
 from commands2.button import Trigger
 
@@ -97,7 +99,7 @@ class RobotContainer:
 
         # In-game tuner stuff:
         # self.tune_shooter_speed = TuneShooterSpeed(self._controller_2)
-        # self.tune_hood_angle = TuneHoodAngle(self._controller_2)
+        self.tune_hood_angle = TuneHoodAngle(self._controller_2)
         # self.tune_align_angle = TuneAlignAngle(self._controller_2)
 
         self.configureButtonBindings()
@@ -261,7 +263,7 @@ class RobotContainer:
         # self._controller_2.povDown().onFalse(hood_commands.ToggleOffOverrideHood())
 
         # self._controller_2.leftStick().onTrue(cmd.runOnce(lambda: self.tune_shooter_speed.reset()))
-        # self._controller_2.leftStick().onTrue(cmd.runOnce(lambda: self.tune_hood_angle.reset()))
+        self._controller_2.leftStick().onTrue(cmd.runOnce(lambda: self.tune_hood_angle.reset()))
         # self._controller_2.rightStick().onTrue(cmd.runOnce(lambda: self.tune_align_angle.reset()))
 
         # self._controller_2.povDown().onTrue(IntakeForceRetract(self.intake_subsystem))
@@ -300,6 +302,7 @@ class RobotContainer:
         self.shooter_subsystem.editable_PID.force_apply()
 
     def getAutonomousCommand(self):
+        # UNCOMMENT THIS OR ELSE
         hood_commands.ResetShooterHood(self.hood_subsystem).schedule()
         IntakeRollerForward(self.intake_subsystem).schedule()
         return self.auto_chooser.choose_auto()

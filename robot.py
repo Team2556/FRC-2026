@@ -10,6 +10,7 @@ from wpimath import units
 import commands2
 import typing
 
+
 from robotcontainer import RobotContainer
 from commands.test_program import TestProgramCommand
 
@@ -31,6 +32,7 @@ class MyRobot(commands2.TimedCommandRobot):
         initialization code.
         """
         self.container = RobotContainer()
+        wpilib.CameraServer.launch()
 
     def robotPeriodic(self) -> None:
         """This function is called every 20 ms, no matter the mode. Use this for items like diagnostics

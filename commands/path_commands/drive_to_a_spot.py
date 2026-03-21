@@ -215,10 +215,10 @@ class DriveToASpot(commands2.Command):
     def with_precise_values(self):
         self.max_speed = 2.7
         self.max_rps = 0.5
-        self.end_tolerance = 0.05
+        self.end_tolerance = 0.1
         self.end_rotation_tolerance = 0.001
-        self.goal_end_velocity = 0.1
-        self.slow_distance = 0.38
+        self.goal_end_velocity = 0.01
+        self.slow_distance = 0.6
         return self
 
     def with_sequence_pose_values(self):

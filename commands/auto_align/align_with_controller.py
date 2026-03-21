@@ -100,8 +100,8 @@ class ConditionalAlignAndShoot(HubAlign):
             and self._shooter.is_charged
         ):
             self.transfer_subsystem.activate()
-        else:
-            self.transfer_subsystem.stop()
+        # else:
+        #     self.transfer_subsystem.stop()
         
         if RobotZoneChecker.is_in_opposing_alliance_zone(self._drivetrain.get_state().pose):
             kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM_FAR
@@ -124,4 +124,4 @@ class ConditionalAlignAndShoot(HubAlign):
         super().end(interrupted)
 
         self.transfer_subsystem.stop()
-        self._shooter.disable()
+        # self._shooter.disable()
