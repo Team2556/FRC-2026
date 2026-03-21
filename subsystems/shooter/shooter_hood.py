@@ -131,7 +131,7 @@ class ShooterHood(Subsystem):
     @staticmethod
     def get_angle_by_distance(distance: float) -> float:
         interpolation_distance_data, interpolation_angle_data = zip(
-            *kShooterData.SHOT_ANGLES_MAGNOLIA
+            *kShooterData.SHOT_ANGLES
         )
         return np.interp(
             distance, interpolation_distance_data, interpolation_angle_data

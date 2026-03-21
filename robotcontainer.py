@@ -68,10 +68,10 @@ from constants.field import kHub, kPassSpots
 class RobotContainer:
     def __init__(self) -> None:
         self._controller_1 = (
-            XboxController(port=0).with_deadband(0.3).with_power(3).with_mult(0.2)
+            XboxController(port=0).with_deadband(0.2).with_power(3)
         )
         self._controller_2 = (
-            XboxController(port=1).with_deadband(0.3).with_power(3).with_mult(0.2)
+            XboxController(port=1).with_deadband(0.2).with_power(3)
         )
 
         self._drivetrain = drivetrain.SwerveDriveTrain()

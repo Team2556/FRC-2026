@@ -36,7 +36,7 @@ class TransferSubsystem(Subsystem):
         self.up_transfer_nt = NTTable("Transfer").get_subtable("Up Transfer")
         self.up_transfer_nt.float("RPM", 0.0)
         self.up_transfer_nt.float("Target RPM", kTransfer.TARGET_RPM)
-        self.up_transfer_nt.float("Ideal RPM", 0.0)
+        self.up_transfer_nt.float("Ideal RPM", 0.0) 
         
         self.spindex_editable_pid = EditablePID("Transfer/Spindexer", self.spindex_motor, kSpindexer._CONFIG)
         self.up_transfer_editable_pid = EditablePID("Transfer/Up Transfer", self.up_transfer_motor, kTransfer._CONFIG)

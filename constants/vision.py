@@ -21,4 +21,4 @@ class kOdometry:
     MIN_APRILTAGS = 2
     MAX_TILT_ERROR = 5
     
-    IGNORE_TILT = False
+    IGNORE_TILT = True

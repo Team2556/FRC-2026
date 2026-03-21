@@ -65,7 +65,7 @@ class kShooterMotor:
     _CONFIG.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
 
     IDLE_RPM = -1000
-    TARGET_RPM = -3400
+    TARGET_RPM = -2900
     TUNED_RPM = 0
     
     CURRENT_TARGET_RPM = TARGET_RPM
@@ -83,8 +83,9 @@ class kShooterData:
     SHOT_TIME = [ (2.66, 1.2), (2.80, 1.3), (3.60, 0.92), (4.66, 1)]
     # Distance (meters) | Hood angle (degrees)
     # Anchors: ~25° at 2m, ~35° at 4m — tune on robot
-    SHOT_ANGLES_OLD = [ (2.66, 15), (2.80, 15.5), (3.60, 18.85), (4.66, 22.0)]
-    SHOT_ANGLES_MAGNOLIA = [(1.66, 13.9), (2.92, 21.2)]
+    # SHOT_ANGLES_OLD = [ (2.66, 15), (2.80, 15.5), (3.60, 18.85), (4.66, 22.0)]
+    # SHOT_ANGLES_MAGNOLIA = [(1.66, 13.9), (2.92, 21.2)]
+    SHOT_ANGLES = [(2.48, 24.8), (2.92, 30.0), (3.24, 34.9)]
 
 
 class kShooterConfig:
