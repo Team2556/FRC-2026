@@ -74,7 +74,7 @@ class CustomPathCommands:
                 ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, 
                                          self.hood_subsystem, self.led_subsystem),
                 AutoDrive(self.drivetrain),
-                WaitCommand(6)
+                WaitCommand(3)
             ),
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_right7),
@@ -161,7 +161,7 @@ class CustomPathCommands:
                 ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, 
                                          self.hood_subsystem, self.led_subsystem),
                 AutoDrive(self.drivetrain),
-                WaitCommand(6)
+                WaitCommand(3)
             ),
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.double_grab_left7),

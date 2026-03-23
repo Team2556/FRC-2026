@@ -53,7 +53,7 @@ class RobotZoneChecker:
         return RobotZoneChecker.is_within_pose(
             pose, 
             FlipUtil.fieldPose(Pose2d(0, RobotZoneChecker.field_height / 2, Rotation2d())),
-            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.right_alliance_zone_x, RobotZoneChecker.field_height, Rotation2d())),
+            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.right_alliance_zone_x + 0.3, RobotZoneChecker.field_height, Rotation2d())),
         )
     
     @staticmethod
@@ -61,7 +61,7 @@ class RobotZoneChecker:
         return RobotZoneChecker.is_within_pose(
             pose, 
             FlipUtil.fieldPose(Pose2d(0, 0, Rotation2d())),
-            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.right_alliance_zone_x, RobotZoneChecker.field_height / 2, Rotation2d())),
+            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.right_alliance_zone_x + 0.3, RobotZoneChecker.field_height / 2, Rotation2d())),
         )
     
     @staticmethod
