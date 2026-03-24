@@ -168,10 +168,10 @@ class DriveToASpot(commands2.Command):
             self.target_velocity.rotation()
         )
         
-        self.drivetrain.drive_with_values(
+        self.drivetrain.drive(
             self.target_velocity.X(),
             self.target_velocity.Y(),
-            self.target_velocity.rotation().radians()
+            self.target_velocity.rotation().radians(),
         )
     
     def isFinished(self):

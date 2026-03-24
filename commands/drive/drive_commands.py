@@ -22,7 +22,7 @@ class ControllerDrive(commands2.Command):
         pass
 
     def execute(self):
-        self._drivetrain.drive_with_controller(self._controller)
+        self._drivetrain.drive_from_controller(self._controller)
 
     def isFinished(self) -> bool:
         return False
@@ -68,7 +68,7 @@ class AutoDrive(commands2.Command):
         pass
 
     def execute(self):
-        self._drivetrain.drive_with_values()
+        self._drivetrain.drive(0, 0, 0)
 
     def isFinished(self) -> bool:
         return False

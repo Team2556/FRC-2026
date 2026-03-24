@@ -33,7 +33,6 @@ from commands.intake.intake_commands import (
 from commands.shooter import shooter_commands, hood_commands
 
 from constants.vision import kCamera
-from constants.drive import kDriveConfig
 
 
 class RobotContainer:
@@ -97,10 +96,8 @@ class RobotContainer:
 
         self._controller_1.leftTrigger().whileTrue(
             cmd.runEnd(
-                lambda: self._drivetrain.change_speed_mult(
-                    kDriveConfig.SLOW_SPEED_MULT
-                ),
-                lambda: self._drivetrain.change_speed_mult(),
+                lambda: self._drivetrain.set_modifiers(drivetrain.SwerveDriveTrain.SLOW),
+                lambda: self._drivetrain.reset_modifiers(),
             )
         )
 

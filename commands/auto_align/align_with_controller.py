@@ -59,7 +59,7 @@ class ConditionalAlignAndShoot(commands2.Command):
         self._find_target(robot_pose)
 
         rotation_rate = self._calc.calculate_rotation()
-        self._drivetrain.set_target_align_rotation_rate(
+        self._drivetrain.set_align_rotation(
             rotation_rate * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
         )
 
@@ -83,7 +83,7 @@ class ConditionalAlignAndShoot(commands2.Command):
         return self._drivetrain.should_stop_shooting()
 
     def end(self, interrupted: bool) -> None:
-        self._drivetrain.stop_target_align()
+        self._drivetrain.clear_align_rotation()
         self._transfer.stop()
 
     def _find_target(self, pose: Pose2d) -> None:
