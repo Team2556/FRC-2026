@@ -24,6 +24,7 @@ from .driveio import CustomSwerve
 
 class SwerveDriveTrain(commands2.Subsystem):
     def __init__(self):
+        super().__init__()
         self._drivetrain = TunerConstants.create_drivetrain()
 
         self._drive = swerve.requests.FieldCentric().with_drive_request_type(
@@ -131,8 +132,14 @@ class SwerveDriveTrain(commands2.Subsystem):
             or RobotZoneChecker.is_near_transition_zone(robot_pose)
         )
 
-    def _stop(self):
+    def stop(self):
         self.drive_with_values(velocity_x=0, velocity_y=0, rotation_rate=0)
+
+    def reset_pose(self, pose):
+        self._drivetrain.reset_pose(pose)
+
+    def add_vision_measurement(self, pose, timestamp_seconds, std_devs):
+        self._drivetrain.add_vision_measurement(pose, timestamp_seconds, std_devs)
 
     def get_state(self) -> CustomSwerve.DriveState:
         return CustomSwerve.BuildDriveState(self._drivetrain.get_state())

@@ -27,7 +27,8 @@ class TurretToPose(alignio.TurretTargetWithVelocity):
         target: Pose2d,
         shooter: DualMotorShooter,
     ):
-        super().__init__(drivetrain, shooter, target)
+        super().__init__(drivetrain, target)
+        self._shooter = shooter
 
     def execute(self):
         rotation_rate = self.calculate_rotation()

@@ -10,6 +10,7 @@ from util.nt_util import NTTable
 
 class TransferSubsystem(Subsystem):
     def __init__(self):
+        super().__init__()
         self.spindex_motor = TalonFX(kCANId.hopper.SPINDEXER, "rio")
         self.up_transfer_motor = TalonFX(kCANId.hopper.TRASNFER, "rio")
         

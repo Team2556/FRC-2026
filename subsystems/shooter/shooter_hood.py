@@ -34,6 +34,7 @@ class HoodStates(Enum):
 
 class ShooterHood(Subsystem):
     def __init__(self):
+        super().__init__()
         self._state: HoodStates = HoodStates.HIDE
         self._motor = TalonFXS(kCANId.shooter.HOOD_CONTROL, "rio")
 

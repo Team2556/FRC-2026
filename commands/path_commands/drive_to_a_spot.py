@@ -183,11 +183,8 @@ class DriveToASpot(commands2.Command):
         
         return self.is_within_distance and self.is_within_rotation
     
-    def end(self, interrupted):
-        # This function is called after the command ends
-        # the interrupted variable stores whether or not the command was interuppted or canceled.
-        self.drivetrain._stop()
-        pass
+    def end(self, interrupted: bool):
+        self.drivetrain.stop()
     
     def get_distance_progress(self):
         self.update_pose_estimate()
