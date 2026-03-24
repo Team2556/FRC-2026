@@ -4,9 +4,20 @@
 # the WPILib BSD license file in the root directory of this project.
 #
 
+from commands2 import cmd
+from commands2.button import Trigger
+
 from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
 from util.auto_chooser import AutoChooser
+
+from subsystems.drivetrain import drivetrain
+from subsystems.vision import mono_limelight
+from subsystems.intake.intake import IntakeSubsystem
+from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
+from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
+from subsystems.led.LED_controller import CANdleLEDController
+from subsystems.shooter.dual_shooter import DualMotorShooter
 
 from commands.auto_align import align_with_controller
 from commands.drive import drive_commands
@@ -24,17 +35,6 @@ from commands.shooter import shooter_commands, hood_commands
 
 from constants.vision import kCamera
 from constants.drive import kDriveConfig
-
-from subsystems.drivetrain import drivetrain
-from subsystems.vision import mono_limelight
-from subsystems.intake.intake import IntakeSubsystem
-from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
-from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
-from subsystems.led.LED_controller import CANdleLEDController
-from subsystems.shooter.dual_shooter import DualMotorShooter
-
-from commands2 import cmd
-from commands2.button import Trigger
 
 
 class RobotContainer:

@@ -3,8 +3,10 @@ All poses that are important for all the paths.
 These aren't known locations and should be tuned a bunch (unlike field.py)
 '''
 
-from wpimath.geometry import Pose2d, Rotation2d
 from math import pi
+
+from wpimath.geometry import Pose2d, Rotation2d
+
 from constants.field import kField
 
 class kPath:

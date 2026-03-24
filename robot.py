@@ -5,14 +5,17 @@
 # the WPILib BSD license file in the root directory of this project.
 #
 
-import wpilib
-from wpimath import units
-import commands2
 import typing
 
+import wpilib
+
+from wpimath import units
+
+import commands2
+
+from phoenix6 import SignalLogger
 
 from robotcontainer import RobotContainer
-from phoenix6 import SignalLogger
 
 
 class MyRobot(commands2.TimedCommandRobot):

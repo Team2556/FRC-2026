@@ -1,5 +1,4 @@
 import wpilib
-from wpilib import SmartDashboard
 
 from commands2 import Command, InterruptionBehavior
 

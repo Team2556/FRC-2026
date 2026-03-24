@@ -1,21 +1,9 @@
-from typing import Callable, Tuple
-
-from wpilib import SmartDashboard
-from wpimath import applyDeadband
-from wpimath.geometry import Pose2d
-
 from commands2 import Command, InterruptionBehavior
-
-from util.nt_util import NTTable
-from util.custom_controller import XboxController
 
 from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
 from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 
 from constants.shooter import kHoodMotor
-from constants.shooter import kShooterData
-
-from util.robot_zone_checker import RobotZoneChecker
 
 
 class ResetShooterHood(Command):

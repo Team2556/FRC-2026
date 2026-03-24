@@ -1,19 +1,20 @@
 import commands2
 
 import wpilib
+
 from wpimath.units import rotationsToRadians
 from wpimath.geometry import Transform2d, Rotation2d
 
 from phoenix6 import swerve
-
-from subsystems.drivetrain.swerve_tuner import TunerConstants
-from subsystems.drivetrain.telemetry import Telemetry
 
 from util.custom_controller import CommandXboxController
 from util.robot_zone_checker import RobotZoneChecker
 from util.nt_util import NTTable
 from util.flip_util import FlipUtil
 from util.math_helpers import distanceFromPose2dtoPose2d
+
+from subsystems.drivetrain.swerve_tuner import TunerConstants
+from subsystems.drivetrain.telemetry import Telemetry
 
 from constants.drive import kDriveConfig
 from constants.drive import kAutoAlign
@@ -117,7 +118,9 @@ class SwerveDriveTrain(commands2.Subsystem):
         """Uses a bit of velocity projection to detect if robot should stop shooting to transition between bump/trench"""
         state = self.get_state()
         robot_pose = state.pose
-        robot_velocity_raw = state.velocity.translation().rotateBy(robot_pose.rotation())
+        robot_velocity_raw = state.velocity.translation().rotateBy(
+            robot_pose.rotation()
+        )
         robot_velocity = Transform2d(robot_velocity_raw, Rotation2d())
 
         projected_pose = robot_pose.transformBy(

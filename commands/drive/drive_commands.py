@@ -1,11 +1,14 @@
+from math import pi
+
 import commands2
 
-from subsystems.drivetrain import drivetrain
-
 from wpimath.geometry import Pose2d, Rotation2d
-from util.flip_util import FlipUtil
+
 from wpilib import DriverStation
-from math import pi
+
+from util.flip_util import FlipUtil
+
+from subsystems.drivetrain import drivetrain
 
 from constants.field import kField
 

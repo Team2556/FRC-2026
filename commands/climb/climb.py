@@ -1,5 +1,6 @@
-from subsystems.climb.climb_subsystem import ClimbSubsystem
 from commands2 import Command
+
+from subsystems.climb.climb_subsystem import ClimbSubsystem
 
 class ClimbUp(Command):
     def __init__(self, climb_subsystem: ClimbSubsystem):

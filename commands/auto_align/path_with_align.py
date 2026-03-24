@@ -1,11 +1,9 @@
 from wpimath.geometry import Rotation2d, Pose2d
 
-from constants.drive import kDriveConfig
-
-from subsystems.shooter.dual_shooter import DualMotorShooter
-
 from commands.path_commands.drive_to_a_spot import DriveToASpot
 from commands.auto_align import alignio
+
+from constants.drive import kDriveConfig
 
 
 class DriveWithAlign(DriveToASpot):

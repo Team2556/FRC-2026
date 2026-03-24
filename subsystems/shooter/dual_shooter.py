@@ -1,8 +1,7 @@
-import wpilib
 from enum import Enum
 
+import wpilib
 import commands2
-
 from phoenix6.hardware import TalonFX
 from phoenix6.controls import Follower, VelocityVoltage, NeutralOut
 from phoenix6 import signals

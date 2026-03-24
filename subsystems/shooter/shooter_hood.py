@@ -1,13 +1,9 @@
 import numpy as np
-
 from enum import Enum
 
 import wpilib
-
 from commands2 import Subsystem
-
 from wpimath.geometry import Pose2d
-
 from phoenix6.hardware import TalonFXS
 from phoenix6.controls import MotionMagicVoltage, DutyCycleOut
 from phoenix6.signals import NeutralModeValue, ReverseLimitValue

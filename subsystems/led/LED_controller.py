@@ -1,16 +1,14 @@
 import commands2
+import phoenix6
 
 from util.nt_util import NTTable
-
-import phoenix6
+from util.flip_util import FlipUtil
 
 from subsystems.led.LED_io import LED_request, CANdle_State
 from subsystems.led.LED_helpers import ColorFactories, CANdle_Color
 
 from constants.led import kLED
 from constants.canbus import kCANId
-
-from util.flip_util import FlipUtil
 
 
 class CANdle_StateHandler:

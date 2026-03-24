@@ -1,5 +1,6 @@
-from ntcore import NetworkTableInstance
 from typing import Generic, TypeVar, Union
+
+from ntcore import NetworkTableInstance
 
 T = TypeVar("T")
 

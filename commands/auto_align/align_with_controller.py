@@ -1,9 +1,6 @@
 from wpilib import SmartDashboard
-from wpimath.geometry import Pose2d
 
-from constants.field import kHub, kPassSpots
-from constants.drive import kAutoAlign, kDriveConfig
-from constants.shooter import kShooterMotor
+from wpimath.geometry import Pose2d
 
 from util import custom_controller
 from util.robot_zone_checker import RobotZoneChecker
@@ -16,8 +13,11 @@ from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
 
 from commands.auto_align import alignio
-
 from commands.shooter.hood_commands import ResetShooterHood
+
+from constants.field import kHub, kPassSpots
+from constants.drive import kAutoAlign, kDriveConfig
+from constants.shooter import kShooterMotor
 
 
 class TurretToPose(alignio.TurretTargetWithVelocity):

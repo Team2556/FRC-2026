@@ -1,14 +1,17 @@
+import math
+
 import commands2
 
-from phoenix6 import swerve
-from subsystems.drivetrain import drivetrain
 from wpimath.geometry import Pose2d, Translation2d, Rotation2d
-import math
-from util.flip_util import FlipUtil
-from constants.key_poses import kPath
-from wpilib import DriverStation 
-
 from wpimath.units import rotationsToRadians
+
+from wpilib import DriverStation
+
+from util.flip_util import FlipUtil
+
+from subsystems.drivetrain import drivetrain
+
+from constants.key_poses import kPath
 
 class DriveToASpot(commands2.Command):
     def __init__(

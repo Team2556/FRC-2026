@@ -1,24 +1,21 @@
 import math
 
-import commands2
-
 import numpy as np
 
-import wpilib
+import commands2
+
 from wpimath.geometry import Pose2d, Translation2d
 from wpimath.controller import PIDController
 from wpimath.units import degrees, meters
-from wpilib import SmartDashboard
+
+from util.flip_util import FlipUtil
+from util.nt_util import NTTable
+from util import math_helpers
+
+from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 
 from constants.drive import kAutoAlign
 from constants.shooter import kShooterConfig, kShooterData
-
-from util.flip_util import FlipUtil
-from util import math_helpers
-from util.nt_util import NTTable
-
-from subsystems.shooter.dual_shooter import DualMotorShooter
-from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 
 
 class TurretTargetBase(commands2.Command):

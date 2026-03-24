@@ -3,10 +3,12 @@ from commands2 import Subsystem
 import phoenix6
 from phoenix6.controls import VelocityVoltage, NeutralOut
 from phoenix6.hardware import TalonFX
-from constants.transfer import kSpindexer, kTransfer
-from constants.canbus import kCANId
+
 from util.editable_pid import EditablePID
 from util.nt_util import NTTable
+
+from constants.transfer import kSpindexer, kTransfer
+from constants.canbus import kCANId
 
 class TransferSubsystem(Subsystem):
     def __init__(self):

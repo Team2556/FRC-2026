@@ -1,5 +1,6 @@
-from wpilib import SmartDashboard, SendableChooser
 from commands2 import Command
+
+from wpilib import SmartDashboard, SendableChooser
 
 class AutoChooser():
     def __init__(self, autos : dict[str, Command]):
