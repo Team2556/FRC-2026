@@ -54,6 +54,8 @@ class ShooterHood(Subsystem):
         self.nt.float("Hood Position (deg)", 0.0)
         self.nt.float("Target Angle (deg)", 0.0)
         self.nt.string("State", "HIDE")
+        self.nt.bool("NT Override Enabled", False)
+        self.nt.float("NT Override Angle (deg)", 0.0)
 
         self._target_position_revs = 0
 
@@ -117,7 +119,10 @@ class ShooterHood(Subsystem):
             self._motor.set_position(kHoodMotor.to_revs(kHoodMotor.HOME_ANGLE_DEG))
         self.hard_stopped = self.is_hard_stopped()
 
-        if self._state != HoodStates.RESETTING and self._state != HoodStates.NONE:
+        if self.nt.get("NT Override Enabled"):
+            override_angle = self.nt.get("NT Override Angle (deg)")
+            self.set_position(kHoodMotor.to_revs(override_angle))
+        elif self._state != HoodStates.RESETTING and self._state != HoodStates.NONE:
             self._apply_angle()
 
         self.nt.set(

@@ -20,6 +20,7 @@ from util.robot_zone_checker import RobotZoneChecker
 
 class ResetShooterHood(Command):
     def __init__(self, shooter_hood: ShooterHood):
+        super().__init__()
         self._hood = shooter_hood
 
         self.addRequirements(self._hood)
@@ -58,6 +59,7 @@ class ResetShooterHood(Command):
 
 class UpdateHoodPositionVariable(Command):
     def __init__(self, shooter_hood: ShooterHood, drivetrain: SwerveDriveTrain):
+        super().__init__()
         self.shooter_hood = shooter_hood
         self.drivetrain = drivetrain
 
