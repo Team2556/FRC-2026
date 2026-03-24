@@ -8,12 +8,7 @@
 import typing
 
 import wpilib
-
-from wpimath import units
-
 import commands2
-
-from phoenix6 import SignalLogger
 
 from robotcontainer import RobotContainer
 

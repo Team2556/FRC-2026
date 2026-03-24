@@ -1,6 +1,7 @@
+import wpiutil
 from ntcore import NetworkTableInstance
 from phoenix6 import SignalLogger, swerve, units
-from wpilib import Color, Color8Bit, Mechanism2d, MechanismLigament2d, SmartDashboard, Field2d
+from wpilib import Color, Color8Bit, Mechanism2d, MechanismLigament2d, Field2d
 from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModulePosition, SwerveModuleState
 
@@ -73,11 +74,14 @@ class Telemetry:
 
         # Set up the module state Mechanism2d telemetry
         for i, module_mechanism in enumerate(self._module_mechanisms):
-            SmartDashboard.putData(f"Module {i}", module_mechanism)
+            wpiutil.SendableRegistry.publish(
+                module_mechanism,
+                self._drive_state_table.getSubTable(f"Module {i}")
+            )
 
     def telemeterize(self, state: swerve.SwerveDrivetrain.SwerveDriveState):
         """
-        Accept the swerve drive state and telemeterize it to SmartDashboard and SignalLogger.
+        Accept the swerve drive state and telemeterize it to NetworkTables and SignalLogger.
         """
         # Telemeterize the swerve drive state
         self._drive_pose.set(state.pose)

@@ -1,7 +1,6 @@
 import commands2
 
 import wpilib
-
 from wpimath.units import rotationsToRadians
 from wpimath.geometry import Transform2d, Rotation2d
 
@@ -39,13 +38,12 @@ class SwerveDriveTrain(commands2.Subsystem):
             lambda state: self._logger.telemeterize(state)
         )
 
-        self._field = wpilib.Field2d()
-        wpilib.SmartDashboard.putData("Field", self._field)
-
         self.target_align_rotation_rate = 0
         self.do_target_align = False
 
         self.nt = NTTable("Drivetrain")
+        self._field = wpilib.Field2d()
+        self.nt.sendable("Field", self._field)
         self.nt.bool("Do Target Align")
         self.nt.float("Target Align Rotation Rate")
         self.nt.float("Distance to Hub")

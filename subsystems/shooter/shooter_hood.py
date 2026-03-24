@@ -61,6 +61,10 @@ class ShooterHood(Subsystem):
     def set_speed(self, speed: float) -> None:
         self._motor.set_control(self.home_request.with_output(speed))
 
+    def zero_encoder(self) -> None:
+        """Reset the motor encoder to the home angle after a hard-stop reset."""
+        self._motor.set_position(kHoodMotor.to_revs(kHoodMotor.HOME_ANGLE_DEG))
+
     def set_position(self, position_revs: float) -> None:
         min_revs = kHoodMotor.to_revs(kHoodMotor.HOME_ANGLE_DEG)
         max_revs = kHoodMotor.to_revs(kHoodMotor.MAX_ANGLE_DEG)

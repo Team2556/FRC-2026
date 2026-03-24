@@ -1,5 +1,6 @@
-from typing import Generic, TypeVar, Union
+from typing import Any, Generic, TypeVar, Union
 
+import wpiutil
 from ntcore import NetworkTableInstance
 
 T = TypeVar("T")
@@ -25,6 +26,7 @@ class NTTable:
         self._table = _table or NetworkTableInstance.getDefault().getTable(name)
         self._entries: dict[str, NTEntry] = {}
         self._subtables: dict[str, "NTTable"] = {}
+        self._sendables: dict[str, Any] = {}
 
     def get_subtable(self, name: str) -> "NTTable":
         if name not in self._subtables:
@@ -83,6 +85,20 @@ class NTTable:
             name,
             NTEntry(self._table.getStringArrayTopic(name).getEntry(default), default),
         )
+
+    def sendable(self, name: str, obj: Any) -> None:
+        """Publish a Sendable object to this table path.
+
+        Suitable for Field2d, Mechanism2d, SendableChooser, and any other
+        wpiutil.Sendable.  The object is registered once; subsequent calls
+        with the same name are no-ops so it is safe to call from __init__.
+
+        The NT path will be  <table>/<name>/  (matching what Glass and
+        Shuffleboard expect for structured sendables).
+        """
+        if name not in self._sendables:
+            wpiutil.SendableRegistry.publish(obj, self._table.getSubTable(name))
+            self._sendables[name] = obj
 
     def get(self, name: str) -> NTValue | None:
         entry = self._entries.get(name)

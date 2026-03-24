@@ -1,7 +1,5 @@
 import math
 
-import numpy as np
-
 import commands2
 
 from wpimath.geometry import Pose2d, Translation2d
@@ -15,7 +13,7 @@ from util import math_helpers
 from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 
 from constants.drive import kAutoAlign
-from constants.shooter import kShooterConfig, kShooterData
+from constants.shooter import kShooterConfig
 
 
 class TurretTargetBase(commands2.Command):
@@ -108,12 +106,6 @@ class TurretTargetWithVelocity(TurretTargetBase):
 
     @staticmethod
     def estimate_flight_time(distance: meters) -> float:
+        # Flight-time lead compensation is not yet tuned; returns 0 (no lead).
         return 0
-        interpolation_distance_data, interpolation_time_data = zip(
-            *kShooterData.SHOT_TIME
-        )
-        time = float(
-            np.interp(distance, interpolation_distance_data, interpolation_time_data)
-        )
-        return math_helpers.clamp(time, 0, 5)
 

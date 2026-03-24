@@ -4,8 +4,6 @@ import commands2
 
 from wpimath.geometry import Pose2d, Rotation2d
 
-from wpilib import DriverStation
-
 from util.flip_util import FlipUtil
 
 from subsystems.drivetrain import drivetrain

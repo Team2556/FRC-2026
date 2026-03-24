@@ -206,7 +206,7 @@ class DriveToASpot(commands2.Command):
     
     def with_target_pose(self, value): self.target_pose = value; return self
     def with_max_speed(self, value): self.max_speed = value; return self
-    def with_max_rps(self, value): self.max_rps = value; return self
+    def with_max_rps(self, value): self.max_radians_per_second = rotationsToRadians(value); return self
     def with_end_tolerance(self, value): self.end_tolerance = value; return self
     def with_end_rotation_tolerance(self, value): self.end_rotation_tolerance = value; return self
     def with_goal_end_velocity(self, value): self.goal_end_velocity = value; return self

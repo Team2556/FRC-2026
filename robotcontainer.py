@@ -5,7 +5,6 @@
 #
 
 from commands2 import cmd
-from commands2.button import Trigger
 
 from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData

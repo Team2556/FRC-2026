@@ -9,23 +9,37 @@ class RunTransferCommand(commands2.Command):
         self.transfer_sybsystem = transfer_sybsystem
         self.addRequirements(transfer_sybsystem)
 
+    def initialize(self):
+        pass
+
     def execute(self):
         self.transfer_sybsystem.activate()
 
-    def end(self, interrupted):
+    def isFinished(self) -> bool:
+        return False
+
+    def end(self, interrupted: bool):
         self.transfer_sybsystem.stop()
-        
+
+
 class ReverseTransferCommand(commands2.Command):
     def __init__(self, transfer_sybsystem: TransferSubsystem):
         super().__init__()
         self.transfer_sybsystem = transfer_sybsystem
         self.addRequirements(transfer_sybsystem)
 
+    def initialize(self):
+        pass
+
     def execute(self):
         self.transfer_sybsystem.reverse()
 
-    def end(self, interrupted):
+    def isFinished(self) -> bool:
+        return False
+
+    def end(self, interrupted: bool):
         self.transfer_sybsystem.stop()
+
 
 class SpindexOnlyCommand(commands2.Command):
     def __init__(self, transfer_sybsystem: TransferSubsystem):
@@ -33,8 +47,14 @@ class SpindexOnlyCommand(commands2.Command):
         self.transfer_sybsystem = transfer_sybsystem
         self.addRequirements(transfer_sybsystem)
 
+    def initialize(self):
+        pass
+
     def execute(self):
         self.transfer_sybsystem.spindex_only()
 
-    def end(self, interrupted):
+    def isFinished(self) -> bool:
+        return False
+
+    def end(self, interrupted: bool):
         self.transfer_sybsystem.stop()

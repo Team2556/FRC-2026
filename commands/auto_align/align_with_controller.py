@@ -1,5 +1,3 @@
-from wpilib import SmartDashboard
-
 from wpimath.geometry import Pose2d
 
 from util import custom_controller
@@ -82,6 +80,7 @@ class ConditionalAlignAndShoot(HubAlign):
     ):
         super().__init__(drivetrain, shooter, hood, LED_controller)
         self.transfer_subsystem = transfer_subsystem
+        self.addRequirements(transfer_subsystem)
 
     def initialize(self):
         super().initialize()
