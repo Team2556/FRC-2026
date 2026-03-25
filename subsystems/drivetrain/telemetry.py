@@ -1,4 +1,4 @@
-import wpiutil
+import wpilib
 from ntcore import NetworkTableInstance
 from phoenix6 import SignalLogger, swerve, units
 from wpilib import Color, Color8Bit, Mechanism2d, MechanismLigament2d, Field2d
@@ -73,11 +73,14 @@ class Telemetry:
         ]
 
         # Set up the module state Mechanism2d telemetry
+        self._module_builders: list[wpilib.SendableBuilderImpl] = []
         for i, module_mechanism in enumerate(self._module_mechanisms):
-            wpiutil.SendableRegistry.publish(
-                module_mechanism,
-                self._drive_state_table.getSubTable(f"Module {i}")
-            )
+            builder = wpilib.SendableBuilderImpl()
+            builder.setTable(self._drive_state_table.getSubTable(f"Module {i}"))
+            module_mechanism.initSendable(builder)  # populate properties, no ownership transfer
+            builder.startListeners()
+            builder.update()  # publish initial structure
+            self._module_builders.append(builder)  # keep builder alive
 
     def telemeterize(self, state: swerve.SwerveDrivetrain.SwerveDriveState):
         """
@@ -119,3 +122,7 @@ class Telemetry:
             self._module_speeds[i].setAngle(module_state.angle.degrees())
             self._module_directions[i].setAngle(module_state.angle.degrees())
             self._module_speeds[i].setLength(module_state.speed / (2 * self._max_speed))
+
+        # Push updated Mechanism2d values to NetworkTables
+        for builder in self._module_builders:
+            builder.update()

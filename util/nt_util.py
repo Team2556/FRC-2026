@@ -1,5 +1,6 @@
 from typing import Any, Generic, TypeVar, Union
 
+import wpilib
 import wpiutil
 from ntcore import NetworkTableInstance
 
@@ -95,10 +96,28 @@ class NTTable:
 
         The NT path will be  <table>/<name>/  (matching what Glass and
         Shuffleboard expect for structured sendables).
+
+        Call ``update_sendables()`` from the owning subsystem's ``periodic()``
+        so that mutable sendables (Field2d, Mechanism2d) push updated values
+        to the network table every loop.
         """
         if name not in self._sendables:
-            wpiutil.SendableRegistry.publish(obj, self._table.getSubTable(name))
-            self._sendables[name] = obj
+            builder = wpilib.SendableBuilderImpl()
+            builder.setTable(self._table.getSubTable(name))
+            obj.initSendable(builder)   # populate properties without ownership transfer
+            builder.startListeners()    # arm any NT input callbacks (e.g. SendableChooser)
+            builder.update()            # publish initial values
+            self._sendables[name] = (obj, builder)  # keep builder alive
+
+    def update_sendables(self) -> None:
+        """Push current Sendable values to NetworkTables.
+
+        Call from the owning subsystem's ``periodic()`` to keep mutable
+        sendables (Field2d, Mechanism2d) up to date.  Static sendables
+        (SendableChooser options) are fine after the first update.
+        """
+        for _obj, builder in self._sendables.values():
+            builder.update()
 
     def get(self, name: str) -> NTValue | None:
         entry = self._entries.get(name)

@@ -210,3 +210,4 @@ class SwerveDriveTrain(commands2.Subsystem):
         self.nt.set("Align Active", self._align_rotation is not None)
         self.nt.set("Align Rotation Rate", self._align_rotation or 0.0)
         self.nt.set("Align Tuner", round(kAutoAlign.ALIGN_TUNER_OFFSET, 1))
+        self.nt.update_sendables()  # pushes Field2d current pose to NT every loop

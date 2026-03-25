@@ -45,7 +45,10 @@ class ConditionalAlignAndShoot(commands2.Command):
         self._hood = hood
         self._calc = RotationCalculator(drivetrain, kHub.POS)
 
-        self.addRequirements(drivetrain, transfer_subsystem)
+        # Only own transfer — drivetrain is influenced via the set_align_rotation()
+        # overlay, not direct control, so it must remain free for AutoDrive (or the
+        # default drive command) to own simultaneously.
+        self.addRequirements(transfer_subsystem)
 
     def initialize(self) -> None:
         self._calc.initialize()
