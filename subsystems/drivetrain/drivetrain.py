@@ -1,5 +1,5 @@
 import commands2
-from commands2 import Command
+from commands2 import Command, DeferredCommand
 from commands2.sysid import SysIdRoutine
 
 import wpilib
@@ -144,14 +144,16 @@ class SwerveDriveTrain(commands2.Subsystem):
     # ── SysId characterization ──────────────────────────────────────
 
     def sys_id_quasistatic(self, direction: SysIdRoutine.Direction) -> Command:
-        cmd = self._drivetrain.sys_id_quasistatic(direction)
-        cmd.addRequirements(self)  # also require the outer wrapper so default drive is interrupted
-        return cmd
+        """Deferred so it picks whichever routine is active when the button is pressed."""
+        return DeferredCommand(
+            lambda: self._drivetrain.sys_id_quasistatic(direction), self
+        )
 
     def sys_id_dynamic(self, direction: SysIdRoutine.Direction) -> Command:
-        cmd = self._drivetrain.sys_id_dynamic(direction)
-        cmd.addRequirements(self)  # also require the outer wrapper so default drive is interrupted
-        return cmd
+        """Deferred so it picks whichever routine is active when the button is pressed."""
+        return DeferredCommand(
+            lambda: self._drivetrain.sys_id_dynamic(direction), self
+        )
 
     def set_sys_id_routine(self, routine: str):
         """Switch active SysId routine: 'translation', 'steer', or 'rotation'."""
