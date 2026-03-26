@@ -144,10 +144,14 @@ class SwerveDriveTrain(commands2.Subsystem):
     # ── SysId characterization ──────────────────────────────────────
 
     def sys_id_quasistatic(self, direction: SysIdRoutine.Direction) -> Command:
-        return self._drivetrain.sys_id_quasistatic(direction)
+        cmd = self._drivetrain.sys_id_quasistatic(direction)
+        cmd.addRequirements(self)  # also require the outer wrapper so default drive is interrupted
+        return cmd
 
     def sys_id_dynamic(self, direction: SysIdRoutine.Direction) -> Command:
-        return self._drivetrain.sys_id_dynamic(direction)
+        cmd = self._drivetrain.sys_id_dynamic(direction)
+        cmd.addRequirements(self)  # also require the outer wrapper so default drive is interrupted
+        return cmd
 
     def set_sys_id_routine(self, routine: str):
         """Switch active SysId routine: 'translation', 'steer', or 'rotation'."""
