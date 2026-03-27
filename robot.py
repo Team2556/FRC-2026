@@ -103,6 +103,7 @@ class Gravedigger(LoggedRobot):
         )
 
     def robotPeriodic(self) -> None:
+        self.container.auto_chooser.update()
         commands2.CommandScheduler.getInstance().run()
 
     def disabledInit(self) -> None:
