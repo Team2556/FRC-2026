@@ -1,41 +1,42 @@
 from wpimath.geometry import Rotation2d, Pose2d
 
-from constants.drive import kDriveConfig
-
-from subsystems.shooter.dual_shooter import DualMotorShooter
-
 from commands.path_commands.drive_to_a_spot import DriveToASpot
-from commands.auto_align import alignio
+from commands.auto_align.alignio import RotationCalculator
+
+from constants.drive import kDriveConfig
 
 
 class DriveWithAlign(DriveToASpot):
     """
-    DriveToASpot but with hub align rotation instead 
-    (functions as a better command for both a target_align command and drive_to_a_spot)
+    DriveToASpot with hub-align rotation instead of path-computed heading.
+    Suitable for simultaneous drive-and-aim sequences in auto or teleop.
+
+    The ``alignment_target`` pose is stored in blue-alliance coordinates and
+    flipped automatically on ``initialize()``.
     """
 
     def __init__(
         self,
         alignment_target: Pose2d = Pose2d(),
-        *args, **kwargs
+        *args,
+        **kwargs,
     ):
         DriveToASpot.__init__(self, *args, **kwargs)
-        self._hub_align = alignio.TurretTargetWithVelocity(
-            self.drivetrain, alignment_target
-        )
+        self._calc = RotationCalculator(self.drivetrain, alignment_target)
 
-    def initialize(self):
+    def initialize(self) -> None:
         super().initialize()
-        self._hub_align.initialize()
+        self._calc.initialize()
 
     def calcutate_angular_velocity(self) -> Rotation2d:
-        rotation_rate = self._hub_align.calculate_rotation()
+        self._calc.update_pid()
+        rotation_rate = self._calc.calculate_rotation()
         rotation_radians = rotation_rate * kDriveConfig.MAX_ANGULAR_RATE
         return Rotation2d(rotation_radians)
-    
-    def isFinished(self):
-        # Translation stuff
-        distance_from_target = self.pose_estimate.translation().distance(self.target_pose.translation())
+
+    def isFinished(self) -> bool:
+        distance_from_target = self.pose_estimate.translation().distance(
+            self.target_pose.translation()
+        )
         self.is_within_distance = distance_from_target < self.end_tolerance
-        
         return self.is_within_distance

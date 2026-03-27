@@ -1,5 +1,4 @@
 import wpilib
-from wpilib import SmartDashboard, DigitalInput
 
 import commands2
 

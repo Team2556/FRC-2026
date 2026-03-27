@@ -1,8 +1,7 @@
-import wpilib
 from enum import Enum
 
+import wpilib
 import commands2
-
 from phoenix6.hardware import TalonFX
 from phoenix6.controls import Follower, VelocityVoltage, NeutralOut
 from phoenix6 import signals
@@ -51,7 +50,7 @@ class DualMotorShooter(commands2.Subsystem):
         )
         self.shoot_request = VelocityVoltage(
             velocity=kShooterMotor.CURRENT_TARGET_RPM / 60, slot=2
-        )
+        ).with_feed_forward(0.5)
 
         self._state: ShooterState = ShooterState.IDLE
         self.is_charged = False

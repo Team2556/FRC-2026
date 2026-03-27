@@ -14,6 +14,7 @@ from constants.canbus import kCANId
 
 class ClimbSubsystem(commands2.Subsystem):
     def __init__(self):
+        super().__init__()
         self.climb_motor = TalonFX(kCANId.climb.MOTOR, "rio")
         
         if not wpilib.RobotBase.isSimulation():

@@ -1,14 +1,17 @@
+import math
+
 import commands2
 
-from phoenix6 import swerve
-from subsystems.drivetrain import drivetrain
 from wpimath.geometry import Pose2d, Translation2d, Rotation2d
-import math
-from util.flip_util import FlipUtil
-from constants.key_poses import kPath
-from wpilib import DriverStation 
-
 from wpimath.units import rotationsToRadians
+
+from wpilib import DriverStation
+
+from util.flip_util import FlipUtil
+
+from subsystems.drivetrain import drivetrain
+
+from constants.key_poses import kPath
 
 class DriveToASpot(commands2.Command):
     def __init__(
@@ -165,10 +168,10 @@ class DriveToASpot(commands2.Command):
             self.target_velocity.rotation()
         )
         
-        self.drivetrain.drive_with_values(
+        self.drivetrain.drive(
             self.target_velocity.X(),
             self.target_velocity.Y(),
-            self.target_velocity.rotation().radians()
+            self.target_velocity.rotation().radians(),
         )
     
     def isFinished(self):
@@ -183,11 +186,8 @@ class DriveToASpot(commands2.Command):
         
         return self.is_within_distance and self.is_within_rotation
     
-    def end(self, interrupted):
-        # This function is called after the command ends
-        # the interrupted variable stores whether or not the command was interuppted or canceled.
-        self.drivetrain._stop()
-        pass
+    def end(self, interrupted: bool):
+        self.drivetrain.stop()
     
     def get_distance_progress(self):
         self.update_pose_estimate()
@@ -206,7 +206,7 @@ class DriveToASpot(commands2.Command):
     
     def with_target_pose(self, value): self.target_pose = value; return self
     def with_max_speed(self, value): self.max_speed = value; return self
-    def with_max_rps(self, value): self.max_rps = value; return self
+    def with_max_rps(self, value): self.max_radians_per_second = rotationsToRadians(value); return self
     def with_end_tolerance(self, value): self.end_tolerance = value; return self
     def with_end_rotation_tolerance(self, value): self.end_rotation_tolerance = value; return self
     def with_goal_end_velocity(self, value): self.goal_end_velocity = value; return self

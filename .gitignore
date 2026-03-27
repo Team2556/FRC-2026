@@ -231,3 +231,8 @@ cython_debug/
 .pytest_cache
 
 .claude/
+
+# PyKit (AdvantageKit for RobotPy) log output
+pyLogs/
+.pyLogs/
+*.wpilog

@@ -4,6 +4,19 @@
 # the WPILib BSD license file in the root directory of this project.
 #
 
+import wpilib
+
+from util.custom_controller import XboxController
+from util.send_fms_data import SendFMSData
+from util.auto_chooser import AutoChooser
+
+from subsystems.drivetrain import drivetrain
+from subsystems.vision import mono_limelight
+from subsystems.intake.intake import IntakeSubsystem
+from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
+from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
+from subsystems.led.LED_controller import CANdleLEDController
+from subsystems.shooter.dual_shooter import DualMotorShooter
 from commands2 import (
     ParallelCommandGroup,
     cmd,
@@ -14,8 +27,8 @@ from commands2.button import Trigger
 from commands.auto_align import align_with_controller
 from commands.drive import drive_commands
 from commands.vision import vision_odometry
-from commands.path_commands import custom_path_commands, go_back_with_path, go_to_shooting_spot, drive_to_a_spot
-from commands.transfer.run_transfer_motors import RunTransferCommand, ReverseTransferCommand, SpindexOnlyCommand
+from commands.path_commands import custom_path_commands
+from commands.transfer.run_transfer_motors import RunTransferCommand
 from commands.intake.intake_commands import (
     IntakeCommandManualForward,
     IntakeCommandManualReverse,
@@ -23,13 +36,7 @@ from commands.intake.intake_commands import (
     IntakeRollerForward,
     IntakeRollerBackward,
 )
-from commands.climb.climb import ClimbDown, ClimbUp
 from commands.shooter import shooter_commands, hood_commands
-from commands.drive.drive_commands import (
-    OverrideRotation,
-    SetOdometryBackLeft,
-    SetOdometryBackRight,
-)
 
 from constants.vision import kCamera
 from constants.drive import kDriveConfig
@@ -83,10 +90,6 @@ class RobotContainer:
         self.auto_chooser = AutoChooser(self.custom_path_commands.make_autos())
         self.auto_chooser.make_dropdown()
 
-        # In-game tuner stuff:
-        self.tune_hood_angle = TuneHoodAngle(self._controller_2)
-        # self.tune_align_angle = TuneAlignAngle(self._controller_2)
-
         self.configureButtonBindings()
 
     def configureButtonBindings(self) -> None:
@@ -118,62 +121,11 @@ class RobotContainer:
             )
         )
 
-        # self._controller_1.leftBumper().whileTrue(go_back_with_path.GoBackWithPath(self._drivetrain))
-        
-        self._controller_1.leftBumper().whileTrue(
-            ParallelCommandGroup(
-                go_to_shooting_spot.GoToShootingSpot(self._drivetrain),
-                shooter_commands.EnableShooter(self.shooter_subsystem)
-            )
-        )
-
         self._controller_1.leftTrigger().whileTrue(
             cmd.runEnd(
-                lambda: self._drivetrain.change_speed_mult(
-                    kDriveConfig.SLOW_SPEED_MULT
-                ),
-                lambda: self._drivetrain.change_speed_mult(),
+                lambda: self._drivetrain.set_modifiers(drivetrain.SwerveDriveTrain.SLOW),
+                lambda: self._drivetrain.reset_modifiers(),
             )
-        )
-
-        self._controller_1.x().and_(self._controller_1.rightBumper().not_()).whileTrue(
-            ParallelCommandGroup(
-                self.custom_path_commands.left_trench,
-                IntakeCommandManualForward(self.intake_subsystem),
-            )
-        )
-        
-        self._controller_1.x().and_(self._controller_1.rightBumper()).whileTrue(
-            drive_to_a_spot.DriveToASpot(self._drivetrain, target_pose=kPoses.left_trench_feed).with_precise_values()
-        )
-        
-        self._controller_1.a().whileTrue(
-            self.custom_path_commands.left_bump
-        )
-        
-        self._controller_1.y().whileTrue(
-            self.custom_path_commands.right_bump
-        )
-        
-        self._controller_1.b().and_(self._controller_1.rightBumper().not_()).whileTrue(
-            ParallelCommandGroup(
-                self.custom_path_commands.right_trench,
-                IntakeCommandManualForward(self.intake_subsystem),
-            )
-        )
-        
-        self._controller_1.b().and_(self._controller_1.rightBumper()).whileTrue(
-            drive_to_a_spot.DriveToASpot(self._drivetrain, target_pose=kPoses.right_trench_feed).with_precise_values()
-        )
-        
-        self._controller_1.povUp().onTrue(
-            OverrideRotation(self._drivetrain)
-        )
-        self._controller_1.povLeft().onTrue(
-            SetOdometryBackLeft(self._drivetrain)
-        )
-        self._controller_1.povRight().onTrue(
-            SetOdometryBackRight(self._drivetrain)
         )
 
         # CONTROLLER 2

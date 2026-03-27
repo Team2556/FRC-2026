@@ -1,13 +1,9 @@
 import numpy as np
-
 from enum import Enum
 
 import wpilib
-
 from commands2 import Subsystem
-
 from wpimath.geometry import Pose2d
-
 from phoenix6.hardware import TalonFXS
 from phoenix6.controls import MotionMagicVoltage, DutyCycleOut
 from phoenix6.signals import NeutralModeValue, ReverseLimitValue
@@ -34,6 +30,7 @@ class HoodStates(Enum):
 
 class ShooterHood(Subsystem):
     def __init__(self):
+        super().__init__()
         self._state: HoodStates = HoodStates.HIDE
         self._motor = TalonFXS(kCANId.shooter.HOOD_CONTROL, "rio")
 
@@ -53,6 +50,8 @@ class ShooterHood(Subsystem):
         self.nt.float("Hood Position (deg)", 0.0)
         self.nt.float("Target Angle (deg)", 0.0)
         self.nt.string("State", "HIDE")
+        self.nt.bool("NT Override Enabled", False)
+        self.nt.float("NT Override Angle (deg)", 0.0)
 
         self._target_position_revs = 0
 
@@ -61,6 +60,10 @@ class ShooterHood(Subsystem):
 
     def set_speed(self, speed: float) -> None:
         self._motor.set_control(self.home_request.with_output(speed))
+
+    def zero_encoder(self) -> None:
+        """Reset the motor encoder to the home angle after a hard-stop reset."""
+        self._motor.set_position(kHoodMotor.to_revs(kHoodMotor.HOME_ANGLE_DEG))
 
     def set_position(self, position_revs: float) -> None:
         min_revs = kHoodMotor.to_revs(kHoodMotor.HOME_ANGLE_DEG)
@@ -116,7 +119,10 @@ class ShooterHood(Subsystem):
             self._motor.set_position(kHoodMotor.to_revs(kHoodMotor.HOME_ANGLE_DEG))
         self.hard_stopped = self.is_hard_stopped()
 
-        if self._state != HoodStates.RESETTING and self._state != HoodStates.NONE:
+        if self.nt.get("NT Override Enabled"):
+            override_angle = self.nt.get("NT Override Angle (deg)")
+            self.set_position(kHoodMotor.to_revs(override_angle))
+        elif self._state != HoodStates.RESETTING and self._state != HoodStates.NONE:
             self._apply_angle()
 
         self.nt.set(

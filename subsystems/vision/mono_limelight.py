@@ -3,7 +3,6 @@ import math
 import commands2
 
 from wpimath import units
-from wpilib import SmartDashboard
 
 from phoenix6.swerve.swerve_drivetrain import SwerveDrivetrain
 from phoenix6.hardware.pigeon2 import Pigeon2
@@ -21,15 +20,12 @@ class Vision(commands2.Subsystem):
     Only uses measurments of 1 Limelight at a time. (Can take inputs from multiple)"""
 
     def __init__(self, *camera_names):
+        super().__init__()
         self._cameras = camera_names
         self._pigeon = Pigeon2(TunerConstants._pigeon_id)
         self.offset = 0
         self.tilt = 0
         
-        self.nt = NTTable('Vision')
-        self.nt.bool('Drive State Provided')
-        self.nt.float('Robot Tilt')
-
         self.nt = NTTable("Vision")
         self.nt.bool("Drive State Provided")
         self.nt.float("Robot Tilt")
@@ -76,7 +72,7 @@ class Vision(commands2.Subsystem):
         omegaRPS = units.radiansToRotations(drive_state.speeds.omega)
         if kOdometry.MAX_RPS < abs(omegaRPS):
             return None
-        if self.tilt > kOdometry.MAX_TILT_ERROR and kOdometry.IGNORE_TILT == False:
+        if self.tilt > kOdometry.MAX_TILT_ERROR and not kOdometry.IGNORE_TILT:
             return None
 
         entry_name = "botpose_orb_wpiblue" if use_megatag2 else "botpose_wpiblue"

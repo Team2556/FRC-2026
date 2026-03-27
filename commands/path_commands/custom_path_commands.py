@@ -1,5 +1,18 @@
+from math import pi
+
 from commands2 import cmd, ConditionalCommand, WaitCommand, SequentialCommandGroup, ParallelRaceGroup
+
 from wpimath.geometry import Pose2d, Rotation2d
+
+from util.robot_zone_checker import RobotZoneChecker
+from util.flip_util import FlipUtil
+
+from subsystems.drivetrain.drivetrain import SwerveDriveTrain
+from subsystems.shooter.shooter_hood import ShooterHood
+from subsystems.shooter.dual_shooter import DualMotorShooter
+from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
+from subsystems.intake.intake import IntakeSubsystem
+from subsystems.led.LED_controller import CANdleLEDController
 
 from commands.path_commands.drive_to_a_spot import DriveToASpot
 from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
@@ -9,20 +22,9 @@ from commands.drive.drive_commands import InitialPose, AutoDrive
 from commands.intake.intake_commands import IntakeCommandManualForwardAuto, IntakeCommandManualReverseAuto, IntakeRollerForward
 from commands.shooter.shooter_commands import EnableShooter, DisableShooter
 
-from util.robot_zone_checker import RobotZoneChecker
-from util.flip_util import FlipUtil
-
 from constants.key_poses import kPoses
 from constants.field import kHub
 
-from subsystems.drivetrain.drivetrain import SwerveDriveTrain
-from subsystems.shooter.shooter_hood import ShooterHood
-from subsystems.shooter.dual_shooter import DualMotorShooter
-from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
-from subsystems.intake.intake import IntakeSubsystem
-from subsystems.led.LED_controller import CANdleLEDController
-
-from math import pi
 
 class CustomPathCommands:
     '''"Container" that has all the custom useful path commands'''

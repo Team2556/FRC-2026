@@ -5,57 +5,119 @@
 # the WPILib BSD license file in the root directory of this project.
 #
 
-import wpilib
-from wpimath import units
-import commands2
+import os
 import typing
 
+import wpilib
+import commands2
+import phoenix6
+import phoenix6.unmanaged
+from phoenix6.signal_logger import SignalLogger
 
+from pykit.wpilog.wpilogwriter import WPILOGWriter
+from pykit.wpilog.wpilogreader import WPILOGReader
+from pykit.networktables.nt4Publisher import NT4Publisher
+from pykit.loggedrobot import LoggedRobot
+from pykit.logger import Logger
+
+import constants
 from robotcontainer import RobotContainer
-from phoenix6 import SignalLogger
 
 
-class MyRobot(commands2.TimedCommandRobot):
-    """
-    Command v2 robots are encouraged to inherit from TimedCommandRobot, which
-    has an implementation of robotPeriodic which runs the scheduler for you
-    """
+class Gravedigger(LoggedRobot):
 
     autonomousCommand: typing.Optional[commands2.Command] = None
-    testCommand: typing.Optional[commands2.Command] = None
 
-    def robotInit(self) -> None:
-        """
-        This function is run when the robot is first started up and should be used for any
-        initialization code.
-        """
+    def __init__(self):
+        super().__init__()
+        phoenix6.unmanaged.set_phoenix_diagnostics_start_time(-1)
+
+        Logger.recordMetadata("Robot", type(self).__name__)
+
+        match constants.kRobotMode:
+            case constants.RobotModes.REAL:
+                # Log deploy info from the last `python -m robotpy deploy`
+                deploy_config = wpilib.deployinfo.getDeployData()
+                if deploy_config is not None:
+                    Logger.recordMetadata("Deploy Host",       deploy_config.get("deploy-host", ""))
+                    Logger.recordMetadata("Deploy User",       deploy_config.get("deploy-user", ""))
+                    Logger.recordMetadata("Deploy Date",       deploy_config.get("deploy-date", ""))
+                    Logger.recordMetadata("Git Hash",          deploy_config.get("git-hash", ""))
+                    Logger.recordMetadata("Git Branch",        deploy_config.get("git-branch", ""))
+                    Logger.recordMetadata("Git Description",   deploy_config.get("git-desc", ""))
+                Logger.addDataReciever(NT4Publisher(True))
+                # Prefer USB drive (/U) for logs; fall back to pyLogs/
+                usb_mount = "/U"
+                if os.path.ismount(usb_mount) or os.path.exists(usb_mount):
+                    os.makedirs(os.path.join(usb_mount, "logs"), exist_ok=True)
+                    Logger.addDataReciever(WPILOGWriter())
+                else:
+                    fallback = os.path.abspath("pyLogs")
+                    os.makedirs(fallback, exist_ok=True)
+                    Logger.addDataReciever(WPILOGWriter(filename=None, path=fallback))
+
+            case constants.RobotModes.SIMULATION:
+                Logger.addDataReciever(WPILOGWriter())
+                Logger.addDataReciever(NT4Publisher(True))
+
+            case constants.RobotModes.TESTING:
+                # Skip WPILOGWriter — PyKit's os.rename() raises
+                # FileExistsError on Windows when multiple pyfrc tests
+                # share the same second-level timestamp.
+                Logger.addDataReciever(NT4Publisher(True))
+
+            case constants.RobotModes.REPLAY:
+                self.useTiming = False   # replay as fast as possible
+                log_path = os.path.abspath(os.environ["LOG_PATH"])
+                print(f"[PyKit] Starting replay from {log_path}")
+                Logger.setReplaySource(WPILOGReader(log_path))
+                Logger.addDataReciever(WPILOGWriter(log_path[:-7] + "_sim.wpilog"))
+
+        Logger.start()
         self.container = RobotContainer()
         wpilib.CameraServer.launch()
 
-    def robotPeriodic(self) -> None:
-        """This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-        that you want ran during disabled, autonomous, teleoperated and test.
+    def robotInit(self) -> None:
+        SignalLogger.enable_auto_logging(False)
+        wpilib.LiveWindow.disableAllTelemetry()
+        # Extend watchdog period — commands2 default (0.02 s) is too tight
+        # for a full robot init; 1 s gives headroom without hiding real hangs.
+        commands2.CommandScheduler.getInstance().setPeriod(1)
 
-        This runs after the mode specific periodic functions, but before LiveWindow and
-        SmartDashboard integrated updating."""
+        # Log every command's active/inactive state to AdvantageScope
+        _command_count: dict[str, int] = {}
+
+        def _log_command(command: commands2.Command, active: bool) -> None:
+            name = command.getName()
+            _command_count[name] = _command_count.get(name, 0) + (1 if active else -1)
+            Logger.recordOutput(f"Commands/{name}", _command_count[name] > 0)
+
+        commands2.CommandScheduler.getInstance().onCommandInitialize(
+            lambda c: _log_command(c, True)
+        )
+        commands2.CommandScheduler.getInstance().onCommandFinish(
+            lambda c: _log_command(c, False)
+        )
+        commands2.CommandScheduler.getInstance().onCommandInterrupt(
+            lambda c: _log_command(c, False)
+        )
+
+    def robotPeriodic(self) -> None:
+        self.container.auto_chooser.update()
+        commands2.CommandScheduler.getInstance().run()
 
     def disabledInit(self) -> None:
-        """This function is called once each time the robot enters Disabled mode."""
         pass
 
     def disabledPeriodic(self) -> None:
-        """This function is called periodically when disabled"""
         pass
 
     def autonomousInit(self) -> None:
-        """This autonomous runs the autonomous command selected by your RobotContainer class."""
         self.autonomousCommand = self.container.getAutonomousCommand()
-
         if self.autonomousCommand:
             self.autonomousCommand.schedule()
 
     def autonomousPeriodic(self) -> None:
-        """This function is called periodically during autonomous"""
         pass
 
     def teleopInit(self) -> None:
@@ -63,12 +125,10 @@ class MyRobot(commands2.TimedCommandRobot):
             self.autonomousCommand.cancel()
 
     def teleopPeriodic(self) -> None:
-        """This function is called periodically during operator control"""
+        pass
 
     def testInit(self) -> None:
         commands2.CommandScheduler.getInstance().cancelAll()
-        pass
 
     def testPeriodic(self) -> None:
-        """This function is called periodically during test mode"""
         pass

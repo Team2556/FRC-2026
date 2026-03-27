@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from wpiutil.wpistruct import make_wpistruct
 
 from phoenix6.swerve.swerve_drivetrain import SwerveDrivetrain
 

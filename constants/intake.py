@@ -1,4 +1,4 @@
-from phoenix6.configs import TalonFXConfiguration, Slot0Configs, TalonFXSConfiguration
+from phoenix6.configs import TalonFXConfiguration, TalonFXSConfiguration
 from phoenix6.signals import MotorArrangementValue
 
 

@@ -1,4 +1,5 @@
 from wpilib import DriverStation
+
 from commands2 import Subsystem
 
 from util.nt_util import NTTable
@@ -6,11 +7,9 @@ from util.nt_util import NTTable
 
 class SendFMSData(Subsystem):
 
-    intervals = [30, 55, 80, 105, 130]
-
     def __init__(self):
-        self.intervals.append(999)
-        self.intervals.insert(0, 0)
+        super().__init__()
+        self.intervals = [0, 30, 55, 80, 105, 130, 999]
         
         # Increasing value that is used for "Hub Active" light in this case
         # Synchronizes with the teleop phases "1, 2, 3, 4" so it's easier to use

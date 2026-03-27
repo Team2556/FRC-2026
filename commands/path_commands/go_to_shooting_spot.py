@@ -1,19 +1,18 @@
+import math
+
 import commands2
 
-from subsystems.drivetrain.drivetrain import SwerveDriveTrain
-from wpilib import DriverStation
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
+
 from util.math import kMath
+from util.robot_zone_checker import RobotZoneChecker
+
+from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 
 from commands.path_commands.drive_to_a_spot import DriveToASpot
-from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
-from constants.key_poses import kPoses
+
 from constants.field import kHub
 
-from util.flip_util import FlipUtil
-from util.robot_zone_checker import RobotZoneChecker
-from math import pi
-import math
 
 class GoToShootingSpot(commands2.Command):
     def __init__(self, subsystem: SwerveDriveTrain):

@@ -1,6 +1,8 @@
 import wpilib
+
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.hardware import TalonFX
+
 from util.nt_util import NTTable
 
 

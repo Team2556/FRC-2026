@@ -1,4 +1,4 @@
-from phoenix6.configs import TalonFXConfiguration, Slot0Configs
+from phoenix6.configs import TalonFXConfiguration
 
 
 class kClimb:

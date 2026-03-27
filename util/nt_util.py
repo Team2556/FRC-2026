@@ -1,5 +1,9 @@
+from typing import Any, Generic, TypeVar, Union
+
+import wpilib
+import wpiutil
 from ntcore import NetworkTableInstance
-from typing import Generic, TypeVar, Union
+from pykit.logger import Logger
 
 T = TypeVar("T")
 
@@ -7,9 +11,10 @@ NTValue = Union[bool, int, float, str, list[bool], list[int], list[float], list[
 
 
 class NTEntry(Generic[T]):
-    def __init__(self, entry, default: T):
+    def __init__(self, entry, default: T, log_key: str = ""):
         self._entry = entry
         self._default = default
+        self._log_key = log_key
         self._entry.set(default)
 
     def get(self) -> T:
@@ -17,6 +22,20 @@ class NTEntry(Generic[T]):
 
     def set(self, value: T) -> None:
         self._entry.set(value)
+        if self._log_key:
+            # PyKit locks a log key's type on the first write and rejects any
+            # subsequent write that uses a different numeric type (int vs float
+            # are distinct LoggableTypes).  Coerce to the declared default type
+            # so mixed int/float call sites never cause a type conflict.
+            if isinstance(self._default, bool):
+                log_val = value
+            elif isinstance(self._default, float):
+                log_val = float(value)
+            elif isinstance(self._default, int):
+                log_val = int(value)
+            else:
+                log_val = value
+            Logger.recordOutput(self._log_key, log_val)
 
 
 class NTTable:
@@ -24,6 +43,7 @@ class NTTable:
         self._table = _table or NetworkTableInstance.getDefault().getTable(name)
         self._entries: dict[str, NTEntry] = {}
         self._subtables: dict[str, "NTTable"] = {}
+        self._sendables: dict[str, Any] = {}
 
     def get_subtable(self, name: str) -> "NTTable":
         if name not in self._subtables:
@@ -35,53 +55,89 @@ class NTTable:
             self._entries[name] = entry
         return self._entries[name]
 
+    def _log_key(self, name: str) -> str:
+        """Return the PyKit Logger key for this entry: '<TableName>/<name>'."""
+        return self._table.getPath().lstrip("/") + "/" + name
+
     def bool(self, name: str, default: bool = False) -> NTEntry[bool]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getBooleanTopic(name).getEntry(default), default),
+            NTEntry(self._table.getBooleanTopic(name).getEntry(default), default, self._log_key(name)),
         )
 
     def int(self, name: str, default: int = 0) -> NTEntry[int]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getIntegerTopic(name).getEntry(default), default),
+            NTEntry(self._table.getIntegerTopic(name).getEntry(default), default, self._log_key(name)),
         )
 
     def float(self, name: str, default: float = 0.0) -> NTEntry[float]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getDoubleTopic(name).getEntry(default), default),
+            NTEntry(self._table.getDoubleTopic(name).getEntry(default), default, self._log_key(name)),
         )
 
     def string(self, name: str, default: str = "") -> NTEntry[str]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getStringTopic(name).getEntry(default), default),
+            NTEntry(self._table.getStringTopic(name).getEntry(default), default, self._log_key(name)),
         )
 
     def bool_array(self, name: str, default: list[bool] = []) -> NTEntry[list[bool]]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getBooleanArrayTopic(name).getEntry(default), default),
+            NTEntry(self._table.getBooleanArrayTopic(name).getEntry(default), default, self._log_key(name)),
         )
 
     def int_array(self, name: str, default: list[int] = []) -> NTEntry[list[int]]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getIntegerArrayTopic(name).getEntry(default), default),
+            NTEntry(self._table.getIntegerArrayTopic(name).getEntry(default), default, self._log_key(name)),
         )
 
     def float_array(self, name: str, default: list[float] = []) -> NTEntry[list[float]]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getDoubleArrayTopic(name).getEntry(default), default),
+            NTEntry(self._table.getDoubleArrayTopic(name).getEntry(default), default, self._log_key(name)),
         )
 
     def string_array(self, name: str, default: list[str] = []) -> NTEntry[list[str]]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getStringArrayTopic(name).getEntry(default), default),
+            NTEntry(self._table.getStringArrayTopic(name).getEntry(default), default, self._log_key(name)),
         )
+
+    def sendable(self, name: str, obj: Any) -> None:
+        """Publish a Sendable object to this table path.
+
+        Suitable for Field2d, Mechanism2d, SendableChooser, and any other
+        wpiutil.Sendable.  The object is registered once; subsequent calls
+        with the same name are no-ops so it is safe to call from __init__.
+
+        The NT path will be  <table>/<name>/  (matching what Glass and
+        Shuffleboard expect for structured sendables).
+
+        Call ``update_sendables()`` from the owning subsystem's ``periodic()``
+        so that mutable sendables (Field2d, Mechanism2d) push updated values
+        to the network table every loop.
+        """
+        if name not in self._sendables:
+            builder = wpilib.SendableBuilderImpl()
+            builder.setTable(self._table.getSubTable(name))
+            obj.initSendable(builder)   # populate properties without ownership transfer
+            builder.startListeners()    # arm any NT input callbacks (e.g. SendableChooser)
+            builder.update()            # publish initial values
+            self._sendables[name] = (obj, builder)  # keep builder alive
+
+    def update_sendables(self) -> None:
+        """Push current Sendable values to NetworkTables.
+
+        Call from the owning subsystem's ``periodic()`` to keep mutable
+        sendables (Field2d, Mechanism2d) up to date.  Static sendables
+        (SendableChooser options) are fine after the first update.
+        """
+        for _obj, builder in self._sendables.values():
+            builder.update()
 
     def get(self, name: str) -> NTValue | None:
         entry = self._entries.get(name)
