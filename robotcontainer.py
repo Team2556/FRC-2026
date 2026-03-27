@@ -4,6 +4,8 @@
 # the WPILib BSD license file in the root directory of this project.
 #
 
+import wpilib
+
 from commands2 import cmd
 
 from util.custom_controller import XboxController

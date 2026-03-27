@@ -2,8 +2,6 @@ from dataclasses import dataclass, field
 
 from phoenix6.swerve.swerve_drivetrain import SwerveDrivetrain
 
-from wpiutil.wpistruct import make_wpistruct
-
 from wpimath.geometry import Rotation2d, Pose2d, Transform2d, Translation2d
 from wpimath.units import degrees
 

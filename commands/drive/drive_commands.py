@@ -5,13 +5,14 @@ import commands2
 from wpimath.geometry import Pose2d, Rotation2d
 
 from util.flip_util import FlipUtil
+from util.custom_controller import XboxController
 
 from subsystems.drivetrain import drivetrain
 
 from constants.field import kField
 
 class ControllerDrive(commands2.Command):
-    def __init__(self, drivetrain: drivetrain.SwerveDriveTrain, controller):
+    def __init__(self, drivetrain: drivetrain.SwerveDriveTrain, controller: XboxController):
         super().__init__()
         self._drivetrain = drivetrain
         self._controller = controller

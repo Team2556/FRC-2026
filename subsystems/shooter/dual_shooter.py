@@ -50,7 +50,7 @@ class DualMotorShooter(commands2.Subsystem):
         )
         self.shoot_request = VelocityVoltage(
             velocity=kShooterMotor.CURRENT_TARGET_RPM / 60, slot=2
-        )
+        ).with_feed_forward(0.5)
 
         self._state: ShooterState = ShooterState.IDLE
         self.is_charged = False

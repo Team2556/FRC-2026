@@ -3,6 +3,7 @@ from typing import Any, Generic, TypeVar, Union
 import wpilib
 import wpiutil
 from ntcore import NetworkTableInstance
+from pykit.logger import Logger
 
 T = TypeVar("T")
 
@@ -10,9 +11,10 @@ NTValue = Union[bool, int, float, str, list[bool], list[int], list[float], list[
 
 
 class NTEntry(Generic[T]):
-    def __init__(self, entry, default: T):
+    def __init__(self, entry, default: T, log_key: str = ""):
         self._entry = entry
         self._default = default
+        self._log_key = log_key
         self._entry.set(default)
 
     def get(self) -> T:
@@ -20,6 +22,20 @@ class NTEntry(Generic[T]):
 
     def set(self, value: T) -> None:
         self._entry.set(value)
+        if self._log_key:
+            # PyKit locks a log key's type on the first write and rejects any
+            # subsequent write that uses a different numeric type (int vs float
+            # are distinct LoggableTypes).  Coerce to the declared default type
+            # so mixed int/float call sites never cause a type conflict.
+            if isinstance(self._default, bool):
+                log_val = value
+            elif isinstance(self._default, float):
+                log_val = float(value)
+            elif isinstance(self._default, int):
+                log_val = int(value)
+            else:
+                log_val = value
+            Logger.recordOutput(self._log_key, log_val)
 
 
 class NTTable:
@@ -39,52 +55,56 @@ class NTTable:
             self._entries[name] = entry
         return self._entries[name]
 
+    def _log_key(self, name: str) -> str:
+        """Return the PyKit Logger key for this entry: '<TableName>/<name>'."""
+        return self._table.getPath().lstrip("/") + "/" + name
+
     def bool(self, name: str, default: bool = False) -> NTEntry[bool]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getBooleanTopic(name).getEntry(default), default),
+            NTEntry(self._table.getBooleanTopic(name).getEntry(default), default, self._log_key(name)),
         )
 
     def int(self, name: str, default: int = 0) -> NTEntry[int]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getIntegerTopic(name).getEntry(default), default),
+            NTEntry(self._table.getIntegerTopic(name).getEntry(default), default, self._log_key(name)),
         )
 
     def float(self, name: str, default: float = 0.0) -> NTEntry[float]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getDoubleTopic(name).getEntry(default), default),
+            NTEntry(self._table.getDoubleTopic(name).getEntry(default), default, self._log_key(name)),
         )
 
     def string(self, name: str, default: str = "") -> NTEntry[str]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getStringTopic(name).getEntry(default), default),
+            NTEntry(self._table.getStringTopic(name).getEntry(default), default, self._log_key(name)),
         )
 
     def bool_array(self, name: str, default: list[bool] = []) -> NTEntry[list[bool]]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getBooleanArrayTopic(name).getEntry(default), default),
+            NTEntry(self._table.getBooleanArrayTopic(name).getEntry(default), default, self._log_key(name)),
         )
 
     def int_array(self, name: str, default: list[int] = []) -> NTEntry[list[int]]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getIntegerArrayTopic(name).getEntry(default), default),
+            NTEntry(self._table.getIntegerArrayTopic(name).getEntry(default), default, self._log_key(name)),
         )
 
     def float_array(self, name: str, default: list[float] = []) -> NTEntry[list[float]]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getDoubleArrayTopic(name).getEntry(default), default),
+            NTEntry(self._table.getDoubleArrayTopic(name).getEntry(default), default, self._log_key(name)),
         )
 
     def string_array(self, name: str, default: list[str] = []) -> NTEntry[list[str]]:
         return self._get_or_create(
             name,
-            NTEntry(self._table.getStringArrayTopic(name).getEntry(default), default),
+            NTEntry(self._table.getStringArrayTopic(name).getEntry(default), default, self._log_key(name)),
         )
 
     def sendable(self, name: str, obj: Any) -> None:

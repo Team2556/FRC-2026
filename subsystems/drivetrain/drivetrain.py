@@ -7,7 +7,9 @@ from wpimath.geometry import Transform2d, Rotation2d
 
 from phoenix6 import swerve
 
-from util.custom_controller import CommandXboxController
+from pykit.logger import Logger
+
+from util.custom_controller import XboxController
 from util.robot_zone_checker import RobotZoneChecker
 from util.nt_util import NTTable
 from util.flip_util import FlipUtil
@@ -40,8 +42,6 @@ class DriveModifiers:
 
 
 class SwerveDriveTrain(commands2.Subsystem):
-
-    #: Modifier presets — pass to ``set_modifiers()`` from a command or binding
     NORMAL = DriveModifiers(speed=1.0, rotation=1.0)
     SLOW   = DriveModifiers(speed=kDriveConfig.SLOW_SPEED_MULT, rotation=1.0)
 
@@ -61,7 +61,7 @@ class SwerveDriveTrain(commands2.Subsystem):
         )
 
         self._modifiers = DriveModifiers()
-        self._align_rotation: float | None = None  # None = no override active
+        self._align_rotation: float | None = None
 
         self.nt = NTTable("Drivetrain")
         self._field = wpilib.Field2d()
@@ -70,10 +70,6 @@ class SwerveDriveTrain(commands2.Subsystem):
         self.nt.float("Align Rotation Rate")
         self.nt.float("Distance to Hub")
         self.nt.float("Align Tuner")
-
-    # ------------------------------------------------------------------
-    # Core drive API
-    # ------------------------------------------------------------------
 
     def drive(self, vx: float, vy: float, omega: float) -> None:
         """
@@ -93,7 +89,7 @@ class SwerveDriveTrain(commands2.Subsystem):
             .with_rotational_rate(omega)
         )
 
-    def drive_from_controller(self, controller: CommandXboxController) -> None:
+    def drive_from_controller(self, controller: XboxController) -> None:
         """
         Read joystick axes, apply the active modifier pipeline and any
         alignment-rotation override, then drive the robot.
@@ -109,10 +105,16 @@ class SwerveDriveTrain(commands2.Subsystem):
         To add a new modifier dimension, add a field to ``DriveModifiers``
         and reference it here.
         """
+        # Guard: if no joystick is connected on this port (common in sim when
+        # no virtual joystick is configured), stop rather than read garbage axes.
+        if not wpilib.DriverStation.isJoystickConnected(controller.getHID().getPort()):
+            self.stop()
+            return
+
         raw_vx    = -controller.getLeftY()
         raw_vy    = -controller.getLeftX()
         raw_omega = -controller.getRightX()
-
+        
         speed_scale = (
             kDriveConfig.SPEED_MULT
             * self._modifiers.speed
@@ -200,7 +202,21 @@ class SwerveDriveTrain(commands2.Subsystem):
         self._drivetrain.seed_field_centric()
 
     def periodic(self) -> None:
-        pose = self.get_state().pose
+        state = self.get_state()
+        pose  = state.pose
+
+        Logger.recordOutput("Drive/Pose",              pose)
+        Logger.recordOutput("Drive/HeadingDeg",        state.heading)
+        Logger.recordOutput("Drive/SpeedX_mps",        state.velocity.translation().x)
+        Logger.recordOutput("Drive/SpeedY_mps",        state.velocity.translation().y)
+        Logger.recordOutput("Drive/OmegaRadPerSec",    state.velocity.rotation().radians())
+        Logger.recordOutput("Drive/AlignActive",       self._align_rotation is not None)
+        Logger.recordOutput("Drive/AlignRotationRate", self._align_rotation or 0.0)
+
+        # Note: SwerveModuleState list logging removed — PyKit does not yet
+        # support tuple[SwerveModuleState] serialization and would throw an
+        # exception every loop, cancelling the default drive command.
+
         self._field.setRobotPose(pose)
 
         self.nt.set(
