@@ -19,12 +19,12 @@ class TunerConstants:
     _steer_gains = (
         configs.Slot0Configs()
         # .with_k_p(sum([0.010095, 0.13685, 0.02603, 0.15159])/4) # velocity loop
-        .with_k_p(sum([ 10.739, 13.242, 12.16, 7.1703])/4) # position loop
+        .with_k_p(10.82)#sum([ 10.739, 13.242, 12.16, 7.1703])/4) # position loop
         .with_k_i(0)
-        .with_k_d(sum([ 0.11989, 0.26857, 0.37575,0.27463])/4)
-        .with_k_s(sum([0.35797,0.3839 , 0.45442,0.30588 ])/4)
-        .with_k_v(sum([1.3281, 1.3062, 1.0138, 1.1043 ])/4)
-        .with_k_a(sum([0.026809, 0.032434, 0.032061,  0.042059])/4)
+        .with_k_d(0.25971)#sum([ 0.11989, 0.26857, 0.37575,0.27463])/4)
+        .with_k_s(0.1)#sum([0.35797,0.3839 , 0.45442,0.30588 ])/4)
+        .with_k_v(1.1881)#sum([1.3281, 1.3062, 1.0138, 1.1043 ])/4)
+        .with_k_a(0.03334075)#sum([0.026809, 0.032434, 0.032061,  0.042059])/4)
         #used at magnolia:
         # .with_k_p(40)
         # .with_k_i(0)
@@ -57,6 +57,7 @@ class TunerConstants:
     # The closed-loop output type to use for the steer motors;
     # This affects the PID/FF gains for the steer motors
     _steer_closed_loop_output = swerve.ClosedLoopOutputType.VOLTAGE
+    # _steer_closed_loop_output = swerve.ClosedLoopOutputType.VOLTAGE
     # The closed-loop output type to use for the drive motors;
     # This affects the PID/FF gains for the drive motors
     _drive_closed_loop_output = swerve.ClosedLoopOutputType.VOLTAGE
@@ -80,8 +81,8 @@ class TunerConstants:
         configs.CurrentLimitsConfigs()
         # Swerve azimuth does not require much torque output, so we can set a relatively low
         # stator current limit to help avoid brownouts without impacting performance.
-        # .with_stator_current_limit(60.0)
-        .with_stator_current_limit(35.0)
+        .with_stator_current_limit(60.0)
+        # used at magnolia:  .with_stator_current_limit(35.0)
         .with_stator_current_limit_enable(True)
     )
     _encoder_initial_configs = configs.CANcoderConfiguration()
