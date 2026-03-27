@@ -18,12 +18,20 @@ class TunerConstants:
     # output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
     _steer_gains = (
         configs.Slot0Configs()
-        .with_k_p(40)
+        # .with_k_p(sum([0.010095, 0.13685, 0.02603, 0.15159])/4) # velocity loop
+        .with_k_p(sum([ 10.739, 13.242, 12.16, 7.1703])/4) # position loop
         .with_k_i(0)
-        .with_k_d(0.5)
-        .with_k_s(0.1)
-        .with_k_v(1.59)
-        .with_k_a(0)
+        .with_k_d(sum([ 0.11989, 0.26857, 0.37575,0.27463])/4)
+        .with_k_s(sum([0.35797,0.3839 , 0.45442,0.30588 ])/4)
+        .with_k_v(sum([1.3281, 1.3062, 1.0138, 1.1043 ])/4)
+        .with_k_a(sum([0.026809, 0.032434, 0.032061,  0.042059])/4)
+        #used at magnolia:
+        # .with_k_p(40)
+        # .with_k_i(0)
+        # .with_k_d(0.5)
+        # .with_k_s(0.1)
+        # .with_k_v(1.59)
+        # .with_k_a(0)
         .with_static_feedforward_sign(
             signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN
         )
@@ -32,11 +40,18 @@ class TunerConstants:
     # output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     _drive_gains = (
         configs.Slot0Configs()
-        .with_k_p(0.00442645)
+        .with_k_p(sum([ 0.092102 , 0.15798, 0.13838, 0.18059 ])/4)
         .with_k_i(0)
         .with_k_d(0)
-        .with_k_s(0.07664325)
-        .with_k_v(0.11412)
+        .with_k_s(sum([ 0.1569 , 0.072046, 0.066353 ,  0.078697 ])/4)
+        .with_k_v(sum([0.11654 , 0.11804, 0.11832, 0.11765 ])/4)
+        .with_k_a(sum([ 0.0043711 , 0.012229,  0.016051, 0.012999 ])/4)
+        #Used at Magnolia:
+        # .with_k_p(0.00442645)
+        # .with_k_i(0)
+        # .with_k_d(0)
+        # .with_k_s(0.07664325)
+        # .with_k_v(0.11412)
     )
 
     # The closed-loop output type to use for the steer motors;
@@ -56,7 +71,7 @@ class TunerConstants:
 
     # The stator current at which the wheels start to slip;
     # This needs to be tuned to your individual robot
-    _slip_current: units.ampere = 54.0 #originally 120.0
+    _slip_current: units.ampere = 80.0 #originally 120.0
 
     # Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
     # Some configs will be overwritten; check the `with_*_initial_configs()` API documentation.

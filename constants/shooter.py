@@ -35,7 +35,19 @@ class kHoodMotor:
     OVERRIDE_ANGLE_DEG = 25.0
     
     OPPOSING_ANGLE_DEG = 35.0
-    
+
+    # Physics-based aiming
+    MIN_ANGLE_DEG = 5.0              # explicit alias for HOME_ANGLE_DEG
+    HUB_HEIGHT_M = 1.8288            # target center height above ground (meters)
+    SHOOTER_HEIGHT_M = 0.3048        # hood pivot height above ground (meters)
+    VELOCITY_EFFICIENCY = 0.9        # fraction of theoretical exit velocity realized (tune down if overshooting)
+    EXIT_ANGLE_OFFSET_DEG = 0.0      # additive correction after physics calc (tune on robot)
+
+    # Simulation (SingleJointedArmSim — models the hood flap pivot)
+    ARM_LENGTH_M = 0.10              # hood flap length pivot-to-tip
+    ARM_MASS_KG = 0.15               # hood flap mass
+    SIM_GEARING = 15.1               # motor revolutions per output revolution
+
     @staticmethod
     def to_revs(degrees: float) -> float:
         return degrees * kHoodMotor.GEAR_RATIO
@@ -90,3 +102,4 @@ class kShooterConfig:
     SHOOTER_OFFSET = Translation2d(-10.432 * kMath.MetersPerInch, 0)  # Meters
     SHOOTER_DIRECTION = -90  # 180 for Reverse
     WHEEL_RADIUS = 4 * kMath.MetersPerInch
+    EXIT_VELOCITY_FACTOR = WHEEL_RADIUS * 2 * math.pi / 60  # RPM -> m/s at wheel surface

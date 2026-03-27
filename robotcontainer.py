@@ -134,12 +134,14 @@ class RobotContainer:
                 self.shooter_subsystem,
                 self.transfer_subsystem,
                 self.hood_subsystem,
+                force_physics=lambda: self._controller_1.rightBumper().getAsBoolean(),
             )
         )
 
         # self._controller_1.leftBumper().whileTrue(go_back_with_path.GoBackWithPath(self._drivetrain))
         
         self._controller_1.leftBumper().whileTrue(
+            
             ParallelCommandGroup(
                 go_to_shooting_spot.GoToShootingSpot(self._drivetrain),
                 shooter_commands.EnableShooter(self.shooter_subsystem)

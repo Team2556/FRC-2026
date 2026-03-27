@@ -11,7 +11,7 @@ from wpimath.units import degrees, meters
 from wpilib import SmartDashboard
 
 from constants.drive import kAutoAlign
-from constants.shooter import kShooterConfig, kShooterData
+from constants.shooter import kShooterConfig, kShooterData, kShooterMotor, kHoodMotor
 
 from util.flip_util import FlipUtil
 from util import math_helpers
@@ -71,10 +71,18 @@ class TurretTargetWithVelocity(TurretTargetBase):
         self, drivetrain: SwerveDriveTrain, target: Pose2d
     ):
         super().__init__(drivetrain, target)
-        # self._shooter = shooter
         self.flight_time_scalar = kAutoAlign.FLIGHT_TIME_SCALAR
-        
+
         self._estimated_target_pose = Pose2d()
+        self._hood_angle_deg = 0.0  # overridden by HubAlign when hood is available
+        self._velocity_efficiency = kHoodMotor.VELOCITY_EFFICIENCY  # overridden by HubAlign with dashboard value
+        self._force_physics = False  # when True, bypass NTTable toggles
+
+        self.flight_nt = NTTable("Auto Align").get_subtable("Flight Time")
+        self.flight_nt.bool("Use Physics Flight Time", False)
+        self.flight_nt.float("Estimated Flight Time (s)", 0.0)
+        self.flight_nt.float("Lead Offset X (m)", 0.0)
+        self.flight_nt.float("Lead Offset Y (m)", 0.0)
 
     def calculate_rotation(self) -> float:
         drive_state = self._drivetrain.get_state()
@@ -101,17 +109,27 @@ class TurretTargetWithVelocity(TurretTargetBase):
 
         target_yaw = self.get_target_yaw(drive_state.pose, target_pose) + kAutoAlign.ALIGN_TUNER_OFFSET
         rotation_rate = self.rotation_PID.calculate(drive_state.heading, target_yaw)
-        
+
         error = drive_state.heading - target_yaw
         self.current_accuracy = abs((error + 180) % 360 - 180)
-        # if self.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES:
-        #     return 0
-        
+
+        # Telemetry
+        self.flight_nt.set("Estimated Flight Time (s)", round(ball_flight_time, 3))
+        self.flight_nt.set("Lead Offset X (m)", round(vel_offset.x, 3))
+        self.flight_nt.set("Lead Offset Y (m)", round(vel_offset.y, 3))
+
         return math_helpers.clamp(rotation_rate, -1.0, 1.0)
 
-    @staticmethod
-    def estimate_flight_time(distance: meters) -> float:
-        return 0
+    def estimate_flight_time(self, distance: float) -> float:
+        """Estimate ball flight time (seconds) to target.
+
+        Toggled via dashboard 'Use Physics Flight Time':
+          True  -> projectile kinematics (v * cos(theta))
+          False -> SHOT_TIME interpolation table
+        """
+        if self._force_physics or self.flight_nt.get("Use Physics Flight Time"):
+            return self._physics_flight_time(distance)
+
         interpolation_distance_data, interpolation_time_data = zip(
             *kShooterData.SHOT_TIME
         )
@@ -119,4 +137,18 @@ class TurretTargetWithVelocity(TurretTargetBase):
             np.interp(distance, interpolation_distance_data, interpolation_time_data)
         )
         return math_helpers.clamp(time, 0, 5)
+
+    def _physics_flight_time(self, distance: float) -> float:
+        """Flat-trajectory approximation: t = d / (v * cos(theta))."""
+        rpm = abs(kShooterMotor.CURRENT_TARGET_RPM)
+        v = rpm * kShooterConfig.EXIT_VELOCITY_FACTOR * self._velocity_efficiency
+        if v < 0.1:
+            return 0  # motor not spinning
+
+        theta_rad = math.radians(self._hood_angle_deg)
+        cos_theta = math.cos(theta_rad)
+        if cos_theta < 0.1:
+            return 0
+        t = distance / (v * cos_theta)
+        return math_helpers.clamp(t, 0, 5)
 

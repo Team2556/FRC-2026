@@ -1,3 +1,5 @@
+from typing import Callable
+
 from wpilib import SmartDashboard
 from wpimath.geometry import Pose2d
 
@@ -27,7 +29,8 @@ class TurretToPose(alignio.TurretTargetWithVelocity):
         target: Pose2d,
         shooter: DualMotorShooter,
     ):
-        super().__init__(drivetrain, shooter, target)
+        super().__init__(drivetrain, target)
+        self._shooter = shooter
 
     def execute(self):
         rotation_rate = self.calculate_rotation()
@@ -57,6 +60,8 @@ class HubAlign(alignio.TurretTargetWithVelocity):
         self._hood.set_state(HoodStates.AUTO)
 
     def execute(self):
+        self._hood_angle_deg = self._hood.auto_hood_angle
+        self._velocity_efficiency = self._hood.nt.get("Velocity Efficiency")
         rotation_rate = self.calculate_rotation()
         self._drivetrain.set_target_align_rotation_rate(
             rotation_rate * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
@@ -78,9 +83,11 @@ class ConditionalAlignAndShoot(HubAlign):
         transfer_subsystem: TransferSubsystem,
         hood: ShooterHood,
         LED_controller: CANdleLEDController | None = None,
+        force_physics: Callable[[], bool] | None = None,
     ):
         super().__init__(drivetrain, shooter, hood, LED_controller)
         self.transfer_subsystem = transfer_subsystem
+        self._force_physics_supplier = force_physics or (lambda: False)
 
     def initialize(self):
         super().initialize()
@@ -88,6 +95,9 @@ class ConditionalAlignAndShoot(HubAlign):
 
     def execute(self):
         self.periodic()
+        # R Bumper + R Trigger overrides dashboard toggles to use physics calc
+        self._force_physics = self._force_physics_supplier()
+        self._hood.force_physics_aiming = self._force_physics
         super().execute()
         robot_pose = self._drivetrain.get_state().pose
 
@@ -122,6 +132,6 @@ class ConditionalAlignAndShoot(HubAlign):
 
     def end(self, interrupted):
         super().end(interrupted)
-
+        self._hood.force_physics_aiming = False
         self.transfer_subsystem.stop()
         self._shooter.disable()
