@@ -6,8 +6,6 @@
 
 import wpilib
 
-from commands2 import cmd
-
 from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
 from util.auto_chooser import AutoChooser
@@ -19,6 +17,12 @@ from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
 from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
 from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.shooter.dual_shooter import DualMotorShooter
+from commands2 import (
+    ParallelCommandGroup,
+    cmd,
+    InstantCommand
+)
+from commands2.button import Trigger
 
 from commands.auto_align import align_with_controller
 from commands.drive import drive_commands
@@ -35,7 +39,24 @@ from commands.intake.intake_commands import (
 from commands.shooter import shooter_commands, hood_commands
 
 from constants.vision import kCamera
+from constants.drive import kDriveConfig
+from constants.led import kLED
+from constants.key_poses import kPoses
 
+from subsystems.drivetrain import drivetrain
+from subsystems.vision import mono_limelight
+from subsystems.intake.intake import IntakeSubsystem
+from subsystems.climb.climb_subsystem import ClimbSubsystem
+from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
+from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
+from subsystems.led.LED_controller import CANdleLEDController
+from subsystems.shooter.dual_shooter import DualMotorShooter
+
+from util.custom_controller import XboxController
+from util.send_fms_data import SendFMSData
+from util.auto_chooser import AutoChooser
+from util.robot_zone_checker import RobotZoneChecker
+from util.tune_with_controller import TuneShooterSpeed, TuneAlignAngle, TuneHoodAngle
 
 class RobotContainer:
     def __init__(self) -> None:
@@ -72,6 +93,10 @@ class RobotContainer:
         self.configureButtonBindings()
 
     def configureButtonBindings(self) -> None:
+        
+        # Order: Default commands, controller 1, controller 2
+        # Controller Button Order: Joysticks, Triggers/Bumpers, Letter Buttons, D-pad, Other Buttons
+        
         self.mono_vision.setDefaultCommand(
             vision_odometry.UpdateOdometry(self.mono_vision, self._drivetrain)
         )
@@ -112,15 +137,17 @@ class RobotContainer:
             )
         )
 
-        # TRANSFER + SHOOTER
-
         self._controller_2.b().whileTrue(RunTransferCommand(self.transfer_subsystem))
 
         self._controller_2.y().whileTrue(
             shooter_commands.EnableShooter(self.shooter_subsystem)
         )
 
-        # INTAKE
+        self._controller_2.x().whileTrue(SpindexOnlyCommand(self.transfer_subsystem))
+
+        self._controller_2.a().whileTrue(
+            ReverseTransferCommand(self.transfer_subsystem)
+        )
 
         self._controller_2.leftTrigger().whileTrue(
             IntakeRollerForward(self.intake_subsystem)
@@ -130,19 +157,50 @@ class RobotContainer:
             IntakeRollerBackward(self.intake_subsystem)
         )
 
-        self._controller_2.rightBumper().onTrue(
-            IntakeCommandManualForward(self.intake_subsystem),
-        )
         self._controller_2.leftBumper().onTrue(
             IntakeCommandManualReverse(self.intake_subsystem),
+        )
+        
+        self._controller_2.rightBumper().onTrue(
+            IntakeCommandManualForward(self.intake_subsystem),
         )
 
         self._controller_2.povUp().onTrue(
             hood_commands.ResetShooterHood(self.hood_subsystem)
         )
 
+        self._controller_2.povLeft().whileTrue(
+            IntakeRollerBackward(self.intake_subsystem)
+        )
+
+        self._controller_2.povDown().whileTrue(
+            hood_commands.SetShooterHoodState(
+                self.hood_subsystem, HoodStates.OUTER_RING
+            )
+        )
+
+        self._controller_2.leftStick().onTrue(cmd.runOnce(lambda: self.tune_hood_angle.reset()))
+        # self._controller_2.rightStick().onTrue(cmd.runOnce(lambda: self.tune_align_angle.reset()))
+        
+        # self._controller_2.povUp().onTrue(ClimbUp(self.climb_subsystem))
+
+        # self._controller_2.povDown().onTrue(ClimbDown(self.climb_subsystem))
+
+        # Dev only: Back + Start force-pushes all dashboard PID values to motors
+        (self._controller_1.back().and_(self._controller_1.start())).onTrue(
+            InstantCommand(self._force_apply_all_pids)
+        )
+
+    def _force_apply_all_pids(self):
+        self.intake_subsystem.pivot_editable_pid.force_apply()
+        self.intake_subsystem.roller_editable_pid.force_apply()
+        self.transfer_subsystem.spindex_editable_pid.force_apply()
+        self.transfer_subsystem.up_transfer_editable_pid.force_apply()
+        self.hood_subsystem.editable_pid.force_apply()
+        self.shooter_subsystem.editable_PID.force_apply()
+
     def getAutonomousCommand(self):
-        # UNCOMMENT THIS OR ELSE
         hood_commands.ResetShooterHood(self.hood_subsystem).schedule()
+        # TODO this second command kinda isn't required
         IntakeRollerForward(self.intake_subsystem).schedule()
         return self.auto_chooser.choose_auto()
