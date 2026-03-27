@@ -56,7 +56,6 @@ from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
 from util.auto_chooser import AutoChooser
 from util.robot_zone_checker import RobotZoneChecker
-from util.tune_with_controller import TuneShooterSpeed, TuneAlignAngle, TuneHoodAngle
 
 class RobotContainer:
     def __init__(self) -> None:
@@ -143,12 +142,6 @@ class RobotContainer:
             shooter_commands.EnableShooter(self.shooter_subsystem)
         )
 
-        self._controller_2.x().whileTrue(SpindexOnlyCommand(self.transfer_subsystem))
-
-        self._controller_2.a().whileTrue(
-            ReverseTransferCommand(self.transfer_subsystem)
-        )
-
         self._controller_2.leftTrigger().whileTrue(
             IntakeRollerForward(self.intake_subsystem)
         )
@@ -172,32 +165,6 @@ class RobotContainer:
         self._controller_2.povLeft().whileTrue(
             IntakeRollerBackward(self.intake_subsystem)
         )
-
-        self._controller_2.povDown().whileTrue(
-            hood_commands.SetShooterHoodState(
-                self.hood_subsystem, HoodStates.OUTER_RING
-            )
-        )
-
-        self._controller_2.leftStick().onTrue(cmd.runOnce(lambda: self.tune_hood_angle.reset()))
-        # self._controller_2.rightStick().onTrue(cmd.runOnce(lambda: self.tune_align_angle.reset()))
-        
-        # self._controller_2.povUp().onTrue(ClimbUp(self.climb_subsystem))
-
-        # self._controller_2.povDown().onTrue(ClimbDown(self.climb_subsystem))
-
-        # Dev only: Back + Start force-pushes all dashboard PID values to motors
-        (self._controller_1.back().and_(self._controller_1.start())).onTrue(
-            InstantCommand(self._force_apply_all_pids)
-        )
-
-    def _force_apply_all_pids(self):
-        self.intake_subsystem.pivot_editable_pid.force_apply()
-        self.intake_subsystem.roller_editable_pid.force_apply()
-        self.transfer_subsystem.spindex_editable_pid.force_apply()
-        self.transfer_subsystem.up_transfer_editable_pid.force_apply()
-        self.hood_subsystem.editable_pid.force_apply()
-        self.shooter_subsystem.editable_PID.force_apply()
 
     def getAutonomousCommand(self):
         hood_commands.ResetShooterHood(self.hood_subsystem).schedule()
