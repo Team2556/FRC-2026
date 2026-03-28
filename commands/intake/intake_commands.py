@@ -29,6 +29,7 @@ class IntakeCommandDeploy(Command):
         return self.reverse_limit.value == signals.ReverseLimitValue.CLOSED_TO_GROUND
 
     def end(self, interrupted: bool):
+        self.intake_subsystem.set_pivot_neutral_mode(signals.NeutralModeValue.COAST)
         self.intake_subsystem.state = "deployed"
 
 
@@ -55,6 +56,7 @@ class IntakeCommandUndeploy(Command):
     def end(self, interrupted: bool):
         self.intake_subsystem.set_internal_deployer_position(0)
         self.intake_subsystem.stop_roller()
+        self.intake_subsystem.set_pivot_neutral_mode(signals.NeutralModeValue.BRAKE)
         self.intake_subsystem.state = "undeployed"
 
 
@@ -81,6 +83,7 @@ class IntakeForceRetract(Command):
     def end(self, interrupted: bool):
         self.intake_subsystem.left_pivot_motor.set(0)
         self.intake_subsystem.set_internal_deployer_position(0)
+        self.intake_subsystem.set_pivot_neutral_mode(signals.NeutralModeValue.BRAKE)
         self.intake_subsystem.state = "force_retracted" if not interrupted else "undeployed"
 
 
