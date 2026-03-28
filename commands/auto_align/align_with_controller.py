@@ -79,8 +79,8 @@ class ConditionalAlignAndShoot(commands2.Command):
 
         if RobotZoneChecker.is_in_opposing_alliance_zone(robot_pose):
             kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM_FAR
-        else:
-            kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM
+        # Normal zone: leave CURRENT_TARGET_RPM alone — DualMotorShooter.periodic()
+        # already updates it from the NT "Target RPM" entry every loop.
 
     def isFinished(self) -> bool:
         return self._drivetrain.should_stop_shooting()
