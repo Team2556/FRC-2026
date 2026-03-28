@@ -24,7 +24,7 @@ class kHoodMotor:
 
     # Positions in degrees — converted to revolutions where needed
     HOME_ANGLE_DEG = 5.0
-    MAX_ANGLE_DEG = 35.0
+    MAX_ANGLE_DEG = 42.0
     REACH_TARGET_ANGLE_ERROR = 2.0  # degrees
     
     INNER_RING_ANGLE = 13.9

@@ -232,7 +232,5 @@ cython_debug/
 
 .claude/
 
-# PyKit (AdvantageKit for RobotPy) log output
-pyLogs/
-.pyLogs/
+# WPILib data log output
 *.wpilog
