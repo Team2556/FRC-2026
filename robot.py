@@ -19,8 +19,10 @@ from pykit.wpilog.wpilogreader import WPILOGReader
 from pykit.networktables.nt4Publisher import NT4Publisher
 from pykit.loggedrobot import LoggedRobot
 from pykit.logger import Logger
+from pykit.inputs.loggablepowerdistribution import LoggedPowerDistribution
 
 import constants
+from constants.canbus import kCANId
 from robotcontainer import RobotContainer
 
 
@@ -52,7 +54,7 @@ class Gravedigger(LoggedRobot):
                     os.makedirs(os.path.join(usb_mount, "logs"), exist_ok=True)
                     Logger.addDataReciever(WPILOGWriter())
                 else:
-                    fallback = os.path.abspath("pyLogs")
+                    fallback = os.path.join(wpilib.getDeployDirectory(), "..", "pyLogs")
                     os.makedirs(fallback, exist_ok=True)
                     Logger.addDataReciever(WPILOGWriter(filename=None, path=fallback))
 
@@ -73,6 +75,12 @@ class Gravedigger(LoggedRobot):
                 Logger.setReplaySource(WPILOGReader(log_path))
                 Logger.addDataReciever(WPILOGWriter(log_path[:-7] + "_sim.wpilog"))
 
+        # Disable PyKit's PDH logging — CAN ID mismatch causes errors every 20ms.
+        # Monkey-patch getInstance so no PowerDistribution object is ever created.
+        class _NullPDH:
+            def saveToTable(self, table):
+                pass
+        LoggedPowerDistribution.getInstance = classmethod(lambda cls: _NullPDH())
         Logger.start()
         self.container = RobotContainer()
         wpilib.CameraServer.launch()
