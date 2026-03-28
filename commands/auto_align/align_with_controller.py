@@ -95,5 +95,5 @@ class ConditionalAlignAndShoot(commands2.Command):
             self._calc.with_target(FlipUtil.fieldPose(kPassSpots.PASS_SPOT_LEFT))
         if RobotZoneChecker.is_in_right_passing_zone(pose):
             self._calc.with_target(FlipUtil.fieldPose(kPassSpots.PASS_SPOT_RIGHT))
-        if RobotZoneChecker.is_in_alliance_zone(pose):
+        if RobotZoneChecker.is_in_hub_shooting_zone(pose):
             self._calc.with_target(FlipUtil.fieldPose(kHub.POS))

@@ -8,7 +8,7 @@ import wpilib
 
 from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
-from util.auto_chooser import AutoChooser
+from util.auto_chooser import AutoBuilder
 
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
@@ -41,7 +41,7 @@ from commands.shooter import shooter_commands, hood_commands
 from constants.vision import kCamera
 from constants.drive import kDriveConfig
 from constants.led import kLED
-from constants.key_poses import kPoses
+from constants.path.key_poses import kPoses
 
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import mono_limelight
@@ -54,7 +54,7 @@ from subsystems.shooter.dual_shooter import DualMotorShooter
 
 from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
-from util.auto_chooser import AutoChooser
+from util.auto_chooser import AutoBuilder
 from util.robot_zone_checker import RobotZoneChecker
 
 class RobotContainer:
@@ -86,7 +86,8 @@ class RobotContainer:
             # climb_subsyetem=self.climb_subsystem,
         )
         self.time_manager = SendFMSData()
-        self.auto_chooser = AutoChooser(self.custom_path_commands.make_autos())
+        
+        self.auto_chooser = AutoBuilder(self.custom_path_commands.get_teleop_paths(), self.custom_path_commands.get_auto_paths())
         self.auto_chooser.make_dropdown()
 
         self.configureButtonBindings()
@@ -168,6 +169,6 @@ class RobotContainer:
 
     def getAutonomousCommand(self):
         hood_commands.ResetShooterHood(self.hood_subsystem).schedule()
-        # TODO this second command kinda isn't required
+        # TODO this second command kinda isn't required get rid of it later
         IntakeRollerForward(self.intake_subsystem).schedule()
         return self.auto_chooser.choose_auto()
