@@ -35,6 +35,7 @@ class RotationCalculator:
         self._drivetrain = drivetrain
         self.target_pose_blue = target
         self.target = FlipUtil.fieldPose(self.target_pose_blue)
+        self.leading_target = self.target
 
         self.shooter_offset = kShooterConfig.SHOOTER_OFFSET
         self.shooter_direction = kShooterConfig.SHOOTER_DIRECTION
@@ -106,6 +107,7 @@ class RotationCalculator:
             hub_translation.x - vel_offset.x, hub_translation.y - vel_offset.y
         )
         target_pose = Pose2d(lead_translation, self.target.rotation())
+        self.leading_target = target_pose
 
         target_yaw = (
             self.get_target_yaw(drive_state.pose, target_pose)
@@ -121,4 +123,4 @@ class RotationCalculator:
     @staticmethod
     def _estimate_flight_time(distance: meters) -> float:
         # Flight-time lead compensation is not yet tuned; returns 0 (no lead).
-        return 0
+        return 1
