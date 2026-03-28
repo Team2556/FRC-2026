@@ -35,6 +35,7 @@ from commands.intake.intake_commands import (
     IntakeDefaultCommand,
     IntakeRollerForward,
     IntakeRollerBackward,
+    IntakeRollerOscillate,
 )
 from commands.shooter import shooter_commands, hood_commands
 
@@ -103,7 +104,7 @@ class RobotContainer:
             shooter_commands.DisableShooter(self.shooter_subsystem)
         )
         self.intake_subsystem.setDefaultCommand(
-            IntakeDefaultCommand(self.intake_subsystem)
+            IntakeDefaultCommand(self.intake_subsystem, self._drivetrain)
         )
 
         # CONTROLLER 1
@@ -117,6 +118,7 @@ class RobotContainer:
                 self.shooter_subsystem,
                 self.transfer_subsystem,
                 self.hood_subsystem,
+                self.intake_subsystem,
             )
         )
 

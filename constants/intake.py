@@ -18,8 +18,12 @@ class kIntakePivot:
     _CONFIG.motion_magic.motion_magic_jerk = 1013            # rotations/sec³
 
     DEPLOYED_POSITION = 10.0
-    
+
     DEPLOYED_SPEED = 0.2
+
+    # Which robot-relative axis the intake faces.
+    # 1.0  = robot front (+X)   -1.0 = robot rear (-X)
+    INTAKE_DIRECTION = 1.0
 
 
 class kIntakeRoller:
@@ -29,3 +33,7 @@ class kIntakeRoller:
     _CONFIG.slot0.k_d = 0
 
     TARGET_RPM = -4750
+
+    # Minimum robot speed toward the intake side (m/s) before the default
+    # command auto-spins the rollers.
+    AUTO_INTAKE_SPEED_THRESHOLD = 0.05
