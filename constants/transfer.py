@@ -15,8 +15,8 @@ class kSpindexer:
 
 class kTransfer:
     _CONFIG = TalonFXConfiguration()
-    _CONFIG.slot0.k_p = 0.1
-    _CONFIG.slot0.k_i = 5
+    _CONFIG.slot0.k_p = 1
+    _CONFIG.slot0.k_i = 0.5
     _CONFIG.slot0.k_d = 0
     _CONFIG.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
 
