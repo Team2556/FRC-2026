@@ -50,7 +50,7 @@ class DualMotorShooter(commands2.Subsystem):
         )
         self.shoot_request = VelocityVoltage(
             velocity=kShooterMotor.CURRENT_TARGET_RPM / 60, slot=2
-        ).with_feed_forward(0.5)
+        ).with_feed_forward(1)
 
         self._state: ShooterState = ShooterState.IDLE
         self.is_charged = False
@@ -124,7 +124,7 @@ class DualMotorShooter(commands2.Subsystem):
         self.nt_sub.set("RPM", motor_velocity_rpm)
 
         kShooterMotor.IDLE_RPM = self.nt_sub.get("Idle RPM")
-        kShooterMotor.TARGET_RPM = self.nt_sub.get("Target RPM")
+        kShooterMotor.CURRENT_TARGET_RPM = self.nt_sub.get("Target RPM")
         self.nt_sub.set("Current Target RPM", kShooterMotor.CURRENT_TARGET_RPM + kShooterMotor.TUNED_RPM)
         kShooterMotor.REACH_TARGET_VELOCITY_ERROR = self.nt_sub.get(
             "Reach Target Velocity Error"
