@@ -41,16 +41,10 @@ class DualMotorShooter(commands2.Subsystem):
             )
         )
 
-        self.idle_request = VelocityVoltage(
-            velocity=kShooterMotor.IDLE_RPM / 60, slot=0
-        )
         self.coast_request = NeutralOut()
-        self.charge_request = VelocityVoltage(
-            velocity=kShooterMotor.CURRENT_TARGET_RPM / 60, slot=1
-        )
-        self.shoot_request = VelocityVoltage(
-            velocity=kShooterMotor.CURRENT_TARGET_RPM / 60, slot=2
-        ).with_feed_forward(1)
+        # Single slot 0 request used for idle, charging, and shooting.
+        # One PID set covers all RPM targets.
+        self.velocity_request = VelocityVoltage(velocity=0, slot=0)
 
         self._state: ShooterState = ShooterState.IDLE
         self.is_charged = False
@@ -74,8 +68,6 @@ class DualMotorShooter(commands2.Subsystem):
             self._top_motor,
             self.cfg,
             use_slot0=True,
-            use_slot1=True,
-            use_slot2=True,
         )
         
         self.shoot_far = False
@@ -97,27 +89,26 @@ class DualMotorShooter(commands2.Subsystem):
         motor_velocity_rpm = self._top_motor.get_velocity().value * 60
         if self._state == ShooterState.IDLE:
             self._top_motor.set_control(
-                self.idle_request.with_velocity(kShooterMotor.IDLE_RPM / 60)
+                self.velocity_request.with_velocity(kShooterMotor.IDLE_RPM / 60)
             )
-
             self.nt.set("State", "IDLE")
 
         elif self._state == ShooterState.ENABLED and not self.is_charged:
+            target_rps = (kShooterMotor.CURRENT_TARGET_RPM + kShooterMotor.TUNED_RPM) / 60
             self._top_motor.set_control(
-                self.charge_request.with_velocity((kShooterMotor.CURRENT_TARGET_RPM + kShooterMotor.TUNED_RPM) / 60)
+                self.velocity_request.with_velocity(target_rps)
             )
             self.is_charged = (
                 abs(motor_velocity_rpm - (kShooterMotor.CURRENT_TARGET_RPM + kShooterMotor.TUNED_RPM))
                 < kShooterMotor.REACH_TARGET_VELOCITY_ERROR
             )
-
             self.nt.set("State", "CHARGING")
 
         elif self._state == ShooterState.ENABLED and self.is_charged:
+            target_rps = (kShooterMotor.CURRENT_TARGET_RPM + kShooterMotor.TUNED_RPM) / 60
             self._top_motor.set_control(
-                self.shoot_request.with_velocity((kShooterMotor.CURRENT_TARGET_RPM + kShooterMotor.TUNED_RPM) / 60)
+                self.velocity_request.with_velocity(target_rps)
             )
-
             self.nt.set("State", "CHARGED")
 
         self.nt.set("Motor Charged", self.is_charged)
