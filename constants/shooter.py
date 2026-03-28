@@ -50,9 +50,11 @@ class kHoodMotor:
 class kShooterMotor:
     _CONFIG = TalonFXConfiguration()
     
-    _CONFIG.slot0.k_p = 0.2
-    _CONFIG.slot0.k_i = 0.2
+    _CONFIG.slot0.k_p = 0.5
+    _CONFIG.slot0.k_i = 0.0
     _CONFIG.slot0.k_d = 0.0
+    _CONFIG.slot0.k_v = 0.1125
+    _CONFIG.slot0.k_s = 0.18
 
     _CONFIG.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
 
@@ -68,16 +70,40 @@ class kShooterMotor:
 
 
 class kShooterData:
-    """
-    Measurements used for interpolation"""
+    """Measured shot data used for distance interpolation.
 
-    # Distance | Time
-    SHOT_TIME = [ (2.66, 1.2), (2.80, 1.3), (3.60, 0.92), (4.66, 1)]
-    # Distance (meters) | Hood angle (degrees)
-    # Anchors: ~25° at 2m, ~35° at 4m — tune on robot
-    # SHOT_ANGLES_OLD = [ (2.66, 15), (2.80, 15.5), (3.60, 18.85), (4.66, 22.0)]
-    # SHOT_ANGLES_MAGNOLIA = [(1.66, 13.9), (2.92, 21.2)]
-    SHOT_ANGLES = [(2.48, 24.8), (2.92, 30.0), (3.24, 34.9)]
+    Both tables share the same distance column (meters to hub).
+    Values outside the measured range are clamped to the nearest endpoint
+    by numpy.interp.
+    """
+
+    # (distance_m, hood_angle_deg)
+    SHOT_ANGLES = [
+        (0.95, 19.0),
+        (1.51, 22.0),
+        (1.98, 28.0),
+        (2.53, 31.0),
+        (3.02, 33.5),
+        (3.53, 35.0),
+        (4.03, 36.5),
+        (4.50, 37.5),
+        (5.03, 40.0),
+        (7.43, 40.0),
+    ]
+
+    # (distance_m, shooter_rpm)  — negative because motor is inverted
+    SHOT_RPMS = [
+        (0.95, -2500),
+        (1.51, -2600),
+        (1.98, -2700),
+        (2.53, -2800),
+        (3.02, -2900),
+        (3.53, -3000),
+        (4.03, -3150),
+        (4.50, -3300),
+        (5.03, -3500),
+        (7.43, -4300),
+    ]
 
 
 class kShooterConfig:

@@ -14,7 +14,6 @@ from commands.auto_align.alignio import RotationCalculator
 
 from constants.field import kHub, kPassSpots
 from constants.drive import kAutoAlign
-from constants.shooter import kShooterMotor
 
 
 class ConditionalAlignAndShoot(commands2.Command):
@@ -58,7 +57,8 @@ class ConditionalAlignAndShoot(commands2.Command):
     def execute(self) -> None:
         self._calc.update_pid()
 
-        robot_pose = self._drivetrain.get_state().pose
+        drive_state = self._drivetrain.get_state()
+        robot_pose = drive_state.pose
         self._find_target(robot_pose)
 
         rotation_rate = self._calc.calculate_rotation()
@@ -66,9 +66,9 @@ class ConditionalAlignAndShoot(commands2.Command):
             rotation_rate * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
         )
 
-        self._hood.add_auto_hood_measurement(
-            self._drivetrain.get_state(), self._calc.target
-        )
+        # Update hood angle and shooter RPM from distance interpolation tables
+        self._hood.add_auto_hood_measurement(drive_state, self._calc.leading_target)
+        self._shooter.add_auto_rpm_measurement(robot_pose, self._calc.leading_target)
 
         # Don't fire until BOTH yaw and shooter speed are on target
         if (
@@ -77,23 +77,20 @@ class ConditionalAlignAndShoot(commands2.Command):
         ):
             self._transfer.activate()
 
-        if RobotZoneChecker.is_in_opposing_alliance_zone(robot_pose):
-            kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM_FAR
-        # Normal zone: leave CURRENT_TARGET_RPM alone — DualMotorShooter.periodic()
-        # already updates it from the NT "Target RPM" entry every loop.
-
     def isFinished(self) -> bool:
         return self._drivetrain.should_stop_shooting()
 
     def end(self, interrupted: bool) -> None:
         self._drivetrain.clear_align_rotation()
+        self._shooter.clear_auto_target()
         self._transfer.stop()
 
     def _find_target(self, pose: Pose2d) -> None:
         """Update the calculator target based on the robot's current zone."""
-        if RobotZoneChecker.is_in_left_passing_zone(pose):
-            self._calc.with_target(FlipUtil.fieldPose(kPassSpots.PASS_SPOT_LEFT))
-        if RobotZoneChecker.is_in_right_passing_zone(pose):
-            self._calc.with_target(FlipUtil.fieldPose(kPassSpots.PASS_SPOT_RIGHT))
-        if RobotZoneChecker.is_in_alliance_zone(pose):
-            self._calc.with_target(FlipUtil.fieldPose(kHub.POS))
+        # if RobotZoneChecker.is_in_left_passing_zone(pose):
+        #     self._calc.with_target(FlipUtil.fieldPose(kPassSpots.PASS_SPOT_LEFT))
+        # if RobotZoneChecker.is_in_right_passing_zone(pose):
+        #     self._calc.with_target(FlipUtil.fieldPose(kPassSpots.PASS_SPOT_RIGHT))
+        # if RobotZoneChecker.is_in_alliance_zone(pose):
+        #     self._calc.with_target(FlipUtil.fieldPose(kHub.POS))
+        self._calc.with_target(FlipUtil.fieldPose(kHub.POS))
