@@ -22,6 +22,10 @@ class kIntakePivot:
 
     DEPLOYED_POSITION = 10.0
 
+    # Which robot-relative axis the intake faces.
+    # 1.0  = robot front (+X)   -1.0 = robot rear (-X)
+    INTAKE_DIRECTION = 1.0
+
 
 class kIntakeRoller:
     _CONFIG = TalonFXConfiguration()
@@ -30,3 +34,7 @@ class kIntakeRoller:
     _CONFIG.slot0.k_d = 0
 
     TARGET_RPM = -4750
+
+    # Minimum robot speed toward the intake side (m/s) before the default
+    # command auto-spins the rollers.
+    AUTO_INTAKE_SPEED_THRESHOLD = 0.05
