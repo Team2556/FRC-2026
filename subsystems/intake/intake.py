@@ -58,7 +58,6 @@ class IntakeSubsystem(commands2.Subsystem):
         self.nt = NTTable("Intake")
         self.nt.float("Pivot Position", 0.0)
         self.nt.float("Target Pivot Position", kIntakePivot.DEPLOYED_POSITION)
-        self.nt.float("Target Pivot Speed", kIntakePivot.DEPLOYED_SPEED) # Temporary hopefully
         self.nt.float("Ideal Pivot Position", 0.0)
         self.nt.int("Current Slot", 0)
         self.nt.float("Roller RPM", 0.0)
@@ -121,8 +120,6 @@ class IntakeSubsystem(commands2.Subsystem):
         self.nt.set("Roller RPM", self.roller_motor.get_velocity().value * 60)
         self.nt.set("State", self.state)
         kIntakePivot.DEPLOYED_POSITION = self.nt.get("Target Pivot Position")
-        # Temporary hopefully
-        kIntakePivot.DEPLOYED_SPEED = self.nt.get("Target Pivot Speed")
         kIntakeRoller.TARGET_RPM = self.nt.get("Target Roller RPM")
 
         self.pivot_editable_pid.periodic()
