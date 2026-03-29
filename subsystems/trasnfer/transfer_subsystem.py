@@ -7,6 +7,7 @@ from constants.transfer import kSpindexer, kTransfer
 from constants.canbus import kCANId
 from util.editable_pid import EditablePID
 from util.nt_util import NTTable
+from util.config_util import apply_config
 
 class TransferSubsystem(Subsystem):
     def __init__(self):
@@ -14,8 +15,8 @@ class TransferSubsystem(Subsystem):
         self.up_transfer_motor = TalonFX(kCANId.hopper.TRASNFER, "rio")
         
         if not wpilib.RobotBase.isSimulation():
-            self.spindex_motor.configurator.apply(kSpindexer._CONFIG, 0.050)
-            self.up_transfer_motor.configurator.apply(kTransfer._CONFIG, 0.050)
+            apply_config(self.spindex_motor, kSpindexer._CONFIG, "Spindexer")
+            apply_config(self.up_transfer_motor, kTransfer._CONFIG, "Up Transfer")
             
             self.spindex_motor.setNeutralMode(phoenix6.signals.NeutralModeValue.BRAKE)
             self.up_transfer_motor.setNeutralMode(phoenix6.signals.NeutralModeValue.BRAKE)

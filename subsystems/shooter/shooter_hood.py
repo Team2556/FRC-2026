@@ -11,6 +11,7 @@ from phoenix6.signals import NeutralModeValue, ReverseLimitValue
 
 from util.editable_pid import EditablePID
 from util.nt_util import NTTable
+from util.config_util import apply_config
 from util.math_helpers import distanceFromPose2dtoPose2d
 
 from constants.shooter import kHoodMotor, kShooterData
@@ -22,7 +23,7 @@ class ShooterHood(Subsystem):
         self.hood_motor = TalonFXS(kCANId.shooter.HOOD_CONTROL, "rio")
 
         if not wpilib.RobotBase.isSimulation():
-            self.hood_motor.configurator.apply(kHoodMotor._CONFIG, 0.050)
+            apply_config(self.hood_motor, kHoodMotor._CONFIG, "Shooter Hood")
             self.hood_motor.setNeutralMode(NeutralModeValue.BRAKE)
 
         self.position_request = MotionMagicVoltage(position=0, enable_foc=False)

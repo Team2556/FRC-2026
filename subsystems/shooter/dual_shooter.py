@@ -9,6 +9,7 @@ from phoenix6 import signals
 
 from util.nt_util import NTTable
 from util.editable_pid import EditablePID
+from util.config_util import apply_config
 
 from constants.canbus import kCANId
 from constants.shooter import kShooterMotor
@@ -32,8 +33,8 @@ class DualMotorShooter(commands2.Subsystem):
         self.cfg.motor_output.neutral_mode = signals.NeutralModeValue.COAST
 
         if not wpilib.RobotBase.isSimulation():
-            self._top_motor.configurator.apply(self.cfg, 0.050)
-            self._bottom_motor.configurator.apply(self.cfg, 0.050)
+            apply_config(self._top_motor, self.cfg, "Shooter Top")
+            apply_config(self._bottom_motor, self.cfg, "Shooter Bottom")
 
         self._bottom_motor.set_control(
             Follower(

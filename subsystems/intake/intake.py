@@ -10,6 +10,7 @@ from phoenix6.signals import MotorAlignmentValue
 
 from util.editable_pid import EditablePID
 from util.nt_util import NTTable
+from util.config_util import apply_config
 
 from constants.intake import kIntakeRoller, kIntakePivot
 from constants.canbus import kCANId
@@ -38,9 +39,9 @@ class IntakeSubsystem(commands2.Subsystem):
         )
 
         if not wpilib.RobotBase.isSimulation():
-            self.left_pivot_motor.configurator.apply(self.pivot_cfg, 0.050)
-            self.right_pivot_motor.configurator.apply(self.pivot_cfg, 0.050)
-            self.roller_motor.configurator.apply(self.roller_cfg, 0.050)
+            apply_config(self.left_pivot_motor, self.pivot_cfg, "Intake Left Pivot")
+            apply_config(self.right_pivot_motor, self.pivot_cfg, "Intake Right Pivot")
+            apply_config(self.roller_motor, self.roller_cfg, "Intake Roller")
 
         self.position_request = phoenix6.controls.MotionMagicVoltage(
             position=0, enable_foc=False, slot=0

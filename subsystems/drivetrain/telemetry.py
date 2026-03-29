@@ -4,6 +4,8 @@ from wpilib import Color, Color8Bit, Mechanism2d, MechanismLigament2d, SmartDash
 from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModulePosition, SwerveModuleState
 
+from util.nt_util import NTTable
+
 class Telemetry:
     def __init__(self, max_speed: units.meters_per_second):
         """
@@ -14,6 +16,9 @@ class Telemetry:
         """
         self._max_speed = max_speed
         # SignalLogger.start()
+
+        self._settings = NTTable("Settings")
+        self._settings.bool("SignalLogger Enabled", False)
 
         # What to publish over networktables for telemetry
         self._inst = NetworkTableInstance.getDefault()
@@ -88,21 +93,22 @@ class Telemetry:
         self._drive_timestamp.set(state.timestamp)
         self._drive_odometry_frequency.set(1.0 / state.odometry_period)
 
-        # Also write to log file
-        SignalLogger.write_struct("DriveState/Pose", Pose2d, state.pose)
-        SignalLogger.write_struct("DriveState/Speeds", ChassisSpeeds, state.speeds)
-        SignalLogger.write_struct_array(
-            "DriveState/ModuleStates", SwerveModuleState, state.module_states
-        )
-        SignalLogger.write_struct_array(
-            "DriveState/ModuleTargets", SwerveModuleState, state.module_targets
-        )
-        SignalLogger.write_struct_array(
-            "DriveState/ModulePositions", SwerveModulePosition, state.module_positions
-        )
-        SignalLogger.write_double(
-            "DriveState/OdometryPeriod", state.odometry_period, "seconds"
-        )
+        # Also write to log file (gated behind NT toggle to avoid loop overruns)
+        if self._settings.get("SignalLogger Enabled"):
+            SignalLogger.write_struct("DriveState/Pose", Pose2d, state.pose)
+            SignalLogger.write_struct("DriveState/Speeds", ChassisSpeeds, state.speeds)
+            SignalLogger.write_struct_array(
+                "DriveState/ModuleStates", SwerveModuleState, state.module_states
+            )
+            SignalLogger.write_struct_array(
+                "DriveState/ModuleTargets", SwerveModuleState, state.module_targets
+            )
+            SignalLogger.write_struct_array(
+                "DriveState/ModulePositions", SwerveModulePosition, state.module_positions
+            )
+            SignalLogger.write_double(
+                "DriveState/OdometryPeriod", state.odometry_period, "seconds"
+            )
 
         # Telemeterize the pose to a Field2d
         self._field_type_pub.set("Field2d")
