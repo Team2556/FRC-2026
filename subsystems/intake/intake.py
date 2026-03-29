@@ -29,19 +29,23 @@ class IntakeSubsystem(commands2.Subsystem):
         self.pivot_cfg = kIntakePivot._CONFIG
         self.roller_cfg = kIntakeRoller._CONFIG
         self.roller_cfg.motor_output.neutral_mode = signals.NeutralModeValue.COAST
-        self.left_pivot_motor.setNeutralMode(signals.NeutralModeValue.COAST)
-        self.right_pivot_motor.setNeutralMode(signals.NeutralModeValue.COAST)
+        self.left_pivot_motor.setNeutralMode(signals.NeutralModeValue.BRAKE)
+        self.right_pivot_motor.setNeutralMode(signals.NeutralModeValue.BRAKE)
 
+        if not wpilib.RobotBase.isSimulation():
+            self.left_pivot_motor.configurator.apply(self.pivot_cfg)
+            self.right_pivot_motor.configurator.apply(self.pivot_cfg)
+            self.roller_motor.configurator.apply(self.roller_cfg)
+
+        # Set follower AFTER config apply so it isn't overwritten
         self.right_pivot_motor.set_control(
             phoenix6.controls.Follower(
                 kCANId.intake.LEFT_PIVOT, MotorAlignmentValue.OPPOSED
             )
         )
 
-        if not wpilib.RobotBase.isSimulation():
-            self.left_pivot_motor.configurator.apply(self.pivot_cfg)
-            self.right_pivot_motor.configurator.apply(self.pivot_cfg)
-            self.roller_motor.configurator.apply(self.roller_cfg)
+        # Leader status signal rate determines follower output rate (must be ≥20 Hz)
+        self.left_pivot_motor.get_duty_cycle().set_update_frequency(50)
 
         self.position_request = phoenix6.controls.MotionMagicVoltage(
             position=0, enable_foc=False, slot=0
@@ -54,7 +58,6 @@ class IntakeSubsystem(commands2.Subsystem):
         self.nt = NTTable("Intake")
         self.nt.float("Pivot Position", 0.0)
         self.nt.float("Target Pivot Position", kIntakePivot.DEPLOYED_POSITION)
-        self.nt.float("Target Pivot Speed", kIntakePivot.DEPLOYED_SPEED) # Temporary hopefully
         self.nt.float("Ideal Pivot Position", 0.0)
         self.nt.int("Current Slot", 0)
         self.nt.float("Roller RPM", 0.0)
@@ -72,9 +75,12 @@ class IntakeSubsystem(commands2.Subsystem):
             "Intake/RollerPID", self.roller_motor, self.roller_cfg
         )
 
+    def set_pivot_neutral_mode(self, mode: signals.NeutralModeValue):
+        self.left_pivot_motor.setNeutralMode(mode)
+        self.right_pivot_motor.setNeutralMode(mode)
+
     def set_deployer_position(self, pos):
         self.left_pivot_motor.set_control(self.position_request.with_position(pos))
-        self.right_pivot_motor.set_control(self.position_request.with_position(-pos))
         self.nt.set("Ideal Pivot Position", pos)
     
     def set_deployer_speed(self, speed):
@@ -83,12 +89,10 @@ class IntakeSubsystem(commands2.Subsystem):
 
     def set_internal_deployer_position(self, pos):
         self.left_pivot_motor.set_position(pos)
-        self.right_pivot_motor.set_position(-pos)
         self.nt.set("Ideal Pivot Position", 0)
 
     def change_deployer_slot(self, slot=0):
         self.left_pivot_motor.set_control(self.position_request.with_slot(slot))
-        self.right_pivot_motor.set_control(self.position_request.with_slot(slot))
         self.nt.set("Current Slot", slot)
 
     def set_roller_speed(self, rpm):
@@ -116,8 +120,6 @@ class IntakeSubsystem(commands2.Subsystem):
         self.nt.set("Roller RPM", self.roller_motor.get_velocity().value * 60)
         self.nt.set("State", self.state)
         kIntakePivot.DEPLOYED_POSITION = self.nt.get("Target Pivot Position")
-        # Temporary hopefully
-        kIntakePivot.DEPLOYED_SPEED = self.nt.get("Target Pivot Speed")
         kIntakeRoller.TARGET_RPM = self.nt.get("Target Roller RPM")
 
         self.pivot_editable_pid.periodic()
