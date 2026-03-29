@@ -38,9 +38,9 @@ class IntakeSubsystem(commands2.Subsystem):
         )
 
         if not wpilib.RobotBase.isSimulation():
-            self.left_pivot_motor.configurator.apply(self.pivot_cfg)
-            self.right_pivot_motor.configurator.apply(self.pivot_cfg)
-            self.roller_motor.configurator.apply(self.roller_cfg)
+            self.left_pivot_motor.configurator.apply(self.pivot_cfg, 0.050)
+            self.right_pivot_motor.configurator.apply(self.pivot_cfg, 0.050)
+            self.roller_motor.configurator.apply(self.roller_cfg, 0.050)
 
         self.position_request = phoenix6.controls.MotionMagicVoltage(
             position=0, enable_foc=False, slot=0

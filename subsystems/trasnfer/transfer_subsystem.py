@@ -14,8 +14,8 @@ class TransferSubsystem(Subsystem):
         self.up_transfer_motor = TalonFX(kCANId.hopper.TRASNFER, "rio")
         
         if not wpilib.RobotBase.isSimulation():
-            self.spindex_motor.configurator.apply(kSpindexer._CONFIG)
-            self.up_transfer_motor.configurator.apply(kTransfer._CONFIG)
+            self.spindex_motor.configurator.apply(kSpindexer._CONFIG, 0.050)
+            self.up_transfer_motor.configurator.apply(kTransfer._CONFIG, 0.050)
             
             self.spindex_motor.setNeutralMode(phoenix6.signals.NeutralModeValue.BRAKE)
             self.up_transfer_motor.setNeutralMode(phoenix6.signals.NeutralModeValue.BRAKE)

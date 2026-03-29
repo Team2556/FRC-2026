@@ -17,7 +17,7 @@ class ClimbSubsystem(commands2.Subsystem):
         self.climb_motor = TalonFX(kCANId.climb.MOTOR, "rio")
         
         if not wpilib.RobotBase.isSimulation():
-            self.climb_motor.configurator.apply(kClimb._CONFIG)
+            self.climb_motor.configurator.apply(kClimb._CONFIG, 0.050)
             self.climb_motor.setNeutralMode(phoenix6.signals.NeutralModeValue.BRAKE)
             
         self.climb_position_voltage = controls.PositionVoltage(position=0, slot=0)

@@ -22,7 +22,7 @@ class ShooterHood(Subsystem):
         self.hood_motor = TalonFXS(kCANId.shooter.HOOD_CONTROL, "rio")
 
         if not wpilib.RobotBase.isSimulation():
-            self.hood_motor.configurator.apply(kHoodMotor._CONFIG)
+            self.hood_motor.configurator.apply(kHoodMotor._CONFIG, 0.050)
             self.hood_motor.setNeutralMode(NeutralModeValue.BRAKE)
 
         self.position_request = MotionMagicVoltage(position=0, enable_foc=False)
