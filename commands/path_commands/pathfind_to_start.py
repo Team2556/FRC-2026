@@ -22,14 +22,15 @@ class PathfindInstruction:
 class PathfindToStart:
     def __init__(
         self, 
+        drivetrain : SwerveDriveTrain,
         *instructions : PathfindInstruction,
-        drivetrain : SwerveDriveTrain
         ):
         self.instructions = instructions
         self.drivetrain = drivetrain
     
-    def generate_instructions(self, current_pose):
+    def generate_instructions(self):
         '''Returns a list of DriveToASpot commands that the robot should do to get to the ideal starting spot'''
+        current_pose = self.drivetrain.get_state().pose
         for instruction in self.instructions:
             if instruction.should_call_instruction(current_pose):
                 commands = []

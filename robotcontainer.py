@@ -27,7 +27,7 @@ from commands2.button import Trigger
 from commands.auto_align import align_with_controller
 from commands.drive import drive_commands
 from commands.vision import vision_odometry
-from commands.path_commands import custom_path_commands
+from constants.path import custom_path_commands
 from commands.transfer.run_transfer_motors import RunTransferCommand
 from commands.intake.intake_commands import (
     IntakeCommandManualForward,
@@ -85,11 +85,14 @@ class RobotContainer:
             hood_subsystem=self.hood_subsystem,
             # climb_subsyetem=self.climb_subsystem,
         )
-        self.time_manager = SendFMSData()
-        
-        self.auto_chooser = AutoBuilder(self.custom_path_commands.get_teleop_paths(), self.custom_path_commands.get_auto_paths())
+        self.auto_chooser = AutoBuilder(
+            self.custom_path_commands.get_teleop_paths(), 
+            self.custom_path_commands.get_auto_paths()
+        )
         self.auto_chooser.make_dropdown()
 
+        self.time_manager = SendFMSData()
+        
         self.configureButtonBindings()
 
     def configureButtonBindings(self) -> None:

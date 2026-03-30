@@ -4,7 +4,7 @@ from util.nt_util import NTTable
 
 from constants.path.key_poses import kPath
 
-from commands.path_commands.custom_path_commands import CustomPathCommands
+from constants.path.custom_path_commands import CustomPathCommands
 from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
 
 class AutoBuilder:
@@ -20,9 +20,6 @@ class AutoBuilder:
         self._nt_path.float("Max Speed", kPath.default_path_speed)
         self._nt_path.float("Auto Speed", kPath.auto_path_speed)
         self._nt_path.float("Smoothing Radius", kPath.smoothing_radius)
-        self._nt_path.float("Smoothing Time", kPath.smoothing_time)
-        self._nt_path.float("Slow Distance Proportional to Max Speed", kPath.path_slow_distance)
-        self._nt_path.float("Slow Transition Multiplier", kPath.path_slow_multiplier)
 
     def make_dropdown(self):
         self.chooser = SendableChooser()
@@ -52,9 +49,6 @@ class AutoBuilder:
         kPath.default_path_speed = self._nt_path.get("Max Speed")
         kPath.auto_path_speed = self._nt_path.get("Auto Speed")
         kPath.smoothing_radius = self._nt_path.get("Smoothing Radius")
-        kPath.smoothing_time = self._nt_path.get("Smoothing Time")
-        kPath.path_slow_distance = self._nt_path.get("Slow Distance Proportional to Max Speed")
-        kPath.path_slow_multiplier = self._nt_path.get("Slow Transition Multiplier")
     
     def update_sequence_paths(self):
         for auto_path in self.auto_paths:

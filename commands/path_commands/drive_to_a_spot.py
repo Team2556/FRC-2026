@@ -23,7 +23,6 @@ class DriveToASpot(commands2.Command):
         end_tolerance : float = 0.1,
         end_rotation_tolerance : float = 0.1,
         goal_end_velocity : float = 0.0,
-        slow_distance : float = 0.5
     ) -> None:
         """
         Command that makes the robot go to a location. Ignores the fact that walls exist
@@ -45,8 +44,6 @@ class DriveToASpot(commands2.Command):
         :param goal_end_velocity:       Target velocity for robot to finish when it reaches that pose
                                         (will make the command go faster if this is increased)
         :type goal_end_velocity:        float (m/s)
-        :param slow_distance:           Robot will start slowing down to end velocity this distance away from target pose
-        :type slow_distance:            float (meters)
         """
         
         super().__init__()
@@ -61,13 +58,14 @@ class DriveToASpot(commands2.Command):
         self.end_tolerance : float = end_tolerance
         self.end_rotation_tolerance : float = end_rotation_tolerance
         self.goal_end_velocity : float = goal_end_velocity
-        self.slow_distance: float = slow_distance
         
         self.addRequirements(self.drivetrain)
         
         self.pose_estimate = Pose2d()
         
         self.override_speed : float | None = None
+        self.override_rps : float | None = None
+        
         self.parallel_commands = []
         
         self.reset_variables()
@@ -86,10 +84,10 @@ class DriveToASpot(commands2.Command):
         self.command_weight = 1.0
         self.next_command_velocity : Pose2d = Pose2d()
         
-        self.target_pose = FlipUtil.fieldPose(self.blue_alliance_target_pose)
+        self.smoothing_radius = kPath.smoothing_radius
+        self.smoothing_time = self.smoothing_radius / self.max_speed
         
-    def update_variables(self):
-        pass
+        self.target_pose = FlipUtil.fieldPose(self.blue_alliance_target_pose)
     
     def update_pose_estimate(self):
         self.pose_estimate = self.drivetrain.get_state().pose
@@ -124,14 +122,12 @@ class DriveToASpot(commands2.Command):
         
         linear_distance = distance.norm()
         
-        # TODO goal_end_velocity needs to be changed in sequence commands depending on angle to next path:
-        # slow_distance = abs(self.goal_end_velocity ** 2 - self.max_speed ** 2) / (kPath.max_translational_acceleration * 2)
-        slow_distance = abs(self.max_speed ** 2) / (kPath.max_translational_acceleration * 2)
+        self.slow_distance = abs(self.max_speed ** 2) / (kPath.max_translational_acceleration * 2)
         
         # If robot is within "slow distance" then make robot move slower
         target_speed = self.max_speed
-        if linear_distance < slow_distance:
-            progress_ratio = linear_distance / slow_distance
+        if linear_distance < self.slow_distance:
+            progress_ratio = linear_distance / self.slow_distance
             target_speed = (target_speed - self.goal_end_velocity) * progress_ratio + self.goal_end_velocity
         
         # ok... so this does break when switching alliances in the middle of a match but it's fine anyway
@@ -144,10 +140,9 @@ class DriveToASpot(commands2.Command):
     def calcutate_angular_velocity(self) -> Rotation2d:
         
         rotation_offset = (self.target_pose.rotation().relativeTo(self.pose_estimate.rotation()))
-        rotation_offset = rotation_offset.rotateBy(Rotation2d(math.pi))
         
         # Probably correct calculations 
-        # TODO redo this once sequence path is fixed
+        # TODO redo this once sequence path is fixed maybe
         current_speed = self.drivetrain.get_state().velocity.translation().norm() # Maybe need this
         rotation_slow_distance = (self.max_radians_per_second) ** 2 / kPath.max_rotational_acceleration
         
@@ -216,7 +211,9 @@ class DriveToASpot(commands2.Command):
     def with_end_tolerance(self, value): self.end_tolerance = value; return self
     def with_end_rotation_tolerance(self, value): self.end_rotation_tolerance = value; return self
     def with_goal_end_velocity(self, value): self.goal_end_velocity = value; return self
-    def with_slow_distance(self, value): self.slow_distance = value; return self
+    
+    def with_override_speed(self, new_speed): self.override_speed = new_speed; return self
+    def with_override_rps(self, new_rps): self.override_rps = new_rps; return self
     
     def with_precise_values(self):
         self.max_speed = 2.7
@@ -224,19 +221,23 @@ class DriveToASpot(commands2.Command):
         self.end_tolerance = 0.1
         self.end_rotation_tolerance = 0.01
         self.goal_end_velocity = 0.01
-        self.slow_distance = 0.6
         return self
 
     def with_sequence_pose_values(self):
-        self.max_rps = 0.5
         self.end_tolerance = 0.0
         self.end_rotation_tolerance = 0.0
+
         if self.override_speed:
             self.max_speed = self.override_speed
-        self.slow_distance = self.max_speed * kPath.path_slow_distance
-        self.goal_end_velocity = self.max_speed * kPath.path_slow_multiplier
-        return self
-
-    def with_override_speed(self, new_speed):
-        self.override_speed = new_speed
+        if self.override_rps:
+            self.max_rps = self.override_rps
+        
+        # Shoutout to third kinematic equation
+        self.slow_distance = abs(self.max_speed ** 2) / (kPath.max_translational_acceleration * 2)
+        self.goal_end_velocity = (self.max_speed ** 2 - 2 * kPath.max_translational_acceleration * self.slow_distance) ** 0.5
+        
+        self.smoothing_time = kPath.smoothing_radius / self.max_speed
+        
+        # Also goal_end_velocity is changed to account for not having super sharp turns
+        
         return self
