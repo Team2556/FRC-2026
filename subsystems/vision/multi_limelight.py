@@ -23,7 +23,7 @@ class Vision(commands2.Subsystem):
     via the NT "Use MegaTag2" entry without redeploying.
     """
 
-    def __init__(self, *camera_names):
+    def __init__(self, *camera_names: str):
         super().__init__()
         self._cameras = camera_names
         self._pigeon = Pigeon2(TunerConstants._pigeon_id)

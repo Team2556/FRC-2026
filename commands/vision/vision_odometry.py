@@ -1,6 +1,6 @@
 import commands2
 
-from subsystems.vision import mono_limelight
+from subsystems.vision import multi_limelight
 from subsystems.drivetrain import drivetrain
 
 from constants.vision import kOdometry
@@ -8,7 +8,7 @@ from constants.vision import kOdometry
 
 class UpdateOdometry(commands2.Command):
     def __init__(
-        self, vision: mono_limelight.Vision, drivetrain: drivetrain.SwerveDriveTrain
+        self, vision: multi_limelight.Vision, drivetrain: drivetrain.SwerveDriveTrain
     ):
         super().__init__()
         self._vision = vision
