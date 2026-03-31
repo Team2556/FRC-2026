@@ -8,15 +8,25 @@ class kCamera:
 
 
 class kOdometry:
-    MAX_VISION_AMBIGUITY = 0.3
-    MAX_VISION_Z_ERROR = 0.75
-    XY_SD_COEFF = 0.02
-    THETA_SD_COEFF = 0.06
-
-    MAX_RPS = 2  # m/s
-    USE_MEGATAG_2 = False
-
-    MIN_APRILTAGS = 2
-    MAX_TILT_ERROR = 5
+    USE_MEGATAG2 = True 
     
+    MAX_RPS = 2
+    MAX_TAG_DIST = 7.0
+    MAX_TAG_AMBIGUITY = 0.9
+
+    MT1_MIN_APRILTAGS = 2
+    MT1_XY_COEFF    = 0.3
+    MT1_THETA_COEFF = 0.5
+    
+    MT1_RESET_MAX_AMBIGUITY = 0.2
+    MT1_RESET_MAX_TAG_DIST  = 4.0
+    MT1_RESET_XY_STD    = 0.1
+    MT1_RESET_THETA_STD = 0.1 
+
+    MT2_MIN_APRILTAGS = 1
+    MT2_XY_COEFF      = 0.4
+    MT2_THETA_STD_DEV = 9999999.0
+    MT2_MAX_POSE_ERROR = 0.75
+
+    MAX_TILT_ERROR = 5
     IGNORE_TILT = True
