@@ -36,49 +36,69 @@ class Vision(commands2.Subsystem):
         self.nt.bool("Ignore Tilt", kOdometry.IGNORE_TILT)
         self.nt.bool("Use MegaTag2", kOdometry.USE_MEGATAG2)
 
-    def get_valid_measurements(self, estimates: list[PoseEstimate]) -> list[PoseEstimate]:
-        """Filter estimates to only those meeting the acceptance criteria.
-
-        Criteria:
-          - tag_count >= min_tags for the active pipeline
-          - avg_tag_dist <= MAX_TAG_DIST
-          - no individual tag has ambiguity > MAX_TAG_AMBIGUITY
-            (if raw_fiducials are populated; skipped when the array is empty)
-        All passing estimates are returned so the pose estimator can fuse
-        every camera independently rather than discarding any valid data.
-        """
-        min_tags = kOdometry.MT2_MIN_APRILTAGS if kOdometry.USE_MEGATAG2 else kOdometry.MT1_MIN_APRILTAGS
+    def get_valid_measurements(
+        self, estimates: list[PoseEstimate]
+    ) -> list[PoseEstimate]:
+        min_tags = (
+            kOdometry.MT2_MIN_APRILTAGS
+            if kOdometry.USE_MEGATAG2
+            else kOdometry.MT1_MIN_APRILTAGS
+        )
         valid = []
+
         for e in estimates:
             if e.tag_count < min_tags:
                 continue
+
             if e.avg_tag_dist > kOdometry.MAX_TAG_DIST:
                 continue
+
             if e.raw_fiducials and any(
                 f is not None and f.ambiguity > kOdometry.MAX_TAG_AMBIGUITY
                 for f in e.raw_fiducials
             ):
                 continue
             valid.append(e)
+
         return valid
+
+    def get_strong_mt1_measurement(
+        self, drive_state: SwerveDrivetrain.SwerveDriveState = None
+    ) -> PoseEstimate | None:
+        if drive_state is None:
+            return None
+        if abs(units.radiansToRotations(drive_state.speeds.omega)) > kOdometry.MAX_RPS:
+            return None
+
+        candidates: list[PoseEstimate] = []
+        for camera in self._cameras:
+            result = LimelightHelpers.get_botpose_estimate_wpiblue(camera)
+            if result is None or result.tag_count < kOdometry.MT1_MIN_APRILTAGS:
+                continue
+            if result.avg_tag_dist > kOdometry.MT1_RESET_MAX_TAG_DIST:
+                continue
+            if result.raw_fiducials and any(
+                f is not None and f.ambiguity > kOdometry.MT1_RESET_MAX_AMBIGUITY
+                for f in result.raw_fiducials
+            ):
+                continue
+            candidates.append(result)
+
+        if not candidates:
+            return None
+
+        return min(candidates, key=lambda e: e.avg_tag_dist)
 
     def get_vision_odometry(
         self, drive_state: SwerveDrivetrain.SwerveDriveState = None
     ) -> list[PoseEstimate]:
-        """Return all valid pose estimates across every camera.
-
-        Returns an empty list when global filters (rotation rate, tilt) fail
-        or no camera has a qualifying measurement.  The caller should call
-        ``add_vision_measurement`` once per estimate so the Kalman filter fuses
-        all cameras rather than only the "best" one.
-        """
         self.nt.set("Drive State Provided", drive_state is not None)
         if drive_state is None:
             return []
 
-        heading_deg  = drive_state.pose.rotation().degrees()
-        omega_rps    = units.radiansToRotations(drive_state.speeds.omega)
-        yaw_rate_dps = math.degrees(drive_state.speeds.omega)  # rad/s → deg/s
+        heading_deg = drive_state.pose.rotation().degrees()
+        omega_rps = units.radiansToRotations(drive_state.speeds.omega)
+        yaw_rate_dps = math.degrees(drive_state.speeds.omega)
 
         if abs(omega_rps) > kOdometry.MAX_RPS:
             return []
@@ -109,5 +129,5 @@ class Vision(commands2.Subsystem):
         self.nt.set("Robot Tilt", self.tilt)
 
         kOdometry.MAX_TILT_ERROR = self.nt.get("Maximum Tilt Error")
-        kOdometry.IGNORE_TILT    = self.nt.get("Ignore Tilt")
-        kOdometry.USE_MEGATAG2   = self.nt.get("Use MegaTag2")
+        kOdometry.IGNORE_TILT = self.nt.get("Ignore Tilt")
+        kOdometry.USE_MEGATAG2 = self.nt.get("Use MegaTag2")

@@ -16,10 +16,14 @@ class kOdometry:
     # Pose error grows quickly beyond this — reject rather than pollute the estimator.
     MAX_TAG_DIST = 7.0
 
-    # Per-tag ambiguity threshold (0–1). A tag with ambiguity above this means
-    # the solver couldn't confidently distinguish between two possible poses.
-    # Any estimate containing a tag that exceeds this is rejected entirely.
+    # Per-tag ambiguity threshold (0–1) for normal soft updates.
+    # Any estimate containing a tag above this is rejected entirely.
     MAX_TAG_AMBIGUITY = 0.9
+
+    # Stricter thresholds for the MT1 hard pose reset.
+    # Only a very clean multi-tag view at close range triggers a full reset.
+    MT1_RESET_MAX_AMBIGUITY = 0.2   # very unambiguous tags only
+    MT1_RESET_MAX_TAG_DIST  = 4.0   # meters — close tags only
 
     # MT1 needs ≥2 tags for reliable yaw; MT2 works with 1
     MT2_MIN_APRILTAGS = 1
