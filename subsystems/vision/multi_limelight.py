@@ -16,13 +16,6 @@ from constants.vision import kOdometry
 
 
 class Vision(commands2.Subsystem):
-    """
-    Accepts pose estimates from one or more Limelights.
-
-    Supports both MegaTag1 and MegaTag2 pipelines, switchable at runtime
-    via the NT "Use MegaTag2" entry without redeploying.
-    """
-
     def __init__(self, *camera_names: str):
         super().__init__()
         self._cameras = camera_names
@@ -58,9 +51,10 @@ class Vision(commands2.Subsystem):
                 for f in e.raw_fiducials
             ):
                 continue
+            
             valid.append(e)
 
-        return valid
+        return valid    
 
     def get_strong_mt1_measurement(
         self, drive_state: SwerveDrivetrain.SwerveDriveState = None
@@ -89,7 +83,7 @@ class Vision(commands2.Subsystem):
 
         return min(candidates, key=lambda e: e.avg_tag_dist)
 
-    def get_vision_odometry(
+    def get_vision_measurements(
         self, drive_state: SwerveDrivetrain.SwerveDriveState = None
     ) -> list[PoseEstimate]:
         self.nt.set("Drive State Provided", drive_state is not None)

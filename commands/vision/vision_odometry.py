@@ -21,14 +21,27 @@ class UpdateOdometry(commands2.Command):
     def execute(self):
         drive_state = self._drivetrain.get_state().robot_state
         
-        # If strong megatag 1 reading, use that instead of megatag 2
         strong = self._vision.get_strong_mt1_measurement(drive_state)
         if strong is not None:
-            self._drivetrain.reset_pose(strong.pose)
+            self._drivetrain.add_vision_measurement(
+                strong.pose,
+                strong.timestamp_seconds,
+                (
+                    kOdometry.MT1_RESET_XY_STD,
+                    kOdometry.MT1_RESET_XY_STD,
+                    kOdometry.MT1_RESET_THETA_STD,
+                ),
+            )
             return
 
-        for m in self._vision.get_vision_odometry(drive_state):
+        current_pose = drive_state.pose
+
+        for m in self._vision.get_vision_measurements(drive_state):
             if kOdometry.USE_MEGATAG2:
+                pose_error = m.pose.translation().distance(current_pose.translation())
+                if pose_error > kOdometry.MT2_MAX_POSE_ERROR:
+                    continue
+
                 xy_std = kOdometry.MT2_XY_COEFF * m.avg_tag_dist / m.tag_count
                 std_dev = (xy_std, xy_std, kOdometry.MT2_THETA_STD_DEV)
             else:
