@@ -26,6 +26,10 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         super().__init__(*commands)
         self._commands: list[DriveToASpot]
         self.default_commands = commands
+        
+        for command in self.default_commands:
+            if not command == self.default_commands[-1]:
+                command = command.with_sequence_pose_values()
 
     def initialize(self):
         self.timer.stop()
@@ -44,9 +48,9 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         
         for command in self._commands:
             command.max_speed = max_speed
+            command.reset_variables()
             if not command == self._commands[-1]:
                 command = command.with_sequence_pose_values()
-            command.reset_variables()
         
         super().initialize()
         self.calculate_goal_end_velocity()
@@ -71,7 +75,7 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         
         next_max_speed = next_command.max_speed
         
-        current_angle = current_command.calculate_velocity().rotation()
+        current_angle = current_command.calculate_velocity().translation().angle()
         next_angle = (next_command.target_pose.translation() - current_command.target_pose.translation()).angle()
         if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
             current_angle = current_angle.rotateBy(Rotation2d(pi))
@@ -88,10 +92,10 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
 
     def add_path_smoothing(self):
 
-        if kPath.smoothing_radius == 0:
-            return
-
         currentCommand: DriveToASpot = self._commands[self._currentCommandIndex]
+        
+        if currentCommand.smoothing_radius == 0:
+            return
 
         if currentCommand == self._commands[-1]:
             return
@@ -99,7 +103,7 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         if self.is_during_smoothing:
             if (
                 self.timer.get() >= currentCommand.smoothing_time 
-                or self.robot_is_within_distance(currentCommand, kPath.smoothing_radius * 0.15)
+                # or self.robot_is_within_distance(currentCommand, kPath.smoothing_radius * 0.15)
                 ):
                 self.is_during_smoothing = False
                 self.next_command()

@@ -8,6 +8,7 @@ from wpimath.units import rotationsToRadians
 from wpilib import DriverStation
 
 from util.flip_util import FlipUtil
+from util.math_helpers import clamp
 
 from subsystems.drivetrain import drivetrain
 
@@ -52,6 +53,7 @@ class DriveToASpot(commands2.Command):
         
         self.max_speed = max_speed
         self.max_radians_per_second = rotationsToRadians(max_rps)
+        self.smoothing_radius = kPath.smoothing_radius
         
         self.blue_alliance_target_pose = target_pose
         
@@ -65,6 +67,7 @@ class DriveToASpot(commands2.Command):
         
         self.override_speed : float | None = None
         self.override_rps : float | None = None
+        self.override_smoothing_radius : float | None = None
         
         self.parallel_commands = []
         
@@ -83,9 +86,6 @@ class DriveToASpot(commands2.Command):
         
         self.command_weight = 1.0
         self.next_command_velocity : Pose2d = Pose2d()
-        
-        self.smoothing_radius = kPath.smoothing_radius
-        self.smoothing_time = self.smoothing_radius / self.max_speed
         
         self.target_pose = FlipUtil.fieldPose(self.blue_alliance_target_pose)
     
@@ -214,6 +214,7 @@ class DriveToASpot(commands2.Command):
     
     def with_override_speed(self, new_speed): self.override_speed = new_speed; return self
     def with_override_rps(self, new_rps): self.override_rps = new_rps; return self
+    def with_override_smoothing_radius(self, new_smooth_radius): self.override_smoothing_radius = new_smooth_radius; return self
     
     def with_precise_values(self):
         self.max_speed = 2.7
@@ -231,13 +232,13 @@ class DriveToASpot(commands2.Command):
             self.max_speed = self.override_speed
         if self.override_rps:
             self.max_rps = self.override_rps
+        if self.override_smoothing_radius:
+            self.smoothing_radius = self.override_smoothing_radius
         
         # Shoutout to third kinematic equation
         self.slow_distance = abs(self.max_speed ** 2) / (kPath.max_translational_acceleration * 2)
         self.goal_end_velocity = (self.max_speed ** 2 - 2 * kPath.max_translational_acceleration * self.slow_distance) ** 0.5
         
-        self.smoothing_time = kPath.smoothing_radius / self.max_speed
-        
-        # Also goal_end_velocity is changed to account for not having super sharp turns
+        self.smoothing_time = kPath.smoothing_radius / self.max_speed * kPath.smoothing_time_multiplier
         
         return self

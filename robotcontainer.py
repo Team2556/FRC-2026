@@ -89,7 +89,6 @@ class RobotContainer:
             self.custom_path_commands.get_teleop_paths(), 
             self.custom_path_commands.get_auto_paths()
         )
-        self.auto_chooser.make_dropdown()
 
         self.time_manager = SendFMSData()
         

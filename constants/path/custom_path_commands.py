@@ -61,7 +61,7 @@ class CustomPathCommands:
     def make_auto_paths(self):
         self.auto_paths = {
         "right_half_sweep" : SequentialCommandGroup(
-            InitialPose(self.drivetrain, Pose2d(1, 0.55, Rotation2d())),
+            InitialPose(self.drivetrain, Pose2d(1, 7, Rotation2d())),
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_sweep_1),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_sweep_2),

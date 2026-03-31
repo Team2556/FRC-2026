@@ -18,9 +18,11 @@ class kPath:
     intaking_speed = 2.0
     while_shooting_speed = 1.0
     
-    smoothing_radius = 0.6
+    smoothing_radius = 1.3
+    smoothing_radius_wide = 2
     
-    min_goal_end_velocity_mult = 0.3
+    min_goal_end_velocity_mult = 0.1
+    smoothing_time_multiplier = 1
 
 class kPoses:
     '''Locations of every pose that has to do with drive_to_a_spot pathfinding'''
@@ -62,6 +64,6 @@ class kPoses:
     right_trench_feed = Pose2d(neutral_close_x, trench_from_edge, Rotation2d())
     
     # Auto Poses
-    right_sweep_1 = Pose2d(7, 4, Rotation2d(pi/2))
+    right_sweep_1 = Pose2d(8, 4, Rotation2d(pi/2))
     right_sweep_2 = Pose2d(6.7, 1.3, Rotation2d(-pi/2))
     

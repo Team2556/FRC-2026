@@ -1,5 +1,5 @@
 from commands.path_commands.pathfind_to_start import PathfindInstruction, PathfindToStart
-from wpimath.geometry import Pose2d
+from wpimath.geometry import Pose2d, Rotation2d
 from util.robot_zone_checker import RobotZoneChecker
 from constants.path.key_poses import kPoses
 from subsystems.drivetrain.drivetrain import SwerveDriveTrain
