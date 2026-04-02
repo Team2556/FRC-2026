@@ -14,6 +14,7 @@ from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
 from subsystems.intake.intake import IntakeSubsystem
+from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 
 from commands.auto_align.alignio import RotationCalculator
 
@@ -42,7 +43,7 @@ class ConditionalAlignAndShoot(commands2.Command):
 
     def __init__(
         self,
-        drivetrain,
+        drivetrain: SwerveDriveTrain,
         shooter: DualMotorShooter,
         transfer_subsystem: TransferSubsystem,
         hood: ShooterHood,
@@ -74,9 +75,12 @@ class ConditionalAlignAndShoot(commands2.Command):
         self._find_target(robot_pose)
 
         rotation_rate = self._calc.calculate_rotation()
-        self._drivetrain.set_align_rotation(
-            rotation_rate * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
-        )
+        if abs(self._calc.current_accuracy < 2):
+            self._drivetrain.clear_align_rotation()
+        else:
+            self._drivetrain.set_align_rotation(
+                rotation_rate * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
+            )
 
         # Update hood angle and shooter RPM from distance interpolation tables
         self._hood.add_auto_hood_measurement(drive_state, self._calc.leading_target)

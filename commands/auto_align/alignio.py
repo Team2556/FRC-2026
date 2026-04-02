@@ -145,6 +145,9 @@ class AlignIntakeToVelocity(commands2.Command):
         self._pid.enableContinuousInput(-180.0, 180.0)
 
         self._nt = NTTable("Auto Align")
+        self._nt.float("k_p", kAutoAlign.ROTATION_PID.p)
+        self._nt.float("k_i", kAutoAlign.ROTATION_PID.i)
+        self._nt.float("k_d", kAutoAlign.ROTATION_PID.d)
 
     def initialize(self) -> None:
         pass

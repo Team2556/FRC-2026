@@ -110,7 +110,7 @@ class RobotContainer:
             ParallelCommandGroup(
                 cmd.runEnd(
                     lambda: self._drivetrain.set_modifiers(
-                        drivetrain.SwerveDriveTrain.SLOW
+                        drivetrain.SwerveDriveTrain.SLOW_ROTATE
                     ),
                     lambda: self._drivetrain.reset_modifiers(),
                 ),
@@ -133,9 +133,10 @@ class RobotContainer:
             )
         )
 
-        self._controller_1.rightBumper().whileTrue(
-            AlignIntakeToVelocity(self._drivetrain)
-        )
+        # Currently not nessary, a little buggy too
+        # self._controller_1.rightBumper().whileTrue(
+        #     AlignIntakeToVelocity(self._drivetrain)
+        # )
 
         # CONTROLLER 2
 
