@@ -48,7 +48,7 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
 
     def next_command(self):
         current_command = self._commands[self._currentCommandIndex]
-        current_command.end(False)
+        current_command.cancel()
         self._currentCommandIndex += 1
         if self._currentCommandIndex < len(self._commands):
             self._commands[self._currentCommandIndex].initialize()
@@ -94,6 +94,7 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
                 ):
                 self.is_during_smoothing = False
                 self.next_command()
+                self.timer.reset()
                 return
 
             current_command_weight = 1 - (self.timer.get() / currentCommand.smoothing_time)

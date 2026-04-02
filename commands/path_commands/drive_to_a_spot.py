@@ -92,14 +92,12 @@ class DriveToASpot(commands2.Command):
         self.next_command_velocity : Pose2d = Pose2d()
         
         self.target_pose = FlipUtil.fieldPose(self.blue_alliance_target_pose)
-        if DriverStation.isAutonomous() and kPath.MIRROR_REVERSE_PATHS:
-            self.target_pose = FlipUtil.mirrorPose(self.target_pose)
         
-        if self.override_speed:
+        if not self.override_speed == None:
             self.max_speed = self.override_speed
-        if self.override_rps:
+        if not self.override_rps == None:
             self.max_rps = self.override_rps
-        if self.override_smoothing_radius:
+        if not self.override_smoothing_radius == None:
             self.smoothing_radius = self.override_smoothing_radius
     
     def update_pose_estimate(self):
@@ -197,6 +195,8 @@ class DriveToASpot(commands2.Command):
         # Rotation stuff
         distance_from_target_rotation = -(self.target_pose.rotation().relativeTo(self.pose_estimate.rotation())).radians()
         self.is_within_rotation = abs(distance_from_target_rotation) < self.end_rotation_tolerance
+        if not self.drivetrain._align_rotation == None: # Extra thing so command ignores rotation check if aligning to shoot
+            self.is_within_rotation = True
         
         return self.is_within_distance and self.is_within_rotation
     
@@ -204,7 +204,7 @@ class DriveToASpot(commands2.Command):
         if not self.is_part_of_sequence:
             self.drivetrain.stop()
         for parallel_command in self.parallel_commands:
-            parallel_command.end(True)
+            parallel_command.cancel()
     
     def get_distance_progress(self):
         self.update_pose_estimate()
@@ -216,7 +216,7 @@ class DriveToASpot(commands2.Command):
     def with_parallel_commands(self, *commands : commands2.Command):
         '''
         If you give DriveToASpot a parallel command with this function, said parallel command 
-        will be scheduled at the same time this command is scheduled (works with multiple parallel commands!s)
+        will be scheduled at the same time this command is scheduled (works with multiple parallel commands!)
         '''
         self.parallel_commands.extend(commands)
         return self

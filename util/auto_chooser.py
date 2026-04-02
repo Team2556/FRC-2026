@@ -38,8 +38,6 @@ class AutoBuilder:
     def make_nt_display(self):
         self.auto_choosers : list[SendableChooser] = []
         self.nt_subtables : list[NTTable] = []
-        
-        self._nt_auto.bool("Reverse Paths", False)
 
         for i in range(self.path_amount):
             self.nt_subtables.append(self._nt_auto.get_subtable(f"Path {i + 1}"))
@@ -83,8 +81,6 @@ class AutoBuilder:
         
         kPath.min_goal_end_velocity_mult = self._nt_path.get("Min Goal End Velocity Mult")
         kPath.smoothing_time_multiplier = self._nt_path.get("Smoothing Time Multiplier")
-        
-        kPath.MIRROR_REVERSE_PATHS = self._nt_auto.get("Reverse Paths")
     
     def get_initial_pose(self):
         return self.initial_pose.getSelected()

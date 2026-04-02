@@ -10,7 +10,6 @@ from util.custom_controller import XboxController
 from subsystems.drivetrain import drivetrain
 
 from constants.field import kField
-from constants.path.key_poses import kPath
 
 class ControllerDrive(commands2.Command):
     def __init__(self, drivetrain: drivetrain.SwerveDriveTrain, controller: XboxController):
@@ -40,8 +39,6 @@ class InitialPose(commands2.Command):
         self.addRequirements(self._drivetrain)
 
     def initialize(self):
-        if kPath.MIRROR_REVERSE_PATHS:
-            self.pose = FlipUtil.mirrorPose(self.pose)
         self._drivetrain.reset_pose(
             FlipUtil.fieldPose(
                 Pose2d(

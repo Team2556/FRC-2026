@@ -31,8 +31,8 @@ from commands.vision import vision_odometry
 from constants.path import custom_path_commands
 from commands.transfer.run_transfer_motors import RunTransferCommand
 from commands.intake.intake_commands import (
-    IntakeCommandManualForward,
-    IntakeCommandManualReverse,
+    IntakePivotForward,
+    IntakePivotReverse,
     IntakeDefaultCommand,
     IntakeRollerForward,
     IntakeRollerBackward,
@@ -156,11 +156,11 @@ class RobotContainer:
         )
 
         self._controller_2.leftBumper().onTrue(
-            IntakeCommandManualReverse(self.intake_subsystem),
+            IntakePivotReverse(self.intake_subsystem),
         )
         
         self._controller_2.rightBumper().onTrue(
-            IntakeCommandManualForward(self.intake_subsystem),
+            IntakePivotForward(self.intake_subsystem),
         )
 
         self._controller_2.povUp().onTrue(
@@ -177,7 +177,7 @@ class RobotContainer:
     def getAutonomousCommand(self):
         # Kinda optional maybe initial stuff
         hood_commands.ResetShooterHood(self.hood_subsystem).schedule()
-        # TODO this second command kinda isn't required get rid of it later
+        IntakePivotForward(self.intake_subsystem).schedule()
         IntakeRollerForward(self.intake_subsystem).schedule()
         
         # Do Auto command stuff
