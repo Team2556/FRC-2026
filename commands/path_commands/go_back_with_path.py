@@ -6,7 +6,7 @@ from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 from commands.path_commands.drive_to_a_spot import DriveToASpot
 from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
 
-from constants.key_poses import kPoses
+from constants.path.key_poses import kPoses
 
 
 class GoBackWithPath(commands2.Command):

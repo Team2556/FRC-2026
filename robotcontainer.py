@@ -5,10 +5,11 @@
 #
 
 import wpilib
+from wpilib import SmartDashboard
 
 from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
-from util.auto_chooser import AutoChooser
+from util.auto_chooser import AutoBuilder
 
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import multi_limelight
@@ -24,11 +25,11 @@ from commands.auto_align import align_with_controller
 from commands.auto_align.alignio import AlignIntakeToVelocity
 from commands.drive import drive_commands
 from commands.vision import vision_odometry
-from commands.path_commands import custom_path_commands
+from constants.path import custom_path_commands
 from commands.transfer.run_transfer_motors import RunTransferCommand
 from commands.intake.intake_commands import (
-    IntakeCommandManualForward,
-    IntakeCommandManualReverse,
+    IntakePivotForward,
+    IntakePivotReverse,
     IntakeDefaultCommand,
     IntakeRollerForward,
     IntakeRollerBackward,
@@ -39,7 +40,7 @@ from commands.shooter import shooter_commands, hood_commands
 from constants.vision import kCamera
 from constants.drive import kDriveConfig
 from constants.led import kLED
-from constants.key_poses import kPoses
+from constants.path.key_poses import kPoses
 
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import multi_limelight
@@ -52,7 +53,7 @@ from subsystems.shooter.dual_shooter import DualMotorShooter
 
 from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
-from util.auto_chooser import AutoChooser
+from util.auto_chooser import AutoBuilder
 from util.robot_zone_checker import RobotZoneChecker
 
 
@@ -80,10 +81,14 @@ class RobotContainer:
             hood_subsystem=self.hood_subsystem,
             # climb_subsyetem=self.climb_subsystem,
         )
-        self.time_manager = SendFMSData()
-        self.auto_chooser = AutoChooser(self.custom_path_commands.make_autos())
-        self.auto_chooser.make_dropdown()
+        
+        self.auto_chooser = AutoBuilder(
+            self.custom_path_commands.get_auto_paths()
+        )
+        SmartDashboard.putData("Update ALL (auto) Values", cmd.runOnce(self.update_auto))
 
+        self.time_manager = SendFMSData()
+        
         self.configureButtonBindings()
 
     def configureButtonBindings(self) -> None:
@@ -162,11 +167,11 @@ class RobotContainer:
         )
 
         self._controller_2.leftBumper().onTrue(
-            IntakeCommandManualReverse(self.intake_subsystem),
+            IntakePivotReverse(self.intake_subsystem),
         )
 
         self._controller_2.rightBumper().onTrue(
-            IntakeCommandManualForward(self.intake_subsystem),
+            IntakePivotForward(self.intake_subsystem),
         )
 
         self._controller_2.povUp().onTrue(
@@ -176,9 +181,19 @@ class RobotContainer:
         self._controller_2.povLeft().whileTrue(
             IntakeRollerBackward(self.intake_subsystem)
         )
+    
+    def update_auto(self):
+        self.auto = self.auto_chooser.choose_auto()
 
     def getAutonomousCommand(self):
+        # Kinda optional maybe initial stuff
         hood_commands.ResetShooterHood(self.hood_subsystem).schedule()
-        # TODO this second command kinda isn't required
+        IntakePivotForward(self.intake_subsystem).schedule()
         IntakeRollerForward(self.intake_subsystem).schedule()
-        return self.auto_chooser.choose_auto()
+        
+        # Do Auto command stuff
+        initial_pose = self.auto_chooser.get_initial_pose()
+        if initial_pose:
+            drive_commands.InitialPose(self._drivetrain, initial_pose).schedule()
+        self.update_auto()
+        return self.auto
