@@ -127,7 +127,7 @@ class CustomPathCommands:
                              ).with_override_speed(kPath.while_shooting_speed),
             ),
             self.shoot_command_builder(3),
-            DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_4),
+            # DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_4),
         ),
         "AAR_spot_shoot" : lambda: SequentialCommandGroup(
             ParallelRaceGroup(

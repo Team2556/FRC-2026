@@ -102,7 +102,6 @@ class IntakeRollerForward(Command):
     def __init__(self, intake_subsystem: IntakeSubsystem):
         super().__init__()
         self.intake_subsystem = intake_subsystem
-        self.addRequirements(intake_subsystem)
 
     def initialize(self):
         pass
@@ -121,7 +120,6 @@ class IntakeRollerBackward(Command):
     def __init__(self, intake_subsystem: IntakeSubsystem):
         super().__init__()
         self.intake_subsystem = intake_subsystem
-        self.addRequirements(intake_subsystem)
 
     def initialize(self):
         pass
@@ -140,7 +138,6 @@ class IntakeRollerStop(Command):
     def __init__(self, intake_subsystem: IntakeSubsystem):
         super().__init__()
         self.intake_subsystem = intake_subsystem
-        self.addRequirements(intake_subsystem)
 
     def initialize(self):
         self.intake_subsystem.stop_roller()

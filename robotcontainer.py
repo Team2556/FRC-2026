@@ -187,7 +187,7 @@ class RobotContainer:
 
     def getAutonomousCommand(self):
         # Kinda optional maybe initial stuff
-        hood_commands.ResetShooterHood(self.hood_subsystem).schedule()
+        # hood_commands.ResetShooterHood(self.hood_subsystem).schedule()
         IntakePivotForward(self.intake_subsystem).schedule()
         IntakeRollerForward(self.intake_subsystem).schedule()
         

@@ -61,7 +61,7 @@ class ConditionalAlignAndShoot(commands2.Command):
 
         # Own transfer and intake.  Drivetrain is influenced via the
         # set_align_rotation() overlay so it stays free for the drive command.
-        self.addRequirements(transfer_subsystem, intake_subsystem)
+        self.addRequirements(transfer_subsystem, intake_subsystem, hood)
 
     def initialize(self) -> None:
         self._calc.initialize()
@@ -76,12 +76,12 @@ class ConditionalAlignAndShoot(commands2.Command):
         self._find_target(robot_pose)
 
         rotation_rate = self._calc.calculate_rotation()
-        if abs(self._calc.current_accuracy < 2):
-            self._drivetrain.clear_align_rotation()
-        else:
-            self._drivetrain.set_align_rotation(
-                rotation_rate * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
-            )
+        # if abs(self._calc.current_accuracy < 2):
+            # self._drivetrain.clear_align_rotation()
+        # else:
+        self._drivetrain.set_align_rotation(
+            rotation_rate * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
+        )
 
         # Update hood angle and shooter RPM from distance interpolation tables
         self._hood.add_auto_hood_measurement(drive_state, self._calc.leading_target)

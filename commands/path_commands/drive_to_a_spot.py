@@ -198,7 +198,6 @@ class DriveToASpot(commands2.Command):
         if not self.drivetrain._align_rotation == None: # Extra thing so command ignores rotation check if aligning to shoot
             self.is_within_rotation = True
         
-        print(distance_from_target_rotation)
         return self.is_within_distance and self.is_within_rotation
     
     def end(self, interrupted: bool):

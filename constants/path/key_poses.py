@@ -13,12 +13,12 @@ class kPath:
     max_translational_acceleration = 8.0
     max_rotational_acceleration = 30.0
     
-    default_path_speed = 1.0
-    auto_path_speed = 1.0
-    intaking_speed = 1.0
+    default_path_speed = 1.5
+    auto_path_speed = 1.5
+    intaking_speed = 0.5
     while_shooting_speed = 1.0
     
-    smoothing_radius = 1.3
+    smoothing_radius = 0.3 # 1.3 with 5.5 speed
     smoothing_radius_wide = 2
     
     min_goal_end_velocity_mult = 0.1
@@ -83,19 +83,20 @@ class kPoses:
     
     right_wide_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
     right_wide_sweep_2 = Pose2d(9, trench_from_edge + 0.3, Rotation2d(pi/2))
-    right_wide_sweep_3 = Pose2d(8.5, 4.0, Rotation2d(pi/2 + 0.1))
-    right_wide_sweep_4 = Pose2d(7.5, 3.0, Rotation2d(2*pi/3))
+    right_wide_sweep_3 = Pose2d(8.4, 4.0, Rotation2d(pi/2 + 0.1))
+    right_wide_sweep_4 = Pose2d(7.6, 3.0, Rotation2d(2*pi/3))
     
     right_close_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
     right_close_sweep_2 = Pose2d(7.5, trench_from_edge + 0.3, Rotation2d(pi/2))
+    right_close_sweep_3 = Pose2d(7, 3.5, Rotation2d(pi/2 + 0.1))
     right_close_sweep_3 = Pose2d(7, 3.7, Rotation2d(pi/2 + 0.1))
-    right_close_sweep_4 = Pose2d(5.9, 3.0, Rotation2d(4*pi/3))
-    right_close_sweep_5 = Pose2d(6, 2.0, Rotation2d(-pi/2))
+    right_close_sweep_4 = Pose2d(6.5, 3.0, Rotation2d(4*pi/3))
+    right_close_sweep_5 = Pose2d(6.5, 2.5, Rotation2d(-pi/2))
     
     right_bump_shoot_1 = Pose2d(6.5, bump_from_edge, Rotation2d(pi))
-    right_bump_shoot_2 = Pose2d(3.0, bump_from_edge, Rotation2d(pi))
-    right_bump_shoot_3 = Pose2d(2.9, trench_from_edge, Rotation2d(pi))
-    right_bump_shoot_4 = Pose2d(3.2, trench_from_edge, Rotation2d(pi))
+    right_bump_shoot_2 = Pose2d(2.5, bump_from_edge, Rotation2d(pi))
+    right_bump_shoot_3 = Pose2d(2.5, trench_from_edge + 0.05, Rotation2d(pi))
+    # right_bump_shoot_4 = Pose2d(3.2, trench_from_edge, Rotation2d(pi))
     
     right_spot_shoot_1 = Pose2d(2.9, trench_from_edge, Rotation2d(pi))
     right_spot_shoot_2 = Pose2d(3.2, trench_from_edge, Rotation2d(pi))
