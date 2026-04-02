@@ -39,15 +39,12 @@ class InitialPose(commands2.Command):
         self.addRequirements(self._drivetrain)
 
     def initialize(self):
-        pass
-
-    def execute(self):
         self._drivetrain.reset_pose(
             FlipUtil.fieldPose(
                 Pose2d(
                     self.pose.X(),
                     self.pose.Y(),
-                    Rotation2d(self.pose.rotation().radians() + pi)
+                    Rotation2d(self.pose.rotation().radians())
                 )
             )
         )

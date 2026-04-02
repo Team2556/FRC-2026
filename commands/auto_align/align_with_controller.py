@@ -10,6 +10,7 @@ from subsystems.shooter.dual_shooter import DualMotorShooter
 from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
+from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 from subsystems.intake.intake import IntakeSubsystem
 
 from commands.auto_align.alignio import RotationCalculator
@@ -39,7 +40,7 @@ class ConditionalAlignAndShoot(commands2.Command):
 
     def __init__(
         self,
-        drivetrain,
+        drivetrain : SwerveDriveTrain,
         shooter: DualMotorShooter,
         transfer_subsystem: TransferSubsystem,
         hood: ShooterHood,
@@ -92,8 +93,13 @@ class ConditionalAlignAndShoot(commands2.Command):
         ):
             self._transfer.activate()
 
-    def isFinished(self) -> bool:
-        return self._drivetrain.should_stop_shooting()
+        if RobotZoneChecker.is_in_opposing_alliance_zone(robot_pose):
+            kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM_FAR
+        else:
+            kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM
+
+    # def isFinished(self) -> bool:
+    #     return self._drivetrain.should_stop_shooting()
 
     def end(self, interrupted: bool) -> None:
         self._drivetrain.clear_align_rotation()
@@ -107,5 +113,5 @@ class ConditionalAlignAndShoot(commands2.Command):
             self._calc.with_target(FlipUtil.fieldPose(kPassSpots.PASS_SPOT_LEFT))
         if RobotZoneChecker.is_in_right_passing_zone(pose):
             self._calc.with_target(FlipUtil.fieldPose(kPassSpots.PASS_SPOT_RIGHT))
-        if RobotZoneChecker.is_in_alliance_zone(pose):
+        if RobotZoneChecker.is_in_hub_shooting_zone(pose):
             self._calc.with_target(FlipUtil.fieldPose(kHub.POS))

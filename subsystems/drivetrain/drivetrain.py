@@ -69,22 +69,28 @@ class SwerveDriveTrain(commands2.Subsystem):
         self.nt.float("Distance to Hub")
         self.nt.float("Align Tuner")
 
-    def drive(self, vx: float, vy: float, omega: float) -> None:
+    def drive(self, vx: float, vy: float, omega: float, with_prioritize_target_rotation = False) -> None:
         """
         Apply pre-computed velocities directly to the swerve hardware.
 
         ``vx`` and ``vy`` are in **m/s** (field-relative); ``omega`` is in
-        **rad/s**.  No modifiers or overrides are applied — this is the
-        interface for autonomous and path-following commands that already
-        produce real-unit outputs.
+        **rad/s**. Optional parameter for an override rotation for aligning
+        to a target during a path.
 
         For human-driven motion use ``drive_from_controller()`` instead.
         """
+        
+        actual_omega = (
+            self._align_rotation
+            if self._align_rotation is not None and with_prioritize_target_rotation
+            else omega
+        )
+        
         self._drivetrain.set_control(
             self._drive
             .with_velocity_x(vx)
             .with_velocity_y(vy)
-            .with_rotational_rate(omega)
+            .with_rotational_rate(actual_omega)
         )
 
     def drive_from_controller(self, controller: XboxController) -> None:
