@@ -1,5 +1,8 @@
 import wpilib
+
+
 import commands2
+from commands2 import InterruptionBehavior
 
 from wpimath.geometry import Pose2d
 
@@ -12,6 +15,7 @@ from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
 from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 from subsystems.intake.intake import IntakeSubsystem
+from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 
 from commands.auto_align.alignio import RotationCalculator
 
@@ -40,7 +44,7 @@ class ConditionalAlignAndShoot(commands2.Command):
 
     def __init__(
         self,
-        drivetrain : SwerveDriveTrain,
+        drivetrain: SwerveDriveTrain,
         shooter: DualMotorShooter,
         transfer_subsystem: TransferSubsystem,
         hood: ShooterHood,
@@ -72,9 +76,12 @@ class ConditionalAlignAndShoot(commands2.Command):
         self._find_target(robot_pose)
 
         rotation_rate = self._calc.calculate_rotation()
-        self._drivetrain.set_align_rotation(
-            rotation_rate * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
-        )
+        if abs(self._calc.current_accuracy < 2):
+            self._drivetrain.clear_align_rotation()
+        else:
+            self._drivetrain.set_align_rotation(
+                rotation_rate * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
+            )
 
         # Update hood angle and shooter RPM from distance interpolation tables
         self._hood.add_auto_hood_measurement(drive_state, self._calc.leading_target)
@@ -106,6 +113,9 @@ class ConditionalAlignAndShoot(commands2.Command):
         self._shooter.clear_auto_target()
         self._intake.stop_roller()
         self._transfer.stop()
+    
+    def getInterruptionBehavior(self):
+        return InterruptionBehavior.kCancelIncoming
 
     def _find_target(self, pose: Pose2d) -> None:
         """Update the calculator target based on the robot's current zone."""

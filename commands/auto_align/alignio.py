@@ -1,5 +1,7 @@
 import math
 
+import commands2
+
 from wpimath.geometry import Pose2d, Translation2d
 from wpimath.controller import PIDController
 from wpimath.units import degrees, meters
@@ -12,6 +14,7 @@ from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 
 from constants.drive import kAutoAlign
 from constants.shooter import kShooterConfig
+from constants.intake import kIntakePivot
 
 
 class RotationCalculator:
@@ -124,3 +127,58 @@ class RotationCalculator:
     def _estimate_flight_time(distance: meters) -> float:
         # Flight-time lead compensation is not yet tuned; returns 0 (no lead).
         return 1
+
+
+class AlignIntakeToVelocity(commands2.Command):
+    _MIN_SPEED = 0.1
+    _INTAKE_OFFSET = 0.0 if kIntakePivot.INTAKE_DIRECTION >= 0 else 180.0
+
+    def __init__(self, drivetrain: SwerveDriveTrain):
+        super().__init__()
+        self._drivetrain = drivetrain
+
+        self._pid = PIDController(
+            kAutoAlign.ROTATION_PID.p,
+            kAutoAlign.ROTATION_PID.i,
+            kAutoAlign.ROTATION_PID.d,
+        )
+        self._pid.enableContinuousInput(-180.0, 180.0)
+
+        self._nt = NTTable("Auto Align")
+        self._nt.float("k_p", kAutoAlign.ROTATION_PID.p)
+        self._nt.float("k_i", kAutoAlign.ROTATION_PID.i)
+        self._nt.float("k_d", kAutoAlign.ROTATION_PID.d)
+
+    def initialize(self) -> None:
+        pass
+
+    def execute(self) -> None:
+        self._pid.setP(self._nt.get("k_p"))
+        self._pid.setI(self._nt.get("k_i"))
+        self._pid.setD(self._nt.get("k_d"))
+
+        drive_state = self._drivetrain.get_state()
+
+        robot_vel = drive_state.velocity.translation()
+        field_vel = robot_vel.rotateBy(drive_state.pose.rotation())
+
+        speed = math.hypot(field_vel.x, field_vel.y)
+        if speed < self._MIN_SPEED:
+            self._drivetrain.clear_align_rotation()
+            return
+
+        travel_angle = math.degrees(math.atan2(field_vel.y, field_vel.x))
+        target_heading = travel_angle + self._INTAKE_OFFSET
+
+        rotation_rate = math_helpers.clamp(
+            self._pid.calculate(drive_state.heading, target_heading), -1.0, 1.0
+        )
+        self._drivetrain.set_align_rotation(
+            rotation_rate * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
+        )
+
+    def isFinished(self) -> bool:
+        return False
+
+    def end(self, interrupted: bool) -> None:
+        self._drivetrain.clear_align_rotation()

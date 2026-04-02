@@ -24,24 +24,14 @@ from .driveio import CustomSwerve
 
 @dataclass
 class DriveModifiers:
-    """
-    Active multipliers applied on top of the base speed constants during
-    controller-driven motion.
-
-    To add a new modifier dimension (e.g. turbo mode, strafe lock), add a
-    new field here and reference it in ``drive_from_controller()`` — no
-    existing method signatures change.
-
-    Activate a preset with ``drivetrain.set_modifiers(SwerveDriveTrain.SLOW)``.
-    Return to defaults with ``drivetrain.reset_modifiers()``.
-    """
     speed: float = 1.0
     rotation: float = 1.0
 
 
 class SwerveDriveTrain(commands2.Subsystem):
     NORMAL = DriveModifiers(speed=1.0, rotation=1.0)
-    SLOW   = DriveModifiers(speed=kDriveConfig.SLOW_SPEED_MULT, rotation=1.0)
+    SLOW   = DriveModifiers(speed=kDriveConfig.SLOW_SPEED_MULT, rotation=0.75)
+    SLOW_ROTATE = DriveModifiers(speed=kDriveConfig.SLOW_SPEED_MULT, rotation=0.2)
 
     def __init__(self):
         super().__init__()
