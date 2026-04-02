@@ -1,16 +1,19 @@
 from enum import Enum
 
+import numpy as np
+
 import wpilib
 import commands2
 from phoenix6.hardware import TalonFX
 from phoenix6.controls import Follower, VelocityVoltage, NeutralOut
 from phoenix6 import signals
+from wpimath.geometry import Pose2d
 
 from util.nt_util import NTTable
 from util.editable_pid import EditablePID
 
 from constants.canbus import kCANId
-from constants.shooter import kShooterMotor
+from constants.shooter import kShooterMotor, kShooterData
 
 
 class ShooterState(Enum):
@@ -41,19 +44,14 @@ class DualMotorShooter(commands2.Subsystem):
             )
         )
 
-        self.idle_request = VelocityVoltage(
-            velocity=kShooterMotor.IDLE_RPM / 60, slot=0
-        )
         self.coast_request = NeutralOut()
-        self.charge_request = VelocityVoltage(
-            velocity=kShooterMotor.CURRENT_TARGET_RPM / 60, slot=1
-        )
-        self.shoot_request = VelocityVoltage(
-            velocity=kShooterMotor.CURRENT_TARGET_RPM / 60, slot=2
-        ).with_feed_forward(0.5)
+        # Single slot 0 request used for idle, charging, and shooting.
+        # One PID set covers all RPM targets.
+        self.velocity_request = VelocityVoltage(velocity=0, slot=0)
 
         self._state: ShooterState = ShooterState.IDLE
         self.is_charged = False
+        self._auto_rpm: float | None = None  # set by distance interpolation; None = use NT
 
         self.nt = NTTable("Shooter")
         self.nt.string("State")
@@ -74,8 +72,6 @@ class DualMotorShooter(commands2.Subsystem):
             self._top_motor,
             self.cfg,
             use_slot0=True,
-            use_slot1=True,
-            use_slot2=True,
         )
         
         self.shoot_far = False
@@ -91,41 +87,67 @@ class DualMotorShooter(commands2.Subsystem):
     def toggle_shoot_far(self, shoot_far):
         self.shoot_far = shoot_far
 
+    # ------------------------------------------------------------------
+    # Distance-based RPM interpolation
+    # ------------------------------------------------------------------
+
+    def add_auto_rpm_measurement(self, robot_pose: Pose2d, target_pose: Pose2d) -> None:
+        """Interpolate and store the target RPM for the current shot distance.
+
+        Call every execute() loop while auto-aiming.  Clears automatically
+        when ``clear_auto_target()`` is called at command end.
+        """
+        distance = robot_pose.translation().distance(target_pose.translation())
+        self._auto_rpm = self.get_rpm_by_distance(distance)
+
+    def clear_auto_target(self) -> None:
+        """Revert to NT-tunable target RPM (call from command end())."""
+        self._auto_rpm = None
+
+    @staticmethod
+    def get_rpm_by_distance(distance: float) -> float:
+        """Return the interpolated shooter RPM for a given distance (meters)."""
+        distances, rpms = zip(*kShooterData.SHOT_RPMS)
+        return float(np.interp(distance, distances, rpms))
+
+    # ------------------------------------------------------------------
+
     def periodic(self):
         self.editable_PID.periodic()
 
+        # Pull NT-tunable scalars every loop
+        kShooterMotor.IDLE_RPM = self.nt_sub.get("Idle RPM")
+        kShooterMotor.REACH_TARGET_VELOCITY_ERROR = self.nt_sub.get("Reach Target Velocity Error")
+
+        # Active target: distance-interpolated auto RPM takes priority over NT
+        if self._auto_rpm is not None:
+            active_target = self._auto_rpm
+        else:
+            kShooterMotor.CURRENT_TARGET_RPM = self.nt_sub.get("Target RPM")
+            active_target = kShooterMotor.CURRENT_TARGET_RPM
+
         motor_velocity_rpm = self._top_motor.get_velocity().value * 60
+
         if self._state == ShooterState.IDLE:
             self._top_motor.set_control(
-                self.idle_request.with_velocity(kShooterMotor.IDLE_RPM / 60)
+                self.velocity_request.with_velocity(kShooterMotor.IDLE_RPM / 60)
             )
-
             self.nt.set("State", "IDLE")
 
         elif self._state == ShooterState.ENABLED and not self.is_charged:
-            self._top_motor.set_control(
-                self.charge_request.with_velocity((kShooterMotor.CURRENT_TARGET_RPM + kShooterMotor.TUNED_RPM) / 60)
-            )
+            target_rps = (active_target + kShooterMotor.TUNED_RPM) / 60
+            self._top_motor.set_control(self.velocity_request.with_velocity(target_rps))
             self.is_charged = (
-                abs(motor_velocity_rpm - (kShooterMotor.CURRENT_TARGET_RPM + kShooterMotor.TUNED_RPM))
+                abs(motor_velocity_rpm - (active_target + kShooterMotor.TUNED_RPM))
                 < kShooterMotor.REACH_TARGET_VELOCITY_ERROR
             )
-
             self.nt.set("State", "CHARGING")
 
         elif self._state == ShooterState.ENABLED and self.is_charged:
-            self._top_motor.set_control(
-                self.shoot_request.with_velocity((kShooterMotor.CURRENT_TARGET_RPM + kShooterMotor.TUNED_RPM) / 60)
-            )
-
+            target_rps = (active_target + kShooterMotor.TUNED_RPM) / 60
+            self._top_motor.set_control(self.velocity_request.with_velocity(target_rps))
             self.nt.set("State", "CHARGED")
 
         self.nt.set("Motor Charged", self.is_charged)
         self.nt_sub.set("RPM", motor_velocity_rpm)
-
-        kShooterMotor.IDLE_RPM = self.nt_sub.get("Idle RPM")
-        kShooterMotor.TARGET_RPM = self.nt_sub.get("Target RPM")
-        self.nt_sub.set("Current Target RPM", kShooterMotor.CURRENT_TARGET_RPM + kShooterMotor.TUNED_RPM)
-        kShooterMotor.REACH_TARGET_VELOCITY_ERROR = self.nt_sub.get(
-            "Reach Target Velocity Error"
-        )
+        self.nt_sub.set("Current Target RPM", active_target + kShooterMotor.TUNED_RPM)

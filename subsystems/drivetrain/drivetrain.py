@@ -7,8 +7,6 @@ from wpimath.geometry import Transform2d, Rotation2d
 
 from phoenix6 import swerve
 
-from pykit.logger import Logger
-
 from util.custom_controller import XboxController
 from util.robot_zone_checker import RobotZoneChecker
 from util.nt_util import NTTable
@@ -210,18 +208,6 @@ class SwerveDriveTrain(commands2.Subsystem):
     def periodic(self) -> None:
         state = self.get_state()
         pose  = state.pose
-
-        Logger.recordOutput("Drive/Pose",              pose)
-        Logger.recordOutput("Drive/HeadingDeg",        state.heading)
-        Logger.recordOutput("Drive/SpeedX_mps",        state.velocity.translation().x)
-        Logger.recordOutput("Drive/SpeedY_mps",        state.velocity.translation().y)
-        Logger.recordOutput("Drive/OmegaRadPerSec",    state.velocity.rotation().radians())
-        Logger.recordOutput("Drive/AlignActive",       self._align_rotation is not None)
-        Logger.recordOutput("Drive/AlignRotationRate", self._align_rotation or 0.0)
-
-        # Note: SwerveModuleState list logging removed — PyKit does not yet
-        # support tuple[SwerveModuleState] serialization and would throw an
-        # exception every loop, cancelling the default drive command.
 
         self._field.setRobotPose(pose)
 
