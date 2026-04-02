@@ -18,7 +18,7 @@ from commands.auto_align.alignio import RotationCalculator
 from constants.field import kHub, kPassSpots
 from constants.drive import kAutoAlign
 from constants.intake import kIntakeRoller
-
+from constants.shooter import kShooterMotor
 
 class ConditionalAlignAndShoot(commands2.Command):
     """

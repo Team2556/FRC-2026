@@ -64,11 +64,10 @@ class CustomPathCommands:
         '''Makes a command that sits still and shoots for shoot_time seconds'''
         return ParallelRaceGroup(
             DriveToASpot(self.drivetrain, target_pose = Pose2d()
-                            ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem)
+                            ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
                             ).with_override_speed(0
                             ).with_override_rps(0
                             ).with_end_tolerance(0),
-            IntakeRollerForward(self.intake_subsystem),
             WaitCommand(shoot_time)
         )
         
@@ -124,17 +123,17 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_1),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_2),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_3
-                             ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem)
+                             ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
                              ).with_override_speed(kPath.while_shooting_speed),
             ),
             self.shoot_command_builder(3),
-            DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_4),
+            DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_4),
         ),
         "AAR_spot_shoot" : lambda: SequentialCommandGroup(
             ParallelRaceGroup(
                 DriveToASpotSequence(
                     DriveToASpot(self.drivetrain, target_pose = kPoses.right_spot_shoot_1
-                                ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem)
+                                ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
                                 ).with_override_speed(kPath.while_shooting_speed),
                 ),
                 self.shoot_command_builder(20),

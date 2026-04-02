@@ -23,7 +23,7 @@ class DriveToASpot(commands2.Command):
         max_speed : float = 1.0, 
         max_rps : float = 0.75, 
         end_tolerance : float = 0.2,
-        end_rotation_tolerance : float = 0.1,
+        end_rotation_tolerance : float = 0.2,
         goal_end_velocity : float = 0.0,
     ) -> None:
         """
@@ -198,6 +198,7 @@ class DriveToASpot(commands2.Command):
         if not self.drivetrain._align_rotation == None: # Extra thing so command ignores rotation check if aligning to shoot
             self.is_within_rotation = True
         
+        print(distance_from_target_rotation)
         return self.is_within_distance and self.is_within_rotation
     
     def end(self, interrupted: bool):
