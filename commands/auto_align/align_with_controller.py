@@ -9,6 +9,7 @@ from subsystems.shooter.dual_shooter import DualMotorShooter
 from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
+from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 
 from commands.auto_align.alignio import RotationCalculator
 
@@ -32,7 +33,7 @@ class ConditionalAlignAndShoot(commands2.Command):
 
     def __init__(
         self,
-        drivetrain,
+        drivetrain : SwerveDriveTrain,
         shooter: DualMotorShooter,
         transfer_subsystem: TransferSubsystem,
         hood: ShooterHood,
@@ -82,10 +83,22 @@ class ConditionalAlignAndShoot(commands2.Command):
         else:
             kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM
 
-    def isFinished(self) -> bool:
-        return self._drivetrain.should_stop_shooting()
+    # def isFinished(self) -> bool:
+    #     return self._drivetrain.should_stop_shooting()
 
     def end(self, interrupted: bool) -> None:
+        print("-----------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------")
         self._drivetrain.clear_align_rotation()
         self._transfer.stop()
 

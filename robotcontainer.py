@@ -5,6 +5,7 @@
 #
 
 import wpilib
+from wpilib import SmartDashboard
 
 from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
@@ -85,10 +86,11 @@ class RobotContainer:
             hood_subsystem=self.hood_subsystem,
             # climb_subsyetem=self.climb_subsystem,
         )
+        
         self.auto_chooser = AutoBuilder(
-            self.custom_path_commands.get_teleop_paths(), 
             self.custom_path_commands.get_auto_paths()
         )
+        SmartDashboard.putData("Update ALL (auto) Values", cmd.runOnce(self.update_auto))
 
         self.time_manager = SendFMSData()
         
@@ -168,9 +170,19 @@ class RobotContainer:
         self._controller_2.povLeft().whileTrue(
             IntakeRollerBackward(self.intake_subsystem)
         )
+    
+    def update_auto(self):
+        self.auto = self.auto_chooser.choose_auto()
 
     def getAutonomousCommand(self):
+        # Kinda optional maybe initial stuff
         hood_commands.ResetShooterHood(self.hood_subsystem).schedule()
         # TODO this second command kinda isn't required get rid of it later
         IntakeRollerForward(self.intake_subsystem).schedule()
-        return self.auto_chooser.choose_auto()
+        
+        # Do Auto command stuff
+        initial_pose = self.auto_chooser.get_initial_pose()
+        if initial_pose:
+            drive_commands.InitialPose(self._drivetrain, initial_pose).schedule()
+        self.update_auto()
+        return self.auto

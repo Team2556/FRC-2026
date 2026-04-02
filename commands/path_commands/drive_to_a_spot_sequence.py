@@ -2,7 +2,6 @@ import commands2
 from wpimath.geometry import Pose2d, Rotation2d
 from wpilib import Timer, DriverStation
 from commands.path_commands.drive_to_a_spot import DriveToASpot
-from commands.path_commands.pathfind_to_start import PathfindToStart
 from constants.path.key_poses import kPath
 from copy import deepcopy
 from math import pi, cos
@@ -11,7 +10,6 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
     def __init__(
         self,
         *commands: DriveToASpot,
-        pathfind_to_start : PathfindToStart = None,
     ) -> None:
         """Sequential command group specialized for DriveToASpot commands that has cool pose smoothing and starting spot logic"""
 
@@ -19,17 +17,11 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         # throw in an ideal starting spot
         # with an "optional commands" that can be used and are stored to be used with specific ideal starting spots
 
-        self.pathfind_to_start = pathfind_to_start
         self.is_during_smoothing = False
         self.timer = Timer()
 
         super().__init__(*commands)
         self._commands: list[DriveToASpot]
-        self.default_commands = commands
-        
-        for command in self.default_commands:
-            if not command == self.default_commands[-1]:
-                command = command.with_sequence_pose_values()
 
     def initialize(self):
         self.timer.stop()
@@ -40,11 +32,6 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
             max_speed = kPath.auto_path_speed
         else:
             max_speed = kPath.default_path_speed
-
-        if self.pathfind_to_start:
-            self._commands = self.pathfind_to_start.generate_instructions() + list(self.default_commands)
-        else:
-            self._commands = self.default_commands
         
         for command in self._commands:
             command.max_speed = max_speed
@@ -134,14 +121,3 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         robot_pose = command.drivetrain.get_state().pose
         target_pose = command.target_pose
         return robot_pose.translation().distance(target_pose.translation()) < distance
-    
-    def reset_variables(self):
-        # Recalculates all variables assuming there's new constants
-        for drive_command in self._commands:
-            drive_command.reset_variables()
-            drive_command.with_sequence_pose_values()
-        
-        # Calculate smoothing times after everything
-        
-        # TODO auto calculate lots of auto constants in a correct AND optimal way
-        # kPath.smoothing_time = kPath.smoothing_radius * something

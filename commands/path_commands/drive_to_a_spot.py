@@ -9,6 +9,7 @@ from wpilib import DriverStation
 
 from util.flip_util import FlipUtil
 from util.math_helpers import clamp
+from util.nt_util import NTTable
 
 from subsystems.drivetrain import drivetrain
 
@@ -21,7 +22,7 @@ class DriveToASpot(commands2.Command):
         target_pose : Pose2d = Pose2d(),
         max_speed : float = 1.0, 
         max_rps : float = 0.75, 
-        end_tolerance : float = 0.1,
+        end_tolerance : float = 0.2,
         end_rotation_tolerance : float = 0.1,
         goal_end_velocity : float = 0.0,
     ) -> None:
@@ -69,7 +70,10 @@ class DriveToASpot(commands2.Command):
         self.override_rps : float | None = None
         self.override_smoothing_radius : float | None = None
         
-        self.parallel_commands = []
+        self.parallel_commands : list[commands2.Command] = []
+        
+        self.is_part_of_sequence = False
+        self._nt = NTTable("Autonomous")
         
         self.reset_variables()
         
@@ -88,6 +92,15 @@ class DriveToASpot(commands2.Command):
         self.next_command_velocity : Pose2d = Pose2d()
         
         self.target_pose = FlipUtil.fieldPose(self.blue_alliance_target_pose)
+        if DriverStation.isAutonomous() and kPath.MIRROR_REVERSE_PATHS:
+            self.target_pose = FlipUtil.mirrorPose(self.target_pose)
+        
+        if self.override_speed:
+            self.max_speed = self.override_speed
+        if self.override_rps:
+            self.max_rps = self.override_rps
+        if self.override_smoothing_radius:
+            self.smoothing_radius = self.override_smoothing_radius
     
     def update_pose_estimate(self):
         self.pose_estimate = self.drivetrain.get_state().pose
@@ -188,7 +201,10 @@ class DriveToASpot(commands2.Command):
         return self.is_within_distance and self.is_within_rotation
     
     def end(self, interrupted: bool):
-        self.drivetrain.stop()
+        if not self.is_part_of_sequence:
+            self.drivetrain.stop()
+        for parallel_command in self.parallel_commands:
+            parallel_command.end(True)
     
     def get_distance_progress(self):
         self.update_pose_estimate()
@@ -225,15 +241,10 @@ class DriveToASpot(commands2.Command):
         return self
 
     def with_sequence_pose_values(self):
+        self.is_part_of_sequence = True
+        
         self.end_tolerance = 0.0
         self.end_rotation_tolerance = 0.0
-
-        if self.override_speed:
-            self.max_speed = self.override_speed
-        if self.override_rps:
-            self.max_rps = self.override_rps
-        if self.override_smoothing_radius:
-            self.smoothing_radius = self.override_smoothing_radius
         
         # Shoutout to third kinematic equation
         self.slow_distance = abs(self.max_speed ** 2) / (kPath.max_translational_acceleration * 2)

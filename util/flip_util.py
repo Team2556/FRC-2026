@@ -57,3 +57,18 @@ class FlipUtil:
         if FlipUtil.shouldFlip():
             return rotation - Rotation2d(pi)
         return rotation
+    
+    @staticmethod
+    def mirrorPose(pose: Pose2d) -> Pose2d:
+        """
+        Mirror a Pose2d
+        (with the line of reflection at y = kField.WIDTH / 2 and the Rotation2d changed like it would in a mirror)
+        
+        :param pose: The Pose2d to mirror
+        :return: The mirrored Pose2d
+        """
+        return Pose2d(
+            pose.X(),
+            kField.WIDTH - pose.Y(),
+            pose.rotation() * -1
+        )

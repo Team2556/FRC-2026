@@ -23,6 +23,9 @@ class kPath:
     
     min_goal_end_velocity_mult = 0.1
     smoothing_time_multiplier = 1
+    
+    # Global variable thing for mirroring paths
+    MIRROR_REVERSE_PATHS = False
 
 class kPoses:
     '''Locations of every pose that has to do with drive_to_a_spot pathfinding'''
@@ -38,6 +41,14 @@ class kPoses:
     neutral_close_x = 7.35
     neutral_far_x = 10.3
     opposing_x = 13.6
+
+    initial_poses = {
+        "_none" : None,
+        "left_bump" : Pose2d(3.5, field_height - trench_from_edge, Rotation2d()),
+        "right_bump" : Pose2d(3.5, trench_from_edge, Rotation2d()),
+        "left_trench" : Pose2d(4, field_height - trench_from_edge, Rotation2d(pi)),
+        "right_trench" : Pose2d(4, trench_from_edge, Rotation2d(pi)),
+    }
     
     # General poses
     alliance_left_trench = Pose2d(alliance_x, field_height - trench_from_edge, Rotation2d(pi))
@@ -64,6 +75,10 @@ class kPoses:
     right_trench_feed = Pose2d(neutral_close_x, trench_from_edge, Rotation2d())
     
     # Auto Poses
-    right_sweep_1 = Pose2d(8, 4, Rotation2d(pi/2))
-    right_sweep_2 = Pose2d(6.7, 1.3, Rotation2d(-pi/2))
+    right_wide_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
+    right_wide_sweep_2 = Pose2d(9, trench_from_edge + 0.3, Rotation2d(pi/2))
+    right_wide_sweep_3 = Pose2d(8.6, 3.0, Rotation2d(pi/2))
+    right_wide_sweep_4 = Pose2d(6.5, bump_from_edge, Rotation2d(pi))
+    right_wide_sweep_5 = Pose2d(3.0, bump_from_edge, Rotation2d(pi))
+    right_wide_sweep_6 = Pose2d(2.9, trench_from_edge, Rotation2d(pi))
     

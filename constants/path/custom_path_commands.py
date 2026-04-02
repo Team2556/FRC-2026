@@ -1,6 +1,6 @@
 from math import pi
 
-from commands2 import cmd, ConditionalCommand, WaitCommand, SequentialCommandGroup, ParallelRaceGroup
+from commands2 import cmd, ConditionalCommand, WaitCommand, SequentialCommandGroup, ParallelRaceGroup, InstantCommand
 
 from wpimath.geometry import Pose2d, Rotation2d
 
@@ -23,7 +23,6 @@ from commands.intake.intake_commands import IntakeCommandManualForwardAuto, Inta
 from commands.shooter.shooter_commands import EnableShooter, DisableShooter
 
 from constants.path.key_poses import kPoses, kPath
-from constants.path.drive_to_start_instructions import PathfindToStartBuilder
 from constants.field import kHub
 
 
@@ -60,14 +59,22 @@ class CustomPathCommands:
         
     def make_auto_paths(self):
         self.auto_paths = {
-        "right_half_sweep" : SequentialCommandGroup(
-            InitialPose(self.drivetrain, Pose2d(1, 7, Rotation2d())),
+        "_none" : lambda: InstantCommand(),
+        "AA_right_wide_sweep" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_sweep_1),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_sweep_2),
-                pathfind_to_start = PathfindToStartBuilder.neutral_thorugh_right_trench(self.drivetrain),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.right_wide_sweep_1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.right_wide_sweep_2
+                             ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.right_wide_sweep_3
+                             ).with_override_speed(kPath.intaking_speed),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.right_wide_sweep_4),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.right_wide_sweep_5),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.right_wide_sweep_6
+                             ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem)
+                             ).with_override_speed(kPath.while_shooting_speed),
             ),
-        )
+            WaitCommand(3),
+        ),
         }
         
     def make_teleop_paths(self):
