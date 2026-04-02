@@ -1,5 +1,8 @@
 import wpilib
+
+
 import commands2
+from commands2 import InterruptionBehavior
 
 from wpimath.geometry import Pose2d
 
@@ -100,6 +103,9 @@ class ConditionalAlignAndShoot(commands2.Command):
         self._shooter.clear_auto_target()
         self._intake.stop_roller()
         self._transfer.stop()
+    
+    def getInterruptionBehavior(self):
+        return InterruptionBehavior.kCancelIncoming
 
     def _find_target(self, pose: Pose2d) -> None:
         """Update the calculator target based on the robot's current zone."""

@@ -17,10 +17,11 @@ from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
 from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
 from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.shooter.dual_shooter import DualMotorShooter
-from commands2 import ParallelCommandGroup, cmd, InstantCommand
+from commands2 import ParallelCommandGroup, cmd, InstantCommand, InterruptionBehavior
 from commands2.button import Trigger
 
 from commands.auto_align import align_with_controller
+from commands.auto_align.alignio import AlignIntakeToVelocity
 from commands.drive import drive_commands
 from commands.vision import vision_odometry
 from commands.path_commands import custom_path_commands
@@ -120,8 +121,8 @@ class RobotContainer:
                     self.hood_subsystem,
                     self.intake_subsystem,
                 ),
-            )
-        )
+            ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        ).debounce(0.2)
 
         self._controller_1.leftTrigger().whileTrue(
             cmd.runEnd(
@@ -130,6 +131,10 @@ class RobotContainer:
                 ),
                 lambda: self._drivetrain.reset_modifiers(),
             )
+        )
+
+        self._controller_1.rightBumper().whileTrue(
+            AlignIntakeToVelocity(self._drivetrain)
         )
 
         # CONTROLLER 2
