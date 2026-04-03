@@ -34,6 +34,14 @@ class Telemetry:
         self._field_pub = self._table.getDoubleArrayTopic("robotPose").publish()
         self._field_type_pub = self._table.getStringTopic(".type").publish()
 
+        # Gate SignalLogger writes behind an NT toggle (default OFF) to prevent loop overruns.
+        # telemeterize() runs at 250 Hz from the odometry thread — SignalLogger writes at that
+        # rate cause measurable latency. Enable only when actively capturing a log.
+        self._signal_logger_enabled = (
+            self._inst.getTable("Settings").getBooleanTopic("SignalLogger Enabled").getEntry(False)
+        )
+        self._signal_logger_enabled.set(False)
+
         # Mechanisms to represent the swerve module states
         self._module_mechanisms: list[Mechanism2d] = [
             Mechanism2d(1, 1),
@@ -95,21 +103,23 @@ class Telemetry:
         self._drive_timestamp.set(state.timestamp)
         self._drive_odometry_frequency.set(1.0 / state.odometry_period)
 
-        # Also write to log file
-        SignalLogger.write_struct("DriveState/Pose", Pose2d, state.pose)
-        SignalLogger.write_struct("DriveState/Speeds", ChassisSpeeds, state.speeds)
-        SignalLogger.write_struct_array(
-            "DriveState/ModuleStates", SwerveModuleState, state.module_states
-        )
-        SignalLogger.write_struct_array(
-            "DriveState/ModuleTargets", SwerveModuleState, state.module_targets
-        )
-        SignalLogger.write_struct_array(
-            "DriveState/ModulePositions", SwerveModulePosition, state.module_positions
-        )
-        SignalLogger.write_double(
-            "DriveState/OdometryPeriod", state.odometry_period, "seconds"
-        )
+        # SignalLogger writes are gated to prevent loop overruns at 250 Hz.
+        # Enable via Settings/SignalLogger Enabled in NetworkTables when capturing logs.
+        if self._signal_logger_enabled.get(False):
+            SignalLogger.write_struct("DriveState/Pose", Pose2d, state.pose)
+            SignalLogger.write_struct("DriveState/Speeds", ChassisSpeeds, state.speeds)
+            SignalLogger.write_struct_array(
+                "DriveState/ModuleStates", SwerveModuleState, state.module_states
+            )
+            SignalLogger.write_struct_array(
+                "DriveState/ModuleTargets", SwerveModuleState, state.module_targets
+            )
+            SignalLogger.write_struct_array(
+                "DriveState/ModulePositions", SwerveModulePosition, state.module_positions
+            )
+            SignalLogger.write_double(
+                "DriveState/OdometryPeriod", state.odometry_period, "seconds"
+            )
 
         # Telemeterize the pose to a Field2d
         self._field_type_pub.set("Field2d")

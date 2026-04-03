@@ -12,6 +12,7 @@ import commands2
 import phoenix6
 import phoenix6.unmanaged
 from phoenix6.signal_logger import SignalLogger
+from ntcore import NetworkTableInstance
 
 from robotcontainer import RobotContainer
 
@@ -40,9 +41,22 @@ class Gravedigger(commands2.TimedCommandRobot):
         self.container = RobotContainer()
         wpilib.CameraServer.launch()
 
+        nt = NetworkTableInstance.getDefault().getTable("Timing")
+        self._loop_time_pub = nt.getDoubleTopic("Loop Time (ms)").publish()
+        self._overrun_count_pub = nt.getDoubleTopic("Overrun Count").publish()
+        self._overrun_count = 0
+        self._loop_timer = wpilib.Timer()
+        self._loop_timer.start()
+
     def robotPeriodic(self) -> None:
+        start = self._loop_timer.get()
         self.container.auto_chooser.update()
         commands2.CommandScheduler.getInstance().run()
+        elapsed_ms = (self._loop_timer.get() - start) * 1000.0
+        self._loop_time_pub.set(elapsed_ms)
+        if elapsed_ms > 20.0:
+            self._overrun_count += 1
+            self._overrun_count_pub.set(self._overrun_count)
 
     def disabledInit(self) -> None:
         pass

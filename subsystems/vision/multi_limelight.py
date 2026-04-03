@@ -104,7 +104,7 @@ class Vision(commands2.Subsystem):
 
         for camera in self._cameras:
             if use_mt2:
-                LimelightHelpers.set_robot_orientation(
+                LimelightHelpers.set_robot_orientation_no_flush(
                     camera, heading_deg, yaw_rate_dps, 0, 0, 0, 0
                 )
                 result = LimelightHelpers.get_botpose_estimate_wpiblue_megatag2(camera)
