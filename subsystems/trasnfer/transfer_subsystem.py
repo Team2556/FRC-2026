@@ -4,6 +4,7 @@ import phoenix6
 from phoenix6.controls import VelocityVoltage, NeutralOut
 from phoenix6.hardware import TalonFX
 
+from util.config_util import apply_config
 from util.editable_pid import EditablePID
 from util.nt_util import NTTable
 
@@ -17,8 +18,8 @@ class TransferSubsystem(Subsystem):
         self.spindex_motor = TalonFX(kCANId.hopper.SPINDEXER, "rio")
         self.up_transfer_motor = TalonFX(kCANId.hopper.TRASNFER, "rio")
 
-        self.spindex_motor.configurator.apply(kSpindexer._CONFIG)
-        self.up_transfer_motor.configurator.apply(kTransfer._CONFIG)
+        apply_config(self.spindex_motor,      kSpindexer._CONFIG, "Spindexer")
+        apply_config(self.up_transfer_motor,  kTransfer._CONFIG,  "Up Transfer")
 
         self.spindex_motor.setNeutralMode(phoenix6.signals.NeutralModeValue.COAST)
         self.up_transfer_motor.setNeutralMode(phoenix6.signals.NeutralModeValue.BRAKE)

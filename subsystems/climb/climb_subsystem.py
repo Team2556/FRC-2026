@@ -5,6 +5,7 @@ import phoenix6
 from phoenix6 import controls
 from phoenix6.hardware import TalonFX
 
+from util.config_util import apply_config
 from util.editable_pid import EditablePID
 from util.nt_util import NTTable
 
@@ -18,7 +19,7 @@ class ClimbSubsystem(commands2.Subsystem):
         self.climb_motor = TalonFX(kCANId.climb.MOTOR, "rio")
         
         if not wpilib.RobotBase.isSimulation():
-            self.climb_motor.configurator.apply(kClimb._CONFIG)
+            apply_config(self.climb_motor, kClimb._CONFIG, "Climb")
             self.climb_motor.setNeutralMode(phoenix6.signals.NeutralModeValue.BRAKE)
             
         self.climb_position_voltage = controls.PositionVoltage(position=0, slot=0)

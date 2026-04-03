@@ -7,6 +7,7 @@ import phoenix6.controls
 from phoenix6 import signals
 from phoenix6.signals import MotorAlignmentValue
 
+from util.config_util import apply_config
 from util.editable_pid import EditablePID
 from util.nt_util import NTTable
 
@@ -33,9 +34,9 @@ class IntakeSubsystem(commands2.Subsystem):
         self.right_pivot_motor.setNeutralMode(signals.NeutralModeValue.BRAKE)
 
         if not wpilib.RobotBase.isSimulation():
-            self.left_pivot_motor.configurator.apply(self.pivot_cfg)
-            self.right_pivot_motor.configurator.apply(self.pivot_cfg)
-            self.roller_motor.configurator.apply(self.roller_cfg)
+            apply_config(self.left_pivot_motor,  self.pivot_cfg, "Intake Left Pivot")
+            apply_config(self.right_pivot_motor, self.pivot_cfg, "Intake Right Pivot")
+            apply_config(self.roller_motor,      self.roller_cfg, "Intake Roller")
 
         # Set follower AFTER config apply so it isn't overwritten
         self.right_pivot_motor.set_control(
