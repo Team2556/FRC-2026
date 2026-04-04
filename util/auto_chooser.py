@@ -7,7 +7,6 @@ from constants.path.key_poses import kPath, kPoses
 from constants.path.custom_path_commands import CustomPathCommands
 from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
 from commands.path_commands.auto_intermediate import AutoIntermediate
-from commands.drive.drive_commands import InitialPose
 
 from commands2 import cmd, SequentialCommandGroup
 
