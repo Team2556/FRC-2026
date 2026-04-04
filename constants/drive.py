@@ -40,8 +40,5 @@ class kDriveConfig:
     )
 
     # Physical max angular rate derived from max linear speed and drive-base geometry
+    # This replaces the old rotationsToRadians(1.3) which was ~8.17 rad/s — way too fast
     MAX_ANGULAR_RATE = TunerConstants.speed_at_12_volts / DRIVE_BASE_RADIUS
-
-    # Teleop angular rate — what full stick actually maps to
-    # The physical max is ~15.8 rad/s which is way too fast for a human to control
-    TELEOP_ANGULAR_RATE = rotationsToRadians(0.75)  # ~4.7 rad/s, tune to taste
