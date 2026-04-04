@@ -4,7 +4,7 @@ import commands2
 
 import wpilib
 from wpimath.geometry import Pose2d, Rotation2d, Transform2d, Translation2d
-from wpimath.kinematics import ChassisSpeeds, SwerveDrive4Kinematics, SwerveModuleState
+from wpimath.kinematics import ChassisSpeeds
 
 from phoenix6 import swerve
 
@@ -44,13 +44,6 @@ class SwerveDriveTrain(commands2.Subsystem):
         self._apply_robot_speeds = swerve.requests.ApplyRobotSpeeds()
         self._brake = swerve.requests.SwerveDriveBrake()
 
-        self._kinematics = SwerveDrive4Kinematics(
-            Translation2d(TunerConstants._front_left_x_pos, TunerConstants._front_left_y_pos),
-            Translation2d(TunerConstants._front_right_x_pos, TunerConstants._front_right_y_pos),
-            Translation2d(TunerConstants._back_left_x_pos, TunerConstants._back_left_y_pos),
-            Translation2d(TunerConstants._back_right_x_pos, TunerConstants._back_right_y_pos),
-        )
-
         self._logger = Telemetry(TunerConstants.speed_at_12_volts)
         self._drivetrain.register_telemetry(
             lambda state: self._logger.telemeterize(state)
@@ -73,11 +66,9 @@ class SwerveDriveTrain(commands2.Subsystem):
     def run_velocity(self, speeds: ChassisSpeeds) -> None:
         """Run the drivetrain at the given robot-relative ChassisSpeeds.
 
-        Applies the speed multiplier to translation, discretizes, computes
-        module states via WPILib kinematics, desaturates wheel speeds, then
-        sends to modules via CTRE ApplyRobotSpeeds.
-
-        This matches the flow in 10219's Drive.runVelocity exactly.
+        Applies the speed modifier to translation, discretizes for skew
+        correction, then passes to CTRE ApplyRobotSpeeds (which handles
+        kinematics and desaturation internally).
         """
         scaled = ChassisSpeeds(
             speeds.vx * self._modifiers.speed,
@@ -85,15 +76,9 @@ class SwerveDriveTrain(commands2.Subsystem):
             speeds.omega,
         )
 
-        discrete = ChassisSpeeds.discretize(scaled, 0.02)
-        module_states = self._kinematics.toSwerveModuleStates(discrete)
-        module_states = SwerveDrive4Kinematics.desaturateWheelSpeeds(
-            module_states, TunerConstants.speed_at_12_volts
-        )
-
         self._drivetrain.set_control(
             self._apply_robot_speeds
-            .with_speeds(discrete)
+            .with_speeds(ChassisSpeeds.discretize(scaled, 0.02))
         )
 
     def stop(self) -> None:

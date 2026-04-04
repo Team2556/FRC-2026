@@ -144,7 +144,7 @@ class DriveToASpot(commands2.Command):
         
         # ok... so this does break when switching alliances in the middle of a match but it's fine anyway
         # if you really want to fix this then store a value "initial alliance" and multiply by -1
-        if DriverStation.getAlliance() == DriverStation.Alliance.kBlue: # was kRed but different driving 
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
             return Translation2d(target_speed, 0).rotateBy(distance.angle()) * -1
         else:
             return Translation2d(target_speed, 0).rotateBy(distance.angle())
@@ -175,16 +175,18 @@ class DriveToASpot(commands2.Command):
     
     def execute(self):
         self.target_velocity = self.calculate_velocity()
-        
-        self.target_velocity = ChassisSpeeds(
+
+        field_speeds = ChassisSpeeds(
             (self.target_velocity * self.command_weight).X() + self.next_command_velocity.X(),
             (self.target_velocity * self.command_weight).Y() + self.next_command_velocity.Y(),
             self.target_velocity.rotation().radians()
         )
-        
-        self.drivetrain.run_velocity(
-            self.target_velocity
+
+        # calculate_velocity returns field-relative speeds; run_velocity expects robot-relative
+        robot_speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+            field_speeds, self.drivetrain.get_rotation()
         )
+        self.drivetrain.run_velocity(robot_speeds)
     
     def isFinished(self):
         # Translation stuff
