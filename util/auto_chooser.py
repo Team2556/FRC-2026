@@ -32,6 +32,8 @@ class AutoBuilder:
         self._nt_path.float("Smoothing Time Multiplier", kPath.smoothing_time_multiplier)
         
         self._nt_auto = NTTable("Autonomous")
+        self._nt_auto.bool("Reverse Paths", kPath.MIRROR_REVERSE_PATHS)
+        
         self.make_nt_display()
 
     def make_nt_display(self):
@@ -68,6 +70,8 @@ class AutoBuilder:
         for i in range(self.path_amount):
             self.nt_subtables[i].update_sendables()
         self._nt_auto.update_sendables()
+        
+        kPath.MIRROR_REVERSE_PATHS = self._nt_auto.get("Reverse Paths")
 
         # Then get all NetworkTablesStuff (you still need to call choose_auto to update all values in paths)
         # and all that updating should be just a button
@@ -80,6 +84,7 @@ class AutoBuilder:
         
         kPath.min_goal_end_velocity_mult = self._nt_path.get("Min Goal End Velocity Mult")
         kPath.smoothing_time_multiplier = self._nt_path.get("Smoothing Time Multiplier")
+        
     
     def get_initial_pose(self):
         return self.initial_pose.getSelected()

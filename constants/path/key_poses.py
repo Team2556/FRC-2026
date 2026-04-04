@@ -14,7 +14,7 @@ class kPath:
     max_rotational_acceleration = 16.0
     
     default_path_speed = 2.5
-    auto_path_speed = 1.5
+    auto_path_speed = 2.3
     intaking_speed = 0.8
     while_shooting_speed = 1.0
     
@@ -24,7 +24,7 @@ class kPath:
     min_goal_end_velocity_mult = 0.1
     smoothing_time_multiplier = 1
     
-    # Global variable thing for mirroring paths. Not used now but maybe later
+    # Global variable thing for mirroring paths.
     MIRROR_REVERSE_PATHS = False
 
 class kPoses:
@@ -83,7 +83,7 @@ class kPoses:
     
     right_wide_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
     right_wide_sweep_2 = Pose2d(9.5, 1.6, Rotation2d(pi/2))
-    right_wide_sweep_3 = Pose2d(8.5, 4.0, Rotation2d(pi/2 + 0.1))
+    right_wide_sweep_3 = Pose2d(8.4, 4.0, Rotation2d(pi/2 + 0.1))
     right_wide_sweep_4 = Pose2d(6.5, bump_from_edge, Rotation2d(2*pi/3))
     
     right_close_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
