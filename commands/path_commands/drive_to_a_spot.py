@@ -4,6 +4,7 @@ import commands2
 
 from wpimath.geometry import Pose2d, Translation2d, Rotation2d
 from wpimath.units import rotationsToRadians
+from wpimath.kinematics import ChassisSpeeds
 
 from wpilib import DriverStation
 
@@ -96,7 +97,7 @@ class DriveToASpot(commands2.Command):
         if not self.override_speed == None:
             self.max_speed = self.override_speed
         if not self.override_rps == None:
-            self.max_radians_per_second = self.override_rps
+            self.max_radians_per_second = rotationsToRadians(self.override_rps)
         if not self.override_smoothing_radius == None:
             self.smoothing_radius = self.override_smoothing_radius
     
@@ -133,8 +134,6 @@ class DriveToASpot(commands2.Command):
         
         linear_distance = distance.norm()
         
-        print(linear_distance)
-        
         self.slow_distance = abs(self.max_speed ** 2) / (kPath.max_translational_acceleration * 2)
         
         # If robot is within "slow distance" then make robot move slower
@@ -145,10 +144,11 @@ class DriveToASpot(commands2.Command):
         
         # ok... so this does break when switching alliances in the middle of a match but it's fine anyway
         # if you really want to fix this then store a value "initial alliance" and multiply by -1
-        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+        if DriverStation.getAlliance() == DriverStation.Alliance.kBlue: # was kRed but different driving 
             return Translation2d(target_speed, 0).rotateBy(distance.angle()) * -1
         else:
             return Translation2d(target_speed, 0).rotateBy(distance.angle())
+        
     
     def calcutate_angular_velocity(self) -> Rotation2d:
         
@@ -176,17 +176,14 @@ class DriveToASpot(commands2.Command):
     def execute(self):
         self.target_velocity = self.calculate_velocity()
         
-        self.target_velocity = Pose2d(
+        self.target_velocity = ChassisSpeeds(
             (self.target_velocity * self.command_weight).X() + self.next_command_velocity.X(),
             (self.target_velocity * self.command_weight).Y() + self.next_command_velocity.Y(),
-            self.target_velocity.rotation()
+            self.target_velocity.rotation().radians()
         )
         
-        self.drivetrain.drive(
-            self.target_velocity.X(),
-            self.target_velocity.Y(),
-            self.target_velocity.rotation().radians(),
-            with_prioritize_target_rotation=True
+        self.drivetrain.run_velocity(
+            self.target_velocity
         )
     
     def isFinished(self):

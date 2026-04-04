@@ -127,48 +127,6 @@ def set_odometry_to_corner(drivetrain: SwerveDriveTrain, corner: Pose2d) -> comm
         drivetrain,
     )
 
-
 # Pre-built corner poses (blue-alliance origin)
 BACK_LEFT_CORNER  = Pose2d(0.35, kField.WIDTH - 0.35, Rotation2d())
 BACK_RIGHT_CORNER = Pose2d(0.35, 0.35, Rotation2d())
-
-
-# ---------------------------------------------------------------------------
-# Backward-compatible command classes used by custom_path_commands and
-# auto_chooser.  New code should use the factory functions above instead.
-# ---------------------------------------------------------------------------
-
-class InitialPose(commands2.Command):
-    def __init__(self, drivetrain: SwerveDriveTrain, pose: Pose2d):
-        super().__init__()
-        self._drivetrain = drivetrain
-        self._pose = pose
-        self.addRequirements(self._drivetrain)
-
-    def initialize(self):
-        self._drivetrain.reset_pose(FlipUtil.fieldPose(self._pose))
-
-    def isFinished(self) -> bool:
-        return True
-
-    def end(self, interrupted: bool):
-        pass
-
-
-class AutoDrive(commands2.Command):
-    def __init__(self, drivetrain: SwerveDriveTrain):
-        super().__init__()
-        self._drivetrain = drivetrain
-        self.addRequirements(self._drivetrain)
-
-    def initialize(self):
-        pass
-
-    def execute(self):
-        self._drivetrain.stop()
-
-    def isFinished(self) -> bool:
-        return False
-
-    def end(self, interrupted: bool):
-        self._drivetrain.stop()

@@ -17,7 +17,6 @@ from subsystems.led.LED_controller import CANdleLEDController
 from commands.path_commands.drive_to_a_spot import DriveToASpot
 from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
 from commands.auto_align.align_with_controller import ConditionalAlignAndShoot
-from commands.drive.drive_commands import InitialPose, AutoDrive
 from commands.intake.intake_commands import IntakeRollerForward, IntakeRollerBackward
 from commands.shooter.shooter_commands import EnableShooter, DisableShooter
 
@@ -109,12 +108,8 @@ class CustomPathCommands:
                     ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_3
                     ).with_override_speed(kPath.intaking_speed),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_4
-                    ).with_override_speed(kPath.intaking_speed
-                    ).with_override_rps(0.2),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_5
-                    ).with_override_speed(kPath.intaking_speed
-                    ).with_override_rps(0.2),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_4),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_5),
             ),
         ),
         "ATR_bump_shoot" : lambda: SequentialCommandGroup(
