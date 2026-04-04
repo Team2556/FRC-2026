@@ -1,6 +1,6 @@
 from math import pi
 
-from commands2 import cmd, ConditionalCommand, WaitCommand, SequentialCommandGroup, ParallelRaceGroup, InstantCommand
+from commands2 import cmd, ConditionalCommand, WaitCommand, SequentialCommandGroup, ParallelRaceGroup, InstantCommand, RepeatCommand, PrintCommand
 
 from wpimath.geometry import Pose2d, Rotation2d
 
@@ -65,7 +65,7 @@ class CustomPathCommands:
                             ).with_override_speed(0
                             ).with_override_rps(0
                             ).with_end_tolerance(0),
-            WaitCommand(shoot_time)
+            WaitCommand(shoot_time),
         )
         
     def make_auto_paths(self):
@@ -149,12 +149,6 @@ class CustomPathCommands:
                         ).with_override_speed(kPath.while_shooting_speed),
             self.shoot_command_builder(2.5),
             DriveToASpot(self.drivetrain, target_pose = kPoses.right_spot_shoot_2),
-        ),
-        "template" : lambda: SequentialCommandGroup(
-            DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_short_sweep_1),
-            ),
-            self.shoot_command_builder(3)
         ),
         "NNR_trench_extake" : lambda: SequentialCommandGroup(
             DriveToASpot(self.drivetrain, target_pose = kPoses.trench_extake_1

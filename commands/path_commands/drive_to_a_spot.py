@@ -93,6 +93,8 @@ class DriveToASpot(commands2.Command):
         self.next_command_velocity : Pose2d = Pose2d()
         
         self.target_pose = FlipUtil.fieldPose(self.blue_alliance_target_pose)
+        if kPath.MIRROR_REVERSE_PATHS and DriverStation.isAutonomous():
+            self.target_pose = FlipUtil.mirrorPose(self.target_pose)
         
         if not self.override_speed == None:
             self.max_speed = self.override_speed
