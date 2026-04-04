@@ -47,7 +47,6 @@ class CustomPathCommands:
         self.make_teleop_paths()
         self.make_auto_paths()
     
-    # Might be still useful?
     def opposite_pose_rotation(self, pose : Pose2d):
         return Pose2d(
             pose.X(),
@@ -110,8 +109,7 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_3
                     ).with_override_speed(kPath.intaking_speed),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_4
-                    ).with_override_speed(kPath.intaking_speed),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_5),
+                    ).with_override_speed(kPath.intaking_speed * 1.3),
             ),
         ),
         "ATR_bump_shoot" : lambda: SequentialCommandGroup(
@@ -143,7 +141,7 @@ class CustomPathCommands:
                 ).with_override_speed(kPath.while_shooting_speed
                 ).with_goal_end_velocity(0.1
                 ).with_end_tolerance(0.1),
-            self.shoot_command_builder(1),
+            self.shoot_command_builder(1.7),
         ),
         "AAR_spot_shoot" : lambda: SequentialCommandGroup(
             DriveToASpot(self.drivetrain, target_pose = kPoses.right_spot_shoot_1
@@ -178,63 +176,161 @@ class CustomPathCommands:
         self.teleop_paths = {
         "right_trench" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_trench)),
-                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_right_trench)).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_trench),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_trench).with_goal_end_velocity(0),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_trench),
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_trench).with_goal_end_velocity(0),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_right_trench)),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_trench)).with_goal_end_velocity(0),
                 ),
-                cmd.none(),
+                ConditionalCommand(
+                    DriveToASpotSequence(
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_right_trench)),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_trench)).with_goal_end_velocity(0),
+                    ),
+                    cmd.none(),
+                    lambda : RobotZoneChecker.is_in_opposing_alliance_zone(self.drivetrain.get_state().pose)
+                ),
                 lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
             ),
-            lambda : RobotZoneChecker.is_in_hub_shooting_zone(self.drivetrain.get_state().pose)   
+            lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)   
         ),
         "right_bump" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_bump)),
-                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_right_bump)).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_bump),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_bump).with_goal_end_velocity(0),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_bump),
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_bump).with_goal_end_velocity(0),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_right_bump)),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_bump)).with_goal_end_velocity(0),
                 ),
-                cmd.none(),
+                ConditionalCommand(
+                    DriveToASpotSequence(
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_right_bump)),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_bump)).with_goal_end_velocity(0),
+                    ),
+                    cmd.none(),
+                    lambda : RobotZoneChecker.is_in_opposing_alliance_zone(self.drivetrain.get_state().pose)
+                ),
                 lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
             ),
-            lambda : RobotZoneChecker.is_in_hub_shooting_zone(self.drivetrain.get_state().pose)   
+            lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)   
         ),
         "left_trench" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_trench)),
-                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_left_trench)).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_trench),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_trench).with_goal_end_velocity(0),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_trench),
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_trench).with_goal_end_velocity(0),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_left_trench)),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_trench)).with_goal_end_velocity(0),
                 ),
-                cmd.none(),
+                ConditionalCommand(
+                    DriveToASpotSequence(
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_left_trench)),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_trench)).with_goal_end_velocity(0),
+                    ),
+                    cmd.none(),
+                    lambda : RobotZoneChecker.is_in_opposing_alliance_zone(self.drivetrain.get_state().pose)
+                ),
                 lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
             ),
-            lambda : RobotZoneChecker.is_in_hub_shooting_zone(self.drivetrain.get_state().pose)   
+            lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)   
         ),
         "left_bump" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_bump)),
-                DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_left_bump)).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_bump),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_bump).with_goal_end_velocity(0),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_bump),
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_bump).with_goal_end_velocity(0),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_left_bump)),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_bump)).with_goal_end_velocity(0),
+                ),
+                ConditionalCommand(
+                    DriveToASpotSequence(
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_left_bump)),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_bump)).with_goal_end_velocity(0),
+                    ),
+                    cmd.none(),
+                    lambda : RobotZoneChecker.is_in_opposing_alliance_zone
+                ),
+                lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
+            ),
+            lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)   
+        ),
+        "opposing_right_trench" : ConditionalCommand(
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_trench),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_right_trench).with_goal_end_velocity(0),
+            ),
+            ConditionalCommand(
+                DriveToASpotSequence(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_right_trench),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_right_trench).with_goal_end_velocity(0),
                 ),
                 cmd.none(),
                 lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
             ),
-            lambda : RobotZoneChecker.is_in_hub_shooting_zone(self.drivetrain.get_state().pose)   
+            lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)  
+        ),
+        "opposing_right_bump" : ConditionalCommand(
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_bump),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_right_bump).with_goal_end_velocity(0),
+            ),
+            ConditionalCommand(
+                DriveToASpotSequence(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_right_bump),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_right_bump).with_goal_end_velocity(0),
+                ),
+                cmd.none(),
+                lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
+            ),
+            lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)  
+        ),
+        "opposing_left_trench" : ConditionalCommand(
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_trench),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_left_trench).with_goal_end_velocity(0),
+            ),
+            ConditionalCommand(
+                DriveToASpotSequence(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_left_trench),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_left_trench).with_goal_end_velocity(0),
+                ),
+                cmd.none(),
+                lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
+            ),
+            lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)  
+        ),
+        "opposing_left_bump" : ConditionalCommand(
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_bump),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_left_bump).with_goal_end_velocity(0),
+            ),
+            ConditionalCommand(
+                DriveToASpotSequence(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_left_bump),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_left_bump).with_goal_end_velocity(0),
+                ),
+                cmd.none(),
+                lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
+            ),
+            lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)  
+        ),
+        "extake_left_trench" : ConditionalCommand(
+            DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_trench).with_goal_end_velocity(0),
+            cmd.none(),
+            lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose)  
+        ),
+        "extake_right_trench" : ConditionalCommand(
+            DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_trench).with_goal_end_velocity(0),
+            cmd.none(),
+            lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose)  
         )
         }
     

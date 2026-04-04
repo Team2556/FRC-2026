@@ -126,7 +126,7 @@ class RotationCalculator:
     @staticmethod
     def _estimate_flight_time(distance: meters) -> float:
         # Flight-time lead compensation is not yet tuned; returns 0 (no lead).
-        return 1
+        return 1.15
 
 
 class AlignIntakeToVelocity(commands2.Command):

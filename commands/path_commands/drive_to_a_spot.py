@@ -21,7 +21,7 @@ class DriveToASpot(commands2.Command):
         self, 
         subsystem: drivetrain.SwerveDriveTrain, 
         target_pose : Pose2d = Pose2d(),
-        max_speed : float = 1.0, 
+        max_speed : float = kPath.default_path_speed, 
         max_rps : float = 0.75, 
         end_tolerance : float = 0.3,
         end_rotation_tolerance : float = 0.4,

@@ -72,7 +72,9 @@ class RobotContainer:
 
     def configureButtonBindings(self) -> None:
 
+        # -------------------------------------------------------------------
         # Default commands
+        # -------------------------------------------------------------------
 
         self.mono_vision.setDefaultCommand(
             vision_odometry.UpdateOdometry(self.mono_vision, self._drivetrain)
@@ -89,7 +91,9 @@ class RobotContainer:
             )
         )
 
+        # -------------------------------------------------------------------
         # CONTROLLER 1
+        # -------------------------------------------------------------------
 
         self._drivetrain.setDefaultCommand(
             drive_commands.joystick_drive(
@@ -126,8 +130,44 @@ class RobotContainer:
                 lambda: self._drivetrain.reset_modifiers(),
             )
         )
+        
+        # All the path to pose commands for doing bump/trench
+        self._controller_1.x().and_(self._controller_1.leftBumper().not_()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+            self.custom_path_commands.teleop_paths["left_trench"]
+        )
+        self._controller_1.a().and_(self._controller_1.leftBumper().not_()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+            self.custom_path_commands.teleop_paths["left_bump"]
+        )
+        self._controller_1.y().and_(self._controller_1.leftBumper().not_()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+            self.custom_path_commands.teleop_paths["right_bump"]
+        )
+        self._controller_1.b().and_(self._controller_1.leftBumper().not_()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+            self.custom_path_commands.teleop_paths["right_trench"]
+        )
+        # Go to opposing zone paths
+        self._controller_1.x().and_(self._controller_1.leftBumper()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+            self.custom_path_commands.teleop_paths["opposing_left_trench"]
+        )
+        self._controller_1.a().and_(self._controller_1.leftBumper()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+            self.custom_path_commands.teleop_paths["opposing_left_bump"]
+        )
+        self._controller_1.y().and_(self._controller_1.leftBumper()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+            self.custom_path_commands.teleop_paths["opposing_right_bump"]
+        )
+        self._controller_1.b().and_(self._controller_1.leftBumper()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+            self.custom_path_commands.teleop_paths["opposing_right_trench"]
+        )
+        # Extake spot paths
+        self._controller_1.x().and_(self._controller_1.leftBumper().not_()).and_(self._controller_1.rightBumper()).whileTrue(
+            self.custom_path_commands.teleop_paths["extake_left_trench"]
+        )
+        self._controller_1.b().and_(self._controller_1.leftBumper().not_()).and_(self._controller_1.rightBumper()).whileTrue(
+            self.custom_path_commands.teleop_paths["extake_right_trench"]
+        )
 
+        # -------------------------------------------------------------------
         # CONTROLLER 2
+        # -------------------------------------------------------------------
 
         self._controller_2.b().whileTrue(RunTransferCommand(self.transfer_subsystem))
 
