@@ -13,10 +13,9 @@ class kPath:
     max_translational_acceleration = 8.0
     max_rotational_acceleration = 30.0
     
-    default_path_speed = 3
-    auto_path_speed = 3
-    # it SHOULD work at 0.8 speed because that's what it was at comp so I'm confused now
-    intaking_speed = 0.5
+    default_path_speed = 1.5
+    auto_path_speed = 1.5
+    intaking_speed = 0.8
     while_shooting_speed = 1.0
     
     smoothing_radius = 0.7 # 1.3 with 5.5 speed
@@ -77,10 +76,10 @@ class kPoses:
     
     # Auto Poses
     right_short_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
-    right_short_sweep_2 = Pose2d(9, trench_from_edge + 0.3, Rotation2d(pi/2))
-    right_short_sweep_3 = Pose2d(8.2, 2.5, Rotation2d(pi/2 + 0.1))
-    right_short_sweep_4 = Pose2d(8.2, 3.0, Rotation2d(4*pi/3))
-    right_short_sweep_5 = Pose2d(7.5, 2.5, Rotation2d(4*pi/3))
+    right_short_sweep_2 = Pose2d(9.5, 1.6, Rotation2d(pi/2))
+    right_short_sweep_3 = Pose2d(8.2, 2.0, Rotation2d(pi/2 + 0.1))
+    right_short_sweep_4 = Pose2d(8.2, 2.5, Rotation2d(pi))
+    right_short_sweep_5 = Pose2d(6.5, 3.05, Rotation2d(pi))
     
     right_wide_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
     right_wide_sweep_2 = Pose2d(9.5, 1.6, Rotation2d(pi/2))
@@ -89,21 +88,19 @@ class kPoses:
     
     right_close_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
     right_close_sweep_2 = Pose2d(7.5, trench_from_edge + 0.3, Rotation2d(pi/2))
-    right_close_sweep_3 = Pose2d(7, 3.5, Rotation2d(pi/2 + 0.1))
     right_close_sweep_3 = Pose2d(7, 3.7, Rotation2d(pi/2 + 0.1))
-    right_close_sweep_4 = Pose2d(6.5, 3.0, Rotation2d(4*pi/3))
-    right_close_sweep_5 = Pose2d(6.5, 2.5, Rotation2d(-pi/2))
+    right_close_sweep_4 = Pose2d(5.8, 3.0, Rotation2d(-pi/2))
+    right_close_sweep_5 = Pose2d(5.8, 2.0, Rotation2d(-pi/2))
     
-    right_bump_shoot_1 = Pose2d(6.5, bump_from_edge, Rotation2d(pi))
+    right_bump_shoot_1 = Pose2d(6.5, bump_from_edge + 0.20, Rotation2d(pi))
     right_bump_shoot_2 = Pose2d(2.5, bump_from_edge, Rotation2d(pi))
-    right_bump_shoot_3 = Pose2d(2.5, trench_from_edge + 0.05, Rotation2d(pi))
-    right_bump_shoot_4 = Pose2d(3.2, trench_from_edge, Rotation2d(pi))
+    right_bump_shoot_3 = Pose2d(2.8, trench_from_edge, Rotation2d(pi))
     
-    right_bump_half_shoot_1 = Pose2d(6.5, bump_from_edge, Rotation2d(pi))
+    right_bump_half_shoot_1 = Pose2d(6.5, bump_from_edge + 0.20, Rotation2d(pi))
     right_bump_half_shoot_2 = Pose2d(2.5, bump_from_edge, Rotation2d(5*pi/4))
-    right_bump_half_shoot_3 = Pose2d(2.5, trench_from_edge + 0.05, Rotation2d(pi))
-    right_bump_half_shoot_4 = Pose2d(3.2, trench_from_edge, Rotation2d(pi))
+    right_bump_half_shoot_3 = Pose2d(2.8, trench_from_edge, Rotation2d(pi))
     
     right_spot_shoot_1 = Pose2d(2.9, trench_from_edge, Rotation2d(pi))
     right_spot_shoot_2 = Pose2d(3.2, trench_from_edge, Rotation2d(pi))
     
+    trench_extake_1 = Pose2d(6.5, trench_from_edge, Rotation2d(pi))

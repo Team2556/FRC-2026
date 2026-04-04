@@ -45,6 +45,8 @@ class XboxController(CommandXboxController):
         """
         Applies the custom controller settings
         """
+        return val
+        
         if abs(val) <= self._deadband:
             return 0
 

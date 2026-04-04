@@ -70,10 +70,11 @@ class SwerveDriveTrain(commands2.Subsystem):
         correction, then passes to CTRE ApplyRobotSpeeds (which handles
         kinematics and desaturation internally).
         """
+        
         scaled = ChassisSpeeds(
             speeds.vx * self._modifiers.speed,
             speeds.vy * self._modifiers.speed,
-            speeds.omega,
+            self._align_rotation if self._align_rotation else speeds.omega,
         )
 
         self._drivetrain.set_control(

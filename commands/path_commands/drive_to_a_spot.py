@@ -144,7 +144,7 @@ class DriveToASpot(commands2.Command):
         
         # ok... so this does break when switching alliances in the middle of a match but it's fine anyway
         # if you really want to fix this then store a value "initial alliance" and multiply by -1
-        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+        if DriverStation.getAlliance() == DriverStation.Alliance.kBlue: # was kRed (ai was wrong i don't blame it i don't know either)
             return Translation2d(target_speed, 0).rotateBy(distance.angle()) * -1
         else:
             return Translation2d(target_speed, 0).rotateBy(distance.angle())

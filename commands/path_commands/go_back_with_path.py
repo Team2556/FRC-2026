@@ -8,7 +8,7 @@ from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
 
 from constants.path.key_poses import kPoses
 
-
+# Unused right now by the way it's not that useful
 class GoBackWithPath(commands2.Command):
     def __init__(self, subsystem: SwerveDriveTrain, use_bump : bool = False):
         super().__init__()
