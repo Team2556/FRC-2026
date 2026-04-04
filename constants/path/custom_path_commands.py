@@ -16,10 +16,9 @@ from subsystems.led.LED_controller import CANdleLEDController
 
 from commands.path_commands.drive_to_a_spot import DriveToASpot
 from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
-from commands.auto_align.path_with_align import DriveWithAlign
 from commands.auto_align.align_with_controller import ConditionalAlignAndShoot
 from commands.drive.drive_commands import InitialPose, AutoDrive
-from commands.intake.intake_commands import IntakeRollerForward
+from commands.intake.intake_commands import IntakeRollerForward, IntakeRollerBackward
 from commands.shooter.shooter_commands import EnableShooter, DisableShooter
 
 from constants.path.key_poses import kPoses, kPath
@@ -84,12 +83,12 @@ class CustomPathCommands:
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_short_sweep_1),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_short_sweep_2
-                             ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
+                    ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_short_sweep_3
-                             ).with_override_speed(kPath.intaking_speed),
+                    ).with_override_speed(kPath.intaking_speed),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_short_sweep_4
-                             ).with_override_speed(kPath.intaking_speed
-                             ).with_override_rps(0.2),
+                    ).with_override_speed(kPath.intaking_speed
+                    ).with_override_rps(0.2),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_short_sweep_5),
             ),
         ),
@@ -97,9 +96,9 @@ class CustomPathCommands:
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_wide_sweep_1),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_wide_sweep_2
-                             ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
+                    ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_wide_sweep_3
-                             ).with_override_speed(kPath.intaking_speed),
+                    ).with_override_speed(kPath.intaking_speed),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_wide_sweep_4),
             ),
         ),
@@ -107,15 +106,15 @@ class CustomPathCommands:
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_1),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_2
-                             ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
+                    ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_3
-                             ).with_override_speed(kPath.intaking_speed),
+                    ).with_override_speed(kPath.intaking_speed),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_4
-                             ).with_override_speed(kPath.intaking_speed
-                             ).with_override_rps(0.2),
+                    ).with_override_speed(kPath.intaking_speed
+                    ).with_override_rps(0.2),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_5
-                             ).with_override_speed(kPath.intaking_speed
-                             ).with_override_rps(0.2),
+                    ).with_override_speed(kPath.intaking_speed
+                    ).with_override_rps(0.2),
             ),
         ),
         "ATR_bump_shoot" : lambda: SequentialCommandGroup(
@@ -123,11 +122,28 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_1),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_2),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_3
-                             ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
-                             ).with_override_speed(kPath.while_shooting_speed),
+                    ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
+                    ).with_override_speed(kPath.while_shooting_speed),
             ),
             self.shoot_command_builder(3),
-            # DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_4),
+            DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_4),
+        ),
+        "ATR_bump_half_shoot" : lambda: SequentialCommandGroup(
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_half_shoot_1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_half_shoot_2),
+            ),
+            ParallelRaceGroup(
+                IntakeRollerBackward(self.intake_subsystem),
+                WaitCommand(1.3)
+            ),
+            DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_half_shoot_3
+                ).with_parallel_commands(
+                    ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem),
+                    IntakeRollerForward(self.intake_subsystem)
+                ).with_override_speed(kPath.while_shooting_speed),
+            self.shoot_command_builder(3),
+            DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_4),
         ),
         "AAR_spot_shoot" : lambda: SequentialCommandGroup(
             ParallelRaceGroup(

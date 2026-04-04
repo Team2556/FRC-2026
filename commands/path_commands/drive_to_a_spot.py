@@ -22,8 +22,8 @@ class DriveToASpot(commands2.Command):
         target_pose : Pose2d = Pose2d(),
         max_speed : float = 1.0, 
         max_rps : float = 0.75, 
-        end_tolerance : float = 0.2,
-        end_rotation_tolerance : float = 0.2,
+        end_tolerance : float = 0.3,
+        end_rotation_tolerance : float = 0.4,
         goal_end_velocity : float = 0.0,
     ) -> None:
         """
@@ -96,7 +96,7 @@ class DriveToASpot(commands2.Command):
         if not self.override_speed == None:
             self.max_speed = self.override_speed
         if not self.override_rps == None:
-            self.max_rps = self.override_rps
+            self.max_radians_per_second = self.override_rps
         if not self.override_smoothing_radius == None:
             self.smoothing_radius = self.override_smoothing_radius
     
@@ -132,6 +132,8 @@ class DriveToASpot(commands2.Command):
         )
         
         linear_distance = distance.norm()
+        
+        print(linear_distance)
         
         self.slow_distance = abs(self.max_speed ** 2) / (kPath.max_translational_acceleration * 2)
         

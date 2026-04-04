@@ -57,7 +57,11 @@ class DriveToASpotSequence(commands2.SequentialCommandGroup):
         
     def calculate_goal_end_velocity(self):
         '''Calculate goal end vleocity for next command (taking into account direction change between commands)'''
+        if self._currentCommandIndex - 1 == len(self._commands):
+            return 0.0
+        
         current_command = self._commands[self._currentCommandIndex]
+        
         next_command = self._commands[self._currentCommandIndex + 1]
         
         next_max_speed = next_command.max_speed
