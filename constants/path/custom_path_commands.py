@@ -61,10 +61,10 @@ class CustomPathCommands:
         '''Makes a command that sits still and shoots for shoot_time seconds'''
         return ParallelRaceGroup(
             DriveToASpot(self.drivetrain, target_pose = Pose2d()
-                            ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
-                            ).with_override_speed(0
-                            ).with_override_rps(0
-                            ).with_end_tolerance(0),
+                ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
+                ).with_override_speed(0
+                ).with_override_rps(0
+                ).with_end_tolerance(0),
             WaitCommand(shoot_time),
         )
         
@@ -77,7 +77,7 @@ class CustomPathCommands:
         '''
         self.auto_paths = {
         "_none" : lambda: InstantCommand(),
-        "TA_short_sweep" : lambda: SequentialCommandGroup(
+        "TN_short_sweep" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_1),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_2
@@ -91,7 +91,7 @@ class CustomPathCommands:
                     ).with_override_speed(kPath.intaking_speed * 1.5)
             ),
         ),
-        "TA_wide_sweep" : lambda: SequentialCommandGroup(
+        "TN_wide_sweep" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.wide_sweep_1),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.wide_sweep_2
@@ -104,20 +104,61 @@ class CustomPathCommands:
         "TA_close_sweep" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.close_sweep_1),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.close_sweep_2
-                    ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.close_sweep_2),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.close_sweep_3
                     ).with_override_speed(kPath.intaking_speed),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.close_sweep_4
                     ).with_override_speed(kPath.intaking_speed * 1.3),
             ),
         ),
-        "AT_bump_shoot" : lambda: SequentialCommandGroup(
+        "TN_cleanup_sweep" : lambda: SequentialCommandGroup(
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.cleanup_sweep_1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.cleanup_sweep_2
+                    ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.cleanup_sweep_3
+                    ).with_override_speed(kPath.intaking_speed * 1.3),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.cleanup_sweep_4
+                    ).with_override_speed(kPath.intaking_speed * 2
+                    ).with_override_rps(0.3),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.cleanup_sweep_5
+                    ).with_override_speed(kPath.intaking_speed * 2
+                    ).with_override_rps(0.3),
+            ),
+        ),
+        "NT_bump_shoot" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_1
                     ).with_override_smoothing_radius(0.1),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_2
-                    ).with_override_speed(kPath.bump_speed),
+                    ).with_override_speed(kPath.bump_speed).with_closest_180(),
+            ),
+            ConditionalCommand( # different on left side
+                SequentialCommandGroup(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_5
+                            ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
+                            ).with_override_speed(kPath.while_shooting_speed
+                            ).with_goal_end_velocity(0.1
+                            ).with_end_tolerance(0.1),
+                ),
+                SequentialCommandGroup(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.left_bump_shoot_1
+                        ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
+                        ).with_override_speed(kPath.while_shooting_speed
+                        ).with_goal_end_velocity(0.1
+                        ).with_end_tolerance(0.1),
+                    self.shoot_command_builder(1),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_5),
+                ),
+                lambda : RobotZoneChecker.is_on_right_side(self.drivetrain.get_state().pose)
+            )
+        ),
+        "NT_bump_move_shoot" : lambda: SequentialCommandGroup(
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_1
+                    ).with_override_smoothing_radius(0.1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_2
+                    ).with_override_speed(kPath.bump_speed).with_closest_180(),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_3
                             ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
                             ).with_override_speed(kPath.while_shooting_speed
@@ -147,11 +188,11 @@ class CustomPathCommands:
                 lambda : RobotZoneChecker.is_on_right_side(self.drivetrain.get_state().pose)
             )
         ),
-        "AT_bump_half_shoot" : lambda: SequentialCommandGroup(
+        "NT_bump_half_shoot" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_1),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_2
-                    ).with_override_speed(kPath.bump_speed),
+                    ).with_override_speed(kPath.bump_speed).with_closest_180(),
             ),
             ParallelRaceGroup(
                 IntakeRollerBackward(self.intake_subsystem),
@@ -198,18 +239,18 @@ class CustomPathCommands:
         self.teleop_paths = {
         "right_trench" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_trench),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_trench).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_trench).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_trench).with_override_speed(kPath.bump_speed).with_closest_180(),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_right_trench)),
-                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_trench)).with_goal_end_velocity(0),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_right_trench)).with_closest_180(),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_trench)).with_override_speed(kPath.bump_speed).with_closest_180(),
                 ),
                 ConditionalCommand(
                     DriveToASpotSequence(
-                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_right_trench)),
-                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_trench)).with_goal_end_velocity(0),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_right_trench)).with_closest_180(),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_trench)).with_override_speed(kPath.bump_speed).with_closest_180(),
                     ),
                     cmd.none(),
                     lambda : RobotZoneChecker.is_in_opposing_alliance_zone(self.drivetrain.get_state().pose)
@@ -220,18 +261,18 @@ class CustomPathCommands:
         ),
         "right_bump" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_bump),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_bump).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_bump).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_bump).with_override_speed(kPath.bump_speed).with_closest_180(),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_right_bump)),
-                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_bump)).with_goal_end_velocity(0),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_right_bump)).with_closest_180(),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_bump)).with_override_speed(kPath.bump_speed).with_closest_180(),
                 ),
                 ConditionalCommand(
                     DriveToASpotSequence(
-                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_right_bump)),
-                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_bump)).with_goal_end_velocity(0),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_right_bump)).with_closest_180(),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_bump)).with_override_speed(kPath.bump_speed).with_closest_180(),
                     ),
                     cmd.none(),
                     lambda : RobotZoneChecker.is_in_opposing_alliance_zone(self.drivetrain.get_state().pose)
@@ -242,18 +283,18 @@ class CustomPathCommands:
         ),
         "left_trench" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_trench),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_trench).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_trench).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_trench).with_override_speed(kPath.bump_speed).with_closest_180(),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_left_trench)),
-                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_trench)).with_goal_end_velocity(0),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_left_trench)).with_closest_180(),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_trench)).with_override_speed(kPath.bump_speed).with_closest_180(),
                 ),
                 ConditionalCommand(
                     DriveToASpotSequence(
-                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_left_trench)),
-                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_trench)).with_goal_end_velocity(0),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_left_trench)).with_closest_180(),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_trench)).with_override_speed(kPath.bump_speed).with_closest_180(),
                     ),
                     cmd.none(),
                     lambda : RobotZoneChecker.is_in_opposing_alliance_zone(self.drivetrain.get_state().pose)
@@ -264,18 +305,18 @@ class CustomPathCommands:
         ),
         "left_bump" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_bump),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_bump).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_bump).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_bump).with_override_speed(kPath.bump_speed).with_closest_180(),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_left_bump)),
-                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_bump)).with_goal_end_velocity(0),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_left_bump)).with_closest_180(),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_bump)).with_override_speed(kPath.bump_speed).with_closest_180(),
                 ),
                 ConditionalCommand(
                     DriveToASpotSequence(
-                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_left_bump)),
-                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_bump)).with_goal_end_velocity(0),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_left_bump)).with_closest_180(),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_bump)).with_override_speed(kPath.bump_speed).with_closest_180(),
                     ),
                     cmd.none(),
                     lambda : RobotZoneChecker.is_in_opposing_alliance_zone
@@ -286,13 +327,13 @@ class CustomPathCommands:
         ),
         "opposing_right_trench" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_trench),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_right_trench).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_trench).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_right_trench).with_override_speed(kPath.bump_speed).with_closest_180(),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_right_trench),
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_right_trench).with_goal_end_velocity(0),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_right_trench).with_closest_180(),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_right_trench).with_override_speed(kPath.bump_speed).with_closest_180(),
                 ),
                 cmd.none(),
                 lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
@@ -301,13 +342,13 @@ class CustomPathCommands:
         ),
         "opposing_right_bump" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_bump),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_right_bump).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_bump).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_right_bump).with_override_speed(kPath.bump_speed).with_closest_180(),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_right_bump),
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_right_bump).with_goal_end_velocity(0),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_right_bump).with_closest_180(),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_right_bump).with_override_speed(kPath.bump_speed).with_closest_180(),
                 ),
                 cmd.none(),
                 lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
@@ -316,13 +357,13 @@ class CustomPathCommands:
         ),
         "opposing_left_trench" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_trench),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_left_trench).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_trench).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_left_trench).with_override_speed(kPath.bump_speed).with_closest_180(),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_left_trench),
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_left_trench).with_goal_end_velocity(0),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_left_trench).with_closest_180(),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_left_trench).with_override_speed(kPath.bump_speed).with_closest_180(),
                 ),
                 cmd.none(),
                 lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
@@ -331,13 +372,13 @@ class CustomPathCommands:
         ),
         "opposing_left_bump" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_bump),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_left_bump).with_goal_end_velocity(0),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_bump).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_left_bump).with_override_speed(kPath.bump_speed).with_closest_180(),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_left_bump),
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_left_bump).with_goal_end_velocity(0),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_left_bump).with_closest_180(),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_left_bump).with_override_speed(kPath.bump_speed).with_closest_180(),
                 ),
                 cmd.none(),
                 lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
@@ -345,12 +386,12 @@ class CustomPathCommands:
             lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)  
         ),
         "extake_left_trench" : ConditionalCommand(
-            DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_trench).with_goal_end_velocity(0),
+            DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_trench).with_override_speed(kPath.bump_speed),
             cmd.none(),
             lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose)  
         ),
         "extake_right_trench" : ConditionalCommand(
-            DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_trench).with_goal_end_velocity(0),
+            DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_trench).with_override_speed(kPath.bump_speed),
             cmd.none(),
             lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose)  
         )

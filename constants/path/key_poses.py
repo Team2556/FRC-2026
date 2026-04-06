@@ -13,9 +13,9 @@ class kPath:
     max_translational_acceleration = 8.0
     max_rotational_acceleration = 16.0
     
-    default_path_speed = 2.5
+    default_path_speed = 4
     auto_path_speed = 3.4
-    bump_speed = 2.5
+    bump_speed = 2.3
     intaking_speed = 0.6
     while_shooting_speed = 1.0
     
@@ -81,9 +81,6 @@ class kPoses:
     # Auto Poses
     # -------------------------------------------------------------------
     
-    # also TODO:
-    # - fix left auto settings thing with conditional command
-    # - fix all autos (sweeps don't do something wierd, bump y value)
     
     short_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
     short_sweep_2 = Pose2d(9.3, 1.6, Rotation2d(pi/2))
@@ -91,15 +88,21 @@ class kPoses:
     short_sweep_4 = Pose2d(8.1, 2.5, Rotation2d(pi))
     short_sweep_5 = Pose2d(6.5, 3.05, Rotation2d(pi))
     
+    close_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
+    close_sweep_2 = Pose2d(7.5, 1.6, Rotation2d(pi/2))
+    close_sweep_3 = Pose2d(7, 3.9, Rotation2d(pi/2 + 0.1))
+    close_sweep_4 = Pose2d(5.85, 3.4, Rotation2d(pi))
+    
     wide_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
     wide_sweep_2 = Pose2d(9.3, 1.6, Rotation2d(pi/2))
     wide_sweep_3 = Pose2d(8.2, 4.0, Rotation2d(pi/2 + 0.1))
     wide_sweep_4 = Pose2d(6.5, bump_from_edge, Rotation2d(2*pi/3))
     
-    close_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
-    close_sweep_2 = Pose2d(7.5, trench_from_edge + 0.3, Rotation2d(pi/2))
-    close_sweep_3 = Pose2d(7, 3.7, Rotation2d(pi/2 + 0.1))
-    close_sweep_4 = Pose2d(5.8, 2.0, Rotation2d(-pi/2))
+    cleanup_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
+    cleanup_sweep_2 = Pose2d(9.3, 1.6, Rotation2d(pi/2))
+    cleanup_sweep_3 = Pose2d(8.0, 3.5, Rotation2d(pi/2 + 0.1))
+    cleanup_sweep_4 = Pose2d(6.5, 4.0, Rotation2d(pi))
+    cleanup_sweep_5 = Pose2d(6.2, 2.2, Rotation2d(4*pi/3))
     
     bump_shoot_1 = Pose2d(6.5, bump_from_edge + 0.20, Rotation2d(pi))
     bump_shoot_2 = Pose2d(2.5, bump_from_edge, Rotation2d(pi))
