@@ -74,6 +74,7 @@ class DriveToASpot(commands2.Command):
         self.parallel_commands : list[commands2.Command] = []
         
         self.is_part_of_sequence = False
+        self.do_closest_180 = False
         self._nt = NTTable("Autonomous")
         
         self.reset_variables()
@@ -159,7 +160,15 @@ class DriveToASpot(commands2.Command):
     
     def calcutate_angular_velocity(self) -> Rotation2d:
         
-        rotation_offset = (self.target_pose.rotation().relativeTo(self.pose_estimate.rotation()))
+        if self.do_closest_180:
+            rotation_offset_straight = Rotation2d().relativeTo(self.pose_estimate.rotation())
+            rotation_offset_flipped = Rotation2d(math.pi).relativeTo(self.pose_estimate.rotation())
+            if abs(rotation_offset_straight.radians()) < abs(rotation_offset_flipped.radians()):
+                rotation_offset = rotation_offset_straight
+            else:
+                rotation_offset = rotation_offset_flipped
+        else:
+            rotation_offset = (self.target_pose.rotation().relativeTo(self.pose_estimate.rotation()))
         
         # Probably correct calculations 
         # TODO redo this once sequence path is fixed maybe
@@ -239,6 +248,8 @@ class DriveToASpot(commands2.Command):
     def with_override_speed(self, new_speed): self.override_speed = new_speed; return self
     def with_override_rps(self, new_rps): self.override_rps = new_rps; return self
     def with_override_smoothing_radius(self, new_smooth_radius): self.override_smoothing_radius = new_smooth_radius; return self
+    
+    def with_closest_180(self): self.do_closest_180 = True; return self
     
     def with_precise_values(self):
         self.max_speed = 2.7
