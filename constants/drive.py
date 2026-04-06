@@ -15,11 +15,8 @@ class kAutoAlign:
     FLIGHT_TIME_SCALAR: float = 1
     ANGLE_TUNER = 0
 
-    # Keep in mind this degree requirement is when the transfer motors start; it should be a bit more than normal
-    # because it takes some time for fuels to start going up from transfer and them actually shooting at an angle
-    # But ALSO keep in mind that there might be fuel just before the flywheel for example when quickly switching
-    # between alliance/neutral zones
-    REQUIRED_SHOOT_ACCURACY_DEGREES = 10
+    REQUIRED_SHOOT_ACCURACY_DEGREES = 5
+    REQUIRED_SHOOTER_SPEED_ERROR =50
     AUTO_ALIGN_MAX_ANGULAR_RATE = rotationsToRadians(1.5)
 
     ALIGN_TUNER_OFFSET = 0
