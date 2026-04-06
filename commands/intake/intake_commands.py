@@ -126,6 +126,7 @@ class IntakeRollerBackward(Command):
 
     def execute(self):
         self.intake_subsystem.set_roller_speed(kIntakeRoller.TARGET_RPM * -1)
+        print("backwarding")
 
     def isFinished(self) -> bool:
         return False

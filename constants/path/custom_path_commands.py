@@ -77,80 +77,108 @@ class CustomPathCommands:
         '''
         self.auto_paths = {
         "_none" : lambda: InstantCommand(),
-        "TAR_short_sweep" : lambda: SequentialCommandGroup(
+        "TA_short_sweep" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_short_sweep_1),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_short_sweep_2
+                DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_2
                     ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_short_sweep_3
+                DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_3
                     ).with_override_speed(kPath.intaking_speed),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_short_sweep_4
+                DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_4
                     ).with_override_speed(kPath.intaking_speed
                     ).with_override_rps(0.2),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_short_sweep_5
+                DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_5
                     ).with_override_speed(kPath.intaking_speed * 1.5)
             ),
         ),
-        "TAR_wide_sweep" : lambda: SequentialCommandGroup(
+        "TA_wide_sweep" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_wide_sweep_1),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_wide_sweep_2
+                DriveToASpot(self.drivetrain, target_pose = kPoses.wide_sweep_1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.wide_sweep_2
                     ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_wide_sweep_3
+                DriveToASpot(self.drivetrain, target_pose = kPoses.wide_sweep_3
                     ).with_override_speed(kPath.intaking_speed),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_wide_sweep_4),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.wide_sweep_4),
             ),
         ),
-        "TAR_close_sweep" : lambda: SequentialCommandGroup(
+        "TA_close_sweep" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_1),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_2
+                DriveToASpot(self.drivetrain, target_pose = kPoses.close_sweep_1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.close_sweep_2
                     ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_3
+                DriveToASpot(self.drivetrain, target_pose = kPoses.close_sweep_3
                     ).with_override_speed(kPath.intaking_speed),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_close_sweep_4
+                DriveToASpot(self.drivetrain, target_pose = kPoses.close_sweep_4
                     ).with_override_speed(kPath.intaking_speed * 1.3),
             ),
         ),
-        "ATR_bump_shoot" : lambda: SequentialCommandGroup(
+        "AT_bump_shoot" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_1
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_1
                     ).with_override_smoothing_radius(0.1),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_2),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_2
+                    ).with_override_speed(kPath.bump_speed),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_3
+                            ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
+                            ).with_override_speed(kPath.while_shooting_speed
+                            ).with_override_smoothing_radius(1.3),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_4
+                            ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
+                            ).with_override_speed(kPath.while_shooting_speed
+                            ).with_goal_end_velocity(0.1),
             ),
-            DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_3
-                    ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
-                    ).with_override_speed(kPath.while_shooting_speed
-                    ).with_goal_end_velocity(0.1
-                    ).with_end_tolerance(0.1),
-            self.shoot_command_builder(3),
+            ConditionalCommand( # different on left side
+                SequentialCommandGroup(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_5
+                            ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
+                            ).with_override_speed(kPath.while_shooting_speed
+                            ).with_goal_end_velocity(0.1
+                            ).with_end_tolerance(0.1),
+                ),
+                SequentialCommandGroup(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.left_bump_shoot_1
+                        ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
+                        ).with_override_speed(kPath.while_shooting_speed
+                        ).with_goal_end_velocity(0.1
+                        ).with_end_tolerance(0.1),
+                    self.shoot_command_builder(1),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_5),
+                ),
+                lambda : RobotZoneChecker.is_on_right_side(self.drivetrain.get_state().pose)
+            )
         ),
-        "ATR_bump_half_shoot" : lambda: SequentialCommandGroup(
+        "AT_bump_half_shoot" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_half_shoot_1),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_half_shoot_2),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_2
+                    ).with_override_speed(kPath.bump_speed),
             ),
             ParallelRaceGroup(
                 IntakeRollerBackward(self.intake_subsystem),
                 WaitCommand(1.3)
             ),
-            DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_half_shoot_3
-                ).with_parallel_commands(
-                    ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem),
-                    IntakeRollerForward(self.intake_subsystem)
-                ).with_override_speed(kPath.while_shooting_speed
-                ).with_goal_end_velocity(0.1
-                ).with_end_tolerance(0.1),
-            self.shoot_command_builder(1.7),
-        ),
-        "AAR_spot_shoot" : lambda: SequentialCommandGroup(
-            DriveToASpot(self.drivetrain, target_pose = kPoses.right_spot_shoot_1
+            ConditionalCommand( # different on left side
+                SequentialCommandGroup(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_3
+                            ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
+                            ).with_override_speed(kPath.while_shooting_speed
+                            ).with_goal_end_velocity(0.1
+                            ).with_end_tolerance(0.1),
+                    self.shoot_command_builder(3),
+                ),
+                SequentialCommandGroup(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.left_bump_shoot_1
                         ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
-                        ).with_override_speed(kPath.while_shooting_speed),
-            self.shoot_command_builder(2.5),
-            DriveToASpot(self.drivetrain, target_pose = kPoses.right_spot_shoot_2),
+                        ).with_override_speed(kPath.while_shooting_speed
+                        ).with_goal_end_velocity(0.1
+                        ).with_end_tolerance(0.1),
+                    self.shoot_command_builder(3),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_3),
+                ),
+                lambda : RobotZoneChecker.is_on_right_side(self.drivetrain.get_state().pose)
+            )
         ),
-        "NNR_trench_extake" : lambda: SequentialCommandGroup(
+        "NN_trench_extake" : lambda: SequentialCommandGroup(
             DriveToASpot(self.drivetrain, target_pose = kPoses.trench_extake_1
                 ).with_override_speed(kPath.auto_path_speed),
             ParallelRaceGroup(
@@ -160,7 +188,7 @@ class CustomPathCommands:
         ),
         "template" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.right_short_sweep_1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_1),
             ),
             self.shoot_command_builder(3)
         ),

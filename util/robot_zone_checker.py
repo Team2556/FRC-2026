@@ -88,6 +88,22 @@ class RobotZoneChecker:
     
     # Y value specific ones
     @staticmethod
+    def is_on_left_side(pose : Pose2d):
+        return RobotZoneChecker.is_within_pose(
+            pose, 
+            FlipUtil.fieldPose(Pose2d(0, RobotZoneChecker.field_height / 2, Rotation2d())),
+            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.field_width, RobotZoneChecker.field_height, Rotation2d())),
+        )
+    
+    @staticmethod
+    def is_on_right_side(pose : Pose2d):
+        return RobotZoneChecker.is_within_pose(
+            pose, 
+            FlipUtil.fieldPose(Pose2d(0, 0, Rotation2d())),
+            FlipUtil.fieldPose(Pose2d(RobotZoneChecker.field_width, RobotZoneChecker.field_height / 2, Rotation2d())),
+        )
+    
+    @staticmethod
     def is_in_left_passing_zone(pose : Pose2d):
         return RobotZoneChecker.is_within_pose(
             pose, 

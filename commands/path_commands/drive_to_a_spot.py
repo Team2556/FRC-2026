@@ -55,7 +55,7 @@ class DriveToASpot(commands2.Command):
         
         self.max_speed = max_speed
         self.max_radians_per_second = rotationsToRadians(max_rps)
-        self.smoothing_radius = kPath.smoothing_radius
+        self.smoothing_radius = kPath.smoothing_radius_auto
         
         self.blue_alliance_target_pose = target_pose
         
@@ -95,6 +95,11 @@ class DriveToASpot(commands2.Command):
         self.target_pose = FlipUtil.fieldPose(self.blue_alliance_target_pose)
         if kPath.MIRROR_REVERSE_PATHS and DriverStation.isAutonomous():
             self.target_pose = FlipUtil.mirrorPose(self.target_pose)
+        
+        if DriverStation.isAutonomous():
+            self.smoothing_radius = kPath.smoothing_radius_auto
+        else:
+            self.smoothing_radius = kPath.smoothing_radius_teleop
         
         if not self.override_speed == None:
             self.max_speed = self.override_speed
@@ -238,9 +243,9 @@ class DriveToASpot(commands2.Command):
     def with_precise_values(self):
         self.max_speed = 2.7
         self.max_rps = 0.5
-        self.end_tolerance = 0.1
+        self.end_tolerance = 0.15
         self.end_rotation_tolerance = 0.01
-        self.goal_end_velocity = 0.01
+        self.goal_end_velocity = 0.12
         return self
 
     def with_sequence_pose_values(self):
@@ -253,6 +258,6 @@ class DriveToASpot(commands2.Command):
         self.slow_distance = abs(self.max_speed ** 2) / (kPath.max_translational_acceleration * 2)
         self.goal_end_velocity = (self.max_speed ** 2 - 2 * kPath.max_translational_acceleration * self.slow_distance) ** 0.5
         
-        self.smoothing_time = kPath.smoothing_radius / self.max_speed * kPath.smoothing_time_multiplier
+        self.smoothing_time = self.smoothing_radius / self.max_speed * kPath.smoothing_time_multiplier
         
         return self
