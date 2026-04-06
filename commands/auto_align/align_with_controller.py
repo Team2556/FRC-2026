@@ -11,7 +11,7 @@ from util.flip_util import FlipUtil
 
 from subsystems.shooter.dual_shooter import DualMotorShooter
 from subsystems.led.LED_controller import CANdleLEDController
-from subsystems.shooter.shooter_hood import ShooterHood, HoodStates
+from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
 from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 from subsystems.intake.intake import IntakeSubsystem
@@ -24,24 +24,8 @@ from constants.drive import kAutoAlign
 from constants.intake import kIntakeRoller
 from constants.shooter import kShooterMotor
 
+
 class ConditionalAlignAndShoot(commands2.Command):
-    """
-    Aligns the robot toward the best shooting target and fires once ready.
-
-    Target selection (checked each execute loop):
-      - Left passing zone  → left pass spot
-      - Right passing zone → right pass spot
-      - Alliance zone      → hub
-
-    Rotation is computed by a :class:`RotationCalculator` helper; this command
-    does not use any multi-layer inheritance.
-    """
-
-    # Intake oscillation timing constants
-    _OSCILLATE_PERIOD = 1.0    # seconds per cycle
-    _INTAKE_DURATION  = 0.8    # seconds of intake (forward) per cycle
-    # Remaining 0.9 s per cycle = eject (reverse) to free stuck balls
-
     def __init__(
         self,
         drivetrain: SwerveDriveTrain,
@@ -59,13 +43,10 @@ class ConditionalAlignAndShoot(commands2.Command):
         self._intake = intake_subsystem
         self._calc = RotationCalculator(drivetrain, kHub.POS)
 
-        # Own transfer and intake.  Drivetrain is influenced via the
-        # set_align_rotation() overlay so it stays free for the drive command.
-        self.addRequirements(transfer_subsystem, intake_subsystem, hood)
+        self.addRequirements(transfer_subsystem, shooter, hood)
 
     def initialize(self) -> None:
         self._calc.initialize()
-        self._hood.set_state(HoodStates.AUTO)
         self._shooter.enable()
 
     def execute(self) -> None:
@@ -73,55 +54,41 @@ class ConditionalAlignAndShoot(commands2.Command):
 
         drive_state = self._drivetrain.get_state()
         robot_pose = drive_state.pose
-        self._find_target(robot_pose)
 
-        rotation_rate = self._calc.calculate_rotation()
-        # if abs(self._calc.current_accuracy < 2):
-            # self._drivetrain.clear_align_rotation()
-        # else:
+        target_pose = self._find_target(robot_pose)
+        self._calc.with_target(target=target_pose)
+
         self._drivetrain.set_align_rotation(
-            rotation_rate * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
+            self._calc.calculate_rotation() * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
         )
 
-        # Update hood angle and shooter RPM from distance interpolation tables
-        self._hood.add_auto_hood_measurement(drive_state, self._calc.leading_target)
-        self._shooter.add_auto_rpm_measurement(robot_pose, self._calc.leading_target)
+        distance = robot_pose.translation().distance(
+            self._calc.leading_target.translation()
+        )
+        self._hood.set_target_angle(ShooterHood.get_angle_by_distance(distance))
+        self._shooter.set_target_rpm(DualMotorShooter.get_rpm_by_distance(distance))
 
-        phase = wpilib.Timer.getFPGATimestamp() % self._OSCILLATE_PERIOD
-        if phase < self._INTAKE_DURATION:
-            self._intake.set_roller_speed(kIntakeRoller.TARGET_RPM)
-        else:
-            self._intake.set_roller_speed(kIntakeRoller.TARGET_RPM * -0.2)
-
-        # Don't fire until BOTH yaw and shooter speed are on target
         if (
             self._calc.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES
-            and self._shooter.is_charged
+            and self._shooter.is_at_rpm()
+            and self._hood.is_at_angle()
         ):
             self._transfer.activate()
-
-        if RobotZoneChecker.is_in_opposing_alliance_zone(robot_pose):
-            kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM_FAR
         else:
-            kShooterMotor.CURRENT_TARGET_RPM = kShooterMotor.TARGET_RPM
-
-    # def isFinished(self) -> bool:
-    #     return self._drivetrain.should_stop_shooting()
+            self._transfer.stop()
 
     def end(self, interrupted: bool) -> None:
         self._drivetrain.clear_align_rotation()
-        self._shooter.clear_auto_target()
-        self._intake.stop_roller()
         self._transfer.stop()
-    
+
     def getInterruptionBehavior(self):
         return InterruptionBehavior.kCancelIncoming
 
-    def _find_target(self, pose: Pose2d) -> None:
+    def _find_target(self, pose: Pose2d) -> Pose2d:
         """Update the calculator target based on the robot's current zone."""
-        if RobotZoneChecker.is_in_left_passing_zone(pose):
-            self._calc.with_target(FlipUtil.fieldPose(kPassSpots.PASS_SPOT_LEFT))
-        if RobotZoneChecker.is_in_right_passing_zone(pose):
-            self._calc.with_target(FlipUtil.fieldPose(kPassSpots.PASS_SPOT_RIGHT))
         if RobotZoneChecker.is_in_hub_shooting_zone(pose):
-            self._calc.with_target(FlipUtil.fieldPose(kHub.POS))
+            return FlipUtil.fieldPose(kHub.POS)
+        elif RobotZoneChecker.is_in_left_passing_zone(pose):
+            return FlipUtil.fieldPose(kPassSpots.PASS_SPOT_LEFT)
+        elif RobotZoneChecker.is_in_right_passing_zone(pose):
+            return FlipUtil.fieldPose(kPassSpots.PASS_SPOT_RIGHT)
