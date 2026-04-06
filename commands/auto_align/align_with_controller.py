@@ -14,8 +14,6 @@ from subsystems.led.LED_controller import CANdleLEDController
 from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
 from subsystems.drivetrain.drivetrain import SwerveDriveTrain
-from subsystems.intake.intake import IntakeSubsystem
-from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 
 from commands.auto_align.alignio import RotationCalculator
 
@@ -32,15 +30,12 @@ class ConditionalAlignAndShoot(commands2.Command):
         shooter: DualMotorShooter,
         transfer_subsystem: TransferSubsystem,
         hood: ShooterHood,
-        intake_subsystem: IntakeSubsystem,
-        LED_controller: CANdleLEDController | None = None,
     ):
         super().__init__()
         self._drivetrain = drivetrain
         self._shooter = shooter
         self._transfer = transfer_subsystem
         self._hood = hood
-        self._intake = intake_subsystem
         self._calc = RotationCalculator(drivetrain, kHub.POS)
 
         self.addRequirements(transfer_subsystem, shooter, hood)

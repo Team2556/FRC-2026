@@ -11,13 +11,13 @@ from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.shooter.dual_shooter import DualMotorShooter
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
-from subsystems.intake.intake import IntakeSubsystem
+from subsystems.intake.intake_roller import IntakeRoller
 from subsystems.led.LED_controller import CANdleLEDController
 
 from commands.path_commands.drive_to_a_spot import DriveToASpot
 from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
 from commands.auto_align.align_with_controller import ConditionalAlignAndShoot
-from commands.intake.intake_commands import IntakeRollerForward, IntakeRollerBackward
+from commands.intake.roller_commands import IntakeRollerForward, IntakeRollerBackward
 from commands.shooter.shooter_commands import EnableShooter, DisableShooter
 
 from constants.path.key_poses import kPoses, kPath
@@ -29,7 +29,7 @@ class CustomPathCommands:
     def __init__(
         self,
         drivetrain : SwerveDriveTrain = None,
-        intake_subsystem : IntakeSubsystem = None,
+        roller_subsystem : IntakeRoller = None,
         transfer_subsystem : TransferSubsystem = None,
         shooter_subsystem : DualMotorShooter = None,
         hood_subsystem : ShooterHood = None,
@@ -40,7 +40,7 @@ class CustomPathCommands:
         self.drivetrain = drivetrain
         self.shooter_subsystem = shooter_subsystem
         self.transfer_subsystem = transfer_subsystem
-        self.intake_subsystem = intake_subsystem
+        self.roller_subsystem = roller_subsystem
         self.hood_subsystem = hood_subsystem
         self.led_subsystem = led_subsystem
         
@@ -61,7 +61,7 @@ class CustomPathCommands:
         '''Makes a command that sits still and shoots for shoot_time seconds'''
         return ParallelRaceGroup(
             DriveToASpot(self.drivetrain, target_pose = Pose2d()
-                            ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
+                            ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem)
                             ).with_override_speed(0
                             ).with_override_rps(0
                             ).with_end_tolerance(0),
@@ -119,7 +119,7 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_2),
             ),
             DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_shoot_3
-                    ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
+                    ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem)
                     ).with_override_speed(kPath.while_shooting_speed
                     ).with_goal_end_velocity(0.1
                     ).with_end_tolerance(0.1),
@@ -131,13 +131,13 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_half_shoot_2),
             ),
             ParallelRaceGroup(
-                IntakeRollerBackward(self.intake_subsystem),
+                IntakeRollerBackward(self.roller_subsystem),
                 WaitCommand(1.3)
             ),
             DriveToASpot(self.drivetrain, target_pose = kPoses.right_bump_half_shoot_3
                 ).with_parallel_commands(
-                    ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem),
-                    IntakeRollerForward(self.intake_subsystem)
+                    ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem),
+                    IntakeRollerForward(self.roller_subsystem)
                 ).with_override_speed(kPath.while_shooting_speed
                 ).with_goal_end_velocity(0.1
                 ).with_end_tolerance(0.1),
@@ -145,7 +145,7 @@ class CustomPathCommands:
         ),
         "AAR_spot_shoot" : lambda: SequentialCommandGroup(
             DriveToASpot(self.drivetrain, target_pose = kPoses.right_spot_shoot_1
-                        ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
+                        ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem)
                         ).with_override_speed(kPath.while_shooting_speed),
             self.shoot_command_builder(2.5),
             DriveToASpot(self.drivetrain, target_pose = kPoses.right_spot_shoot_2),
@@ -160,7 +160,7 @@ class CustomPathCommands:
             DriveToASpot(self.drivetrain, target_pose = kPoses.trench_extake_1
                 ).with_override_speed(kPath.auto_path_speed),
             ParallelRaceGroup(
-                IntakeRollerBackward(self.intake_subsystem),
+                IntakeRollerBackward(self.roller_subsystem),
                 WaitCommand(1.7)
             )
         ),
