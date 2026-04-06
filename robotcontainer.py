@@ -11,6 +11,7 @@ from commands2 import ParallelCommandGroup, cmd, InterruptionBehavior
 from util.custom_controller import XboxController
 from util.send_fms_data import SendFMSData
 from util.auto_chooser import AutoBuilder
+from util.flip_util import FlipUtil
 
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import multi_limelight
@@ -24,7 +25,7 @@ from subsystems.shooter.dual_shooter import DualMotorShooter
 from commands.auto_align import align_with_controller
 from commands.drive import drive_commands
 from commands.vision import vision_odometry
-from constants.path import custom_path_commands
+from constants.path import custom_path_commands, key_poses
 from commands.transfer.run_transfer_motors import RunTransferCommand
 from commands.intake.pivot_commands import (
     IntakePivotDefaultCommand,
@@ -216,7 +217,10 @@ class RobotContainer:
         IntakeRollerForward(self.intake_roller).schedule()
 
         initial_pose = self.auto_chooser.get_initial_pose()
+        if key_poses.kPath.MIRROR_REVERSE_PATHS:
+            initial_pose = FlipUtil.mirrorPose(initial_pose)
         if initial_pose:
             drive_commands.initial_pose(self._drivetrain, initial_pose).schedule()
+        
         self.update_auto()
         return self.auto

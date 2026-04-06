@@ -15,7 +15,7 @@ from typing import Callable
 class AutoBuilder:
     '''Handles the complicated auto builder stuff and communicates all path constants between the code and Elastic'''
     
-    path_amount = 8
+    path_amount = 6
     
     def __init__(self, auto_paths: dict[str, Callable] = None):
         self.auto_paths = auto_paths
@@ -23,15 +23,18 @@ class AutoBuilder:
         self._nt_path = NTTable("Sequence Path")
         self._nt_path.float("Max Speed", kPath.default_path_speed)
         self._nt_path.float("Auto Speed", kPath.auto_path_speed)
+        self._nt_path.float("Bump Speed", kPath.bump_speed)
         self._nt_path.float("Intaking Speed", kPath.intaking_speed)
         self._nt_path.float("While Shooting Speed", kPath.while_shooting_speed)
         
-        self._nt_path.float("Smoothing Radius", kPath.smoothing_radius)
+        self._nt_path.float("Smoothing Radius", kPath.smoothing_radius_auto)
         
         self._nt_path.float("Min Goal End Velocity Mult", kPath.min_goal_end_velocity_mult)
         self._nt_path.float("Smoothing Time Multiplier", kPath.smoothing_time_multiplier)
         
         self._nt_auto = NTTable("Autonomous")
+        self._nt_auto.bool("Reverse Paths", kPath.MIRROR_REVERSE_PATHS)
+        
         self.make_nt_display()
 
     def make_nt_display(self):
@@ -68,18 +71,22 @@ class AutoBuilder:
         for i in range(self.path_amount):
             self.nt_subtables[i].update_sendables()
         self._nt_auto.update_sendables()
+        
+        kPath.MIRROR_REVERSE_PATHS = self._nt_auto.get("Reverse Paths")
 
         # Then get all NetworkTablesStuff (you still need to call choose_auto to update all values in paths)
         # and all that updating should be just a button
         kPath.default_path_speed = self._nt_path.get("Max Speed")
         kPath.auto_path_speed = self._nt_path.get("Auto Speed")
+        kPath.bump_speed = self._nt_path.get("Bump Speed")
         kPath.intaking_speed = self._nt_path.get("Intaking Speed")
         kPath.while_shooting_speed = self._nt_path.get("While Shooting Speed")
         
-        kPath.smoothing_radius = self._nt_path.get("Smoothing Radius")
+        kPath.smoothing_radius_auto = self._nt_path.get("Smoothing Radius")
         
         kPath.min_goal_end_velocity_mult = self._nt_path.get("Min Goal End Velocity Mult")
         kPath.smoothing_time_multiplier = self._nt_path.get("Smoothing Time Multiplier")
+        
     
     def get_initial_pose(self):
         return self.initial_pose.getSelected()

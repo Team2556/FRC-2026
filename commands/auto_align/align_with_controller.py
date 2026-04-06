@@ -79,7 +79,7 @@ class ConditionalAlignAndShoot(commands2.Command):
         self._transfer.stop()
 
     def getInterruptionBehavior(self):
-        return InterruptionBehavior.kCancelIncoming
+        return InterruptionBehavior.kCancelSelf
 
     def _find_target(self, pose: Pose2d) -> Pose2d | None:
         """Update the calculator target based on the robot's current zone."""

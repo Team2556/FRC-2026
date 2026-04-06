@@ -55,7 +55,7 @@ class DriveToASpot(commands2.Command):
         
         self.max_speed = max_speed
         self.max_radians_per_second = rotationsToRadians(max_rps)
-        self.smoothing_radius = kPath.smoothing_radius
+        self.smoothing_radius = kPath.smoothing_radius_auto
         
         self.blue_alliance_target_pose = target_pose
         
@@ -74,6 +74,7 @@ class DriveToASpot(commands2.Command):
         self.parallel_commands : list[commands2.Command] = []
         
         self.is_part_of_sequence = False
+        self.do_closest_180 = False
         self._nt = NTTable("Autonomous")
         
         self.reset_variables()
@@ -93,6 +94,13 @@ class DriveToASpot(commands2.Command):
         self.next_command_velocity : Pose2d = Pose2d()
         
         self.target_pose = FlipUtil.fieldPose(self.blue_alliance_target_pose)
+        if kPath.MIRROR_REVERSE_PATHS and DriverStation.isAutonomous():
+            self.target_pose = FlipUtil.mirrorPose(self.target_pose)
+        
+        if DriverStation.isAutonomous():
+            self.smoothing_radius = kPath.smoothing_radius_auto
+        else:
+            self.smoothing_radius = kPath.smoothing_radius_teleop
         
         if not self.override_speed == None:
             self.max_speed = self.override_speed
@@ -152,7 +160,15 @@ class DriveToASpot(commands2.Command):
     
     def calcutate_angular_velocity(self) -> Rotation2d:
         
-        rotation_offset = (self.target_pose.rotation().relativeTo(self.pose_estimate.rotation()))
+        if self.do_closest_180:
+            rotation_offset_straight = Rotation2d().relativeTo(self.pose_estimate.rotation())
+            rotation_offset_flipped = Rotation2d(math.pi).relativeTo(self.pose_estimate.rotation())
+            if abs(rotation_offset_straight.radians()) < abs(rotation_offset_flipped.radians()):
+                rotation_offset = rotation_offset_straight
+            else:
+                rotation_offset = rotation_offset_flipped
+        else:
+            rotation_offset = (self.target_pose.rotation().relativeTo(self.pose_estimate.rotation()))
         
         # Probably correct calculations 
         # TODO redo this once sequence path is fixed maybe
@@ -233,12 +249,14 @@ class DriveToASpot(commands2.Command):
     def with_override_rps(self, new_rps): self.override_rps = new_rps; return self
     def with_override_smoothing_radius(self, new_smooth_radius): self.override_smoothing_radius = new_smooth_radius; return self
     
+    def with_closest_180(self): self.do_closest_180 = True; return self
+    
     def with_precise_values(self):
         self.max_speed = 2.7
         self.max_rps = 0.5
-        self.end_tolerance = 0.1
+        self.end_tolerance = 0.15
         self.end_rotation_tolerance = 0.01
-        self.goal_end_velocity = 0.01
+        self.goal_end_velocity = 0.12
         return self
 
     def with_sequence_pose_values(self):
@@ -251,6 +269,6 @@ class DriveToASpot(commands2.Command):
         self.slow_distance = abs(self.max_speed ** 2) / (kPath.max_translational_acceleration * 2)
         self.goal_end_velocity = (self.max_speed ** 2 - 2 * kPath.max_translational_acceleration * self.slow_distance) ** 0.5
         
-        self.smoothing_time = kPath.smoothing_radius / self.max_speed * kPath.smoothing_time_multiplier
+        self.smoothing_time = self.smoothing_radius / self.max_speed * kPath.smoothing_time_multiplier
         
         return self
