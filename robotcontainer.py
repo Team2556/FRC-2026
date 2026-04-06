@@ -174,6 +174,11 @@ class RobotContainer:
         self._controller_1.b().and_(self._controller_1.leftBumper().not_()).and_(self._controller_1.rightBumper()).whileTrue(
             self.custom_path_commands.teleop_paths["extake_right_trench"]
         )
+        
+        # Testing button for precision
+        self._controller_1.povLeft().whileTrue(
+            self.custom_path_commands.teleop_paths["back_left_corner"]
+        )
 
         # -------------------------------------------------------------------
         # CONTROLLER 2
