@@ -15,7 +15,8 @@ from util.flip_util import FlipUtil
 
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import multi_limelight
-from subsystems.intake.intake import IntakeSubsystem
+from subsystems.intake.intake_pivot import IntakePivot
+from subsystems.intake.intake_roller import IntakeRoller
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
 from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.led.LED_controller import CANdleLEDController
@@ -26,12 +27,16 @@ from commands.drive import drive_commands
 from commands.vision import vision_odometry
 from constants.path import custom_path_commands, key_poses
 from commands.transfer.run_transfer_motors import RunTransferCommand
-from commands.intake.intake_commands import (
+from commands.intake.pivot_commands import (
+    IntakePivotDefaultCommand,
     IntakePivotForward,
     IntakePivotReverse,
-    IntakeDefaultCommand,
+)
+from commands.intake.roller_commands import (
+    IntakeRollerDefaultCommand,
     IntakeRollerForward,
     IntakeRollerBackward,
+    IntakeRollerOscillate
 )
 from commands.shooter import shooter_commands, hood_commands
 
@@ -45,7 +50,8 @@ class RobotContainer:
 
         self._drivetrain = drivetrain.SwerveDriveTrain()
 
-        self.intake_subsystem = IntakeSubsystem()
+        self.intake_pivot = IntakePivot()
+        self.intake_roller = IntakeRoller()
         self.transfer_subsystem = TransferSubsystem()
         self.shooter_subsystem = DualMotorShooter()
         self.hood_subsystem = ShooterHood()
@@ -56,7 +62,7 @@ class RobotContainer:
 
         self.custom_path_commands = custom_path_commands.CustomPathCommands(
             self._drivetrain,
-            intake_subsystem=self.intake_subsystem,
+            roller_subsystem=self.intake_roller,
             transfer_subsystem=self.transfer_subsystem,
             shooter_subsystem=self.shooter_subsystem,
             hood_subsystem=self.hood_subsystem,
@@ -83,8 +89,11 @@ class RobotContainer:
         self.shooter_subsystem.setDefaultCommand(
             shooter_commands.DisableShooter(self.shooter_subsystem)
         )
-        self.intake_subsystem.setDefaultCommand(
-            IntakeDefaultCommand(self.intake_subsystem, self._drivetrain)
+        self.intake_pivot.setDefaultCommand(
+            IntakePivotDefaultCommand(self.intake_pivot, self._drivetrain)
+        )
+        self.intake_roller.setDefaultCommand(
+            IntakeRollerDefaultCommand(self.intake_roller, self.intake_pivot, self._drivetrain)
         )
         self.hood_subsystem.setDefaultCommand(
             hood_commands.UpdateHoodPositionVariable(
@@ -118,8 +127,8 @@ class RobotContainer:
                     self.shooter_subsystem,
                     self.transfer_subsystem,
                     self.hood_subsystem,
-                    self.intake_subsystem,
                 ),
+                IntakeRollerOscillate(self.intake_roller)
             ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
         ).debounce(0.2)
 
@@ -182,19 +191,19 @@ class RobotContainer:
         )
 
         self._controller_2.leftTrigger().whileTrue(
-            IntakeRollerForward(self.intake_subsystem)
+            IntakeRollerForward(self.intake_roller)
         )
 
         self._controller_2.rightTrigger().whileTrue(
-            IntakeRollerBackward(self.intake_subsystem)
+            IntakeRollerBackward(self.intake_roller)
         )
 
         self._controller_2.leftBumper().onTrue(
-            IntakePivotReverse(self.intake_subsystem),
+            IntakePivotReverse(self.intake_pivot),
         )
 
         self._controller_2.rightBumper().onTrue(
-            IntakePivotForward(self.intake_subsystem),
+            IntakePivotForward(self.intake_pivot),
         )
 
         self._controller_2.povUp().onTrue(
@@ -202,15 +211,15 @@ class RobotContainer:
         )
 
         self._controller_2.povLeft().whileTrue(
-            IntakeRollerBackward(self.intake_subsystem)
+            IntakeRollerBackward(self.intake_roller)
         )
 
     def update_auto(self):
         self.auto = self.auto_chooser.choose_auto()
 
     def getAutonomousCommand(self):
-        IntakePivotForward(self.intake_subsystem).schedule()
-        IntakeRollerForward(self.intake_subsystem).schedule()
+        IntakePivotForward(self.intake_pivot).schedule()
+        IntakeRollerForward(self.intake_roller).schedule()
 
         initial_pose = self.auto_chooser.get_initial_pose()
         if key_poses.kPath.MIRROR_REVERSE_PATHS:

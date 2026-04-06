@@ -11,13 +11,13 @@ from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.shooter.dual_shooter import DualMotorShooter
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
-from subsystems.intake.intake import IntakeSubsystem
+from subsystems.intake.intake_roller import IntakeRoller
 from subsystems.led.LED_controller import CANdleLEDController
 
 from commands.path_commands.drive_to_a_spot import DriveToASpot
 from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
 from commands.auto_align.align_with_controller import ConditionalAlignAndShoot
-from commands.intake.intake_commands import IntakeRollerForward, IntakeRollerBackward
+from commands.intake.roller_commands import IntakeRollerForward, IntakeRollerBackward
 from commands.shooter.shooter_commands import EnableShooter, DisableShooter
 
 from constants.path.key_poses import kPoses, kPath
@@ -29,7 +29,7 @@ class CustomPathCommands:
     def __init__(
         self,
         drivetrain : SwerveDriveTrain = None,
-        intake_subsystem : IntakeSubsystem = None,
+        roller_subsystem : IntakeRoller = None,
         transfer_subsystem : TransferSubsystem = None,
         shooter_subsystem : DualMotorShooter = None,
         hood_subsystem : ShooterHood = None,
@@ -40,7 +40,7 @@ class CustomPathCommands:
         self.drivetrain = drivetrain
         self.shooter_subsystem = shooter_subsystem
         self.transfer_subsystem = transfer_subsystem
-        self.intake_subsystem = intake_subsystem
+        self.roller_subsystem = roller_subsystem
         self.hood_subsystem = hood_subsystem
         self.led_subsystem = led_subsystem
         
@@ -195,7 +195,7 @@ class CustomPathCommands:
                     ).with_override_speed(kPath.bump_speed).with_precise_values(),
             ),
             ParallelRaceGroup(
-                IntakeRollerBackward(self.intake_subsystem),
+                IntakeRollerBackward(self.roller_subsystem),
                 WaitCommand(1.3)
             ),
             ConditionalCommand( # different on left side
@@ -223,7 +223,7 @@ class CustomPathCommands:
             DriveToASpot(self.drivetrain, target_pose = kPoses.trench_extake_1
                 ).with_override_speed(kPath.auto_path_speed),
             ParallelRaceGroup(
-                IntakeRollerBackward(self.intake_subsystem),
+                IntakeRollerBackward(self.roller_subsystem),
                 WaitCommand(1.7)
             )
         ),
