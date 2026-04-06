@@ -2,6 +2,7 @@ import wpilib
 
 from commands2 import Command
 
+from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 from subsystems.intake.intake_pivot import IntakePivot
 from subsystems.intake.intake_roller import IntakeRoller
 
@@ -9,10 +10,10 @@ from constants.intake import kIntakePivot, kIntakeRoller
 
 
 class IntakeRollerDefaultCommand(Command):
-    def __init__(self, roller: IntakeRoller, pivot: IntakePivot, drivetrain):
+    def __init__(self, roller: IntakeRoller, pivot: IntakePivot, drivetrain: SwerveDriveTrain):
         super().__init__()
         self._roller = roller
-        self._pivot = pivot  # read-only reference, not required
+        self._pivot = pivot
         self._drivetrain = drivetrain
         self.addRequirements(roller)
 

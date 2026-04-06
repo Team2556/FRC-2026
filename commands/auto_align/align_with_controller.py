@@ -51,7 +51,9 @@ class ConditionalAlignAndShoot(commands2.Command):
         robot_pose = drive_state.pose
 
         target_pose = self._find_target(robot_pose)
-        self._calc.with_target(target=target_pose)
+
+        if target_pose is not None:
+            self._calc.with_target(target=target_pose)
 
         self._drivetrain.set_align_rotation(
             self._calc.calculate_rotation() * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
@@ -79,7 +81,7 @@ class ConditionalAlignAndShoot(commands2.Command):
     def getInterruptionBehavior(self):
         return InterruptionBehavior.kCancelIncoming
 
-    def _find_target(self, pose: Pose2d) -> Pose2d:
+    def _find_target(self, pose: Pose2d) -> Pose2d | None:
         """Update the calculator target based on the robot's current zone."""
         if RobotZoneChecker.is_in_hub_shooting_zone(pose):
             return FlipUtil.fieldPose(kHub.POS)
@@ -87,3 +89,5 @@ class ConditionalAlignAndShoot(commands2.Command):
             return FlipUtil.fieldPose(kPassSpots.PASS_SPOT_LEFT)
         elif RobotZoneChecker.is_in_right_passing_zone(pose):
             return FlipUtil.fieldPose(kPassSpots.PASS_SPOT_RIGHT)
+
+        return None
