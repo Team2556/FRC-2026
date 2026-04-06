@@ -61,10 +61,10 @@ class CustomPathCommands:
         '''Makes a command that sits still and shoots for shoot_time seconds'''
         return ParallelRaceGroup(
             DriveToASpot(self.drivetrain, target_pose = Pose2d()
-                            ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
-                            ).with_override_speed(0
-                            ).with_override_rps(0
-                            ).with_end_tolerance(0),
+                ).with_parallel_commands(ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem, self.intake_subsystem)
+                ).with_override_speed(0
+                ).with_override_rps(0
+                ).with_end_tolerance(0),
             WaitCommand(shoot_time),
         )
         
@@ -386,12 +386,12 @@ class CustomPathCommands:
             lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)  
         ),
         "extake_left_trench" : ConditionalCommand(
-            DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_trench).with_override_speed(kPath.bump_speed).with_closest_180(),
+            DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_trench).with_override_speed(kPath.bump_speed),
             cmd.none(),
             lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose)  
         ),
         "extake_right_trench" : ConditionalCommand(
-            DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_trench).with_override_speed(kPath.bump_speed).with_closest_180(),
+            DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_trench).with_override_speed(kPath.bump_speed),
             cmd.none(),
             lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose)  
         )
