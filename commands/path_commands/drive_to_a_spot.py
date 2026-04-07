@@ -6,7 +6,7 @@ from wpimath.geometry import Pose2d, Translation2d, Rotation2d
 from wpimath.units import rotationsToRadians
 from wpimath.kinematics import ChassisSpeeds
 
-from wpilib import DriverStation
+from wpilib import DriverStation, Timer
 
 from util.flip_util import FlipUtil
 from util.math_helpers import clamp
@@ -74,7 +74,11 @@ class DriveToASpot(commands2.Command):
         self.parallel_commands : list[commands2.Command] = []
         
         self.is_part_of_sequence = False
+        self.do_closest_180 = False
         self._nt = NTTable("Autonomous")
+        
+        self.timer = Timer()
+        self.max_time = 0
         
         self.reset_variables()
         
@@ -141,6 +145,10 @@ class DriveToASpot(commands2.Command):
         
         linear_distance = distance.norm()
         
+        if not self.timer.isRunning() and self.max_speed > 0:
+            self.max_time = (linear_distance / self.max_speed) * 2.2 # <-- time to wait to skip path multiplier
+            self.timer.start()
+        
         self.slow_distance = abs(self.max_speed ** 2) / (kPath.max_translational_acceleration * 2)
         
         # If robot is within "slow distance" then make robot move slower
@@ -149,17 +157,20 @@ class DriveToASpot(commands2.Command):
             progress_ratio = linear_distance / self.slow_distance
             target_speed = (target_speed - self.goal_end_velocity) * progress_ratio + self.goal_end_velocity
         
-        # ok... so this does break when switching alliances in the middle of a match but it's fine anyway
-        # if you really want to fix this then store a value "initial alliance" and multiply by -1
-        if DriverStation.getAlliance() == DriverStation.Alliance.kBlue: # was kRed (ai was wrong i don't blame it i don't know either)
-            return Translation2d(target_speed, 0).rotateBy(distance.angle()) * -1
-        else:
-            return Translation2d(target_speed, 0).rotateBy(distance.angle())
+        return Translation2d(target_speed, 0).rotateBy(distance.angle())
         
     
     def calcutate_angular_velocity(self) -> Rotation2d:
         
-        rotation_offset = (self.target_pose.rotation().relativeTo(self.pose_estimate.rotation()))
+        if self.do_closest_180:
+            rotation_offset_straight = Rotation2d().relativeTo(self.pose_estimate.rotation())
+            rotation_offset_flipped = Rotation2d(math.pi).relativeTo(self.pose_estimate.rotation())
+            if abs(rotation_offset_straight.radians()) < abs(rotation_offset_flipped.radians()):
+                rotation_offset = rotation_offset_straight
+            else:
+                rotation_offset = rotation_offset_flipped
+        else:
+            rotation_offset = (self.target_pose.rotation().relativeTo(self.pose_estimate.rotation()))
         
         # Probably correct calculations 
         # TODO redo this once sequence path is fixed maybe
@@ -196,6 +207,11 @@ class DriveToASpot(commands2.Command):
         self.drivetrain.run_velocity(robot_speeds)
     
     def isFinished(self):
+        
+        # Timer stuff doing the override if it's taking too long
+        if self.timer.get() >= self.max_time and self.max_speed > 0:
+            return True
+        
         # Translation stuff
         distance_from_target = self.pose_estimate.translation().distance(self.target_pose.translation())
         self.is_within_distance = distance_from_target < self.end_tolerance
@@ -213,6 +229,7 @@ class DriveToASpot(commands2.Command):
             self.drivetrain.stop()
         for parallel_command in self.parallel_commands:
             parallel_command.cancel()
+        self.timer.reset()
     
     def get_distance_progress(self):
         self.update_pose_estimate()
@@ -240,12 +257,14 @@ class DriveToASpot(commands2.Command):
     def with_override_rps(self, new_rps): self.override_rps = new_rps; return self
     def with_override_smoothing_radius(self, new_smooth_radius): self.override_smoothing_radius = new_smooth_radius; return self
     
+    def with_closest_180(self): self.do_closest_180 = True; return self
+    
     def with_precise_values(self):
         self.max_speed = 2.7
         self.max_rps = 0.5
-        self.end_tolerance = 0.15
-        self.end_rotation_tolerance = 0.01
-        self.goal_end_velocity = 0.12
+        self.end_tolerance = 0.2
+        self.end_rotation_tolerance = 0.1
+        self.goal_end_velocity = 0.03
         return self
 
     def with_sequence_pose_values(self):

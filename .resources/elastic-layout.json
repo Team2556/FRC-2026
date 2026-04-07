@@ -138,119 +138,8 @@
       "grid_layout": {
         "layouts": [
           {
-            "title": "Sequence Path",
-            "x": 0.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 512.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Auto Speed",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Sequence Path/Auto Speed",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "Teleop Path Speed",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Sequence Path/Max Speed",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "Intaking Speed",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Sequence Path/Intaking Speed",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "While Shooting Speed",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Sequence Path/While Shooting Speed",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "Smoothing Radius",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Sequence Path/Smoothing Radius",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "Smoothing Time Multiplier",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Sequence Path/Smoothing Time Multiplier",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "Min Goal End Velocity Mult",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Sequence Path/Min Goal End Velocity Mult",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              }
-            ]
-          },
-          {
             "title": "Path 1",
-            "x": 256.0,
+            "x": 768.0,
             "y": 0.0,
             "width": 256.0,
             "height": 256.0,
@@ -303,7 +192,7 @@
           },
           {
             "title": "Path 2",
-            "x": 512.0,
+            "x": 1024.0,
             "y": 0.0,
             "width": 256.0,
             "height": 256.0,
@@ -356,8 +245,8 @@
           },
           {
             "title": "Path 3",
-            "x": 768.0,
-            "y": 0.0,
+            "x": 256.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 256.0,
             "type": "List Layout",
@@ -409,8 +298,8 @@
           },
           {
             "title": "Path 4",
-            "x": 1024.0,
-            "y": 0.0,
+            "x": 512.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 256.0,
             "type": "List Layout",
@@ -462,7 +351,7 @@
           },
           {
             "title": "Path 5",
-            "x": 256.0,
+            "x": 768.0,
             "y": 256.0,
             "width": 256.0,
             "height": 256.0,
@@ -515,7 +404,7 @@
           },
           {
             "title": "Path 6",
-            "x": 512.0,
+            "x": 1024.0,
             "y": 256.0,
             "width": 256.0,
             "height": 256.0,
@@ -567,107 +456,126 @@
             ]
           },
           {
-            "title": "Path 7",
-            "x": 768.0,
-            "y": 256.0,
+            "title": "Sequence Path",
+            "x": 0.0,
+            "y": 0.0,
             "width": 256.0,
-            "height": 256.0,
+            "height": 576.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
             },
             "children": [
               {
-                "title": "Path",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "ComboBox Chooser",
-                "properties": {
-                  "topic": "/Autonomous/Path 7/Path",
-                  "period": 0.06,
-                  "sort_options": false
-                }
-              },
-              {
-                "title": "Cancel if Too Late",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/Autonomous/Path 7/Cancel if Too Late",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "Min Time to Start",
+                "title": "Auto Speed",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/Autonomous/Path 7/Min Time to Start",
+                  "topic": "/Sequence Path/Auto Speed",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": true
-                }
-              }
-            ]
-          },
-          {
-            "title": "Path 8",
-            "x": 1024.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Path",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "ComboBox Chooser",
-                "properties": {
-                  "topic": "/Autonomous/Path 8/Path",
-                  "period": 0.06,
-                  "sort_options": false
+                  "show_submit_button": false
                 }
               },
               {
-                "title": "Cancel if Too Late",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/Autonomous/Path 8/Cancel if Too Late",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "Min Time to Start",
+                "title": "Bump Speed",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/Autonomous/Path 8/Min Time to Start",
+                  "topic": "/Sequence Path/Bump Speed",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": true
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Intaking Speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Sequence Path/Intaking Speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Max Speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Sequence Path/Max Speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Min Goal End Velocity Mult",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Sequence Path/Min Goal End Velocity Mult",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Smoothing Radius",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Sequence Path/Smoothing Radius",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Smoothing Time Multiplier",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Sequence Path/Smoothing Time Multiplier",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "While Shooting Speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Sequence Path/While Shooting Speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
                 }
               }
             ]
@@ -676,10 +584,10 @@
         "containers": [
           {
             "title": "Initial Pose",
-            "x": 0.0,
+            "x": 256.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 128.0,
+            "height": 256.0,
             "type": "ComboBox Chooser",
             "properties": {
               "topic": "/Autonomous/Initial Pose",
@@ -689,10 +597,10 @@
           },
           {
             "title": "Reverse Paths",
-            "x": 256.0,
-            "y": 512.0,
-            "width": 128.0,
-            "height": 128.0,
+            "x": 512.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
             "type": "Toggle Switch",
             "properties": {
               "topic": "/Autonomous/Reverse Paths",
