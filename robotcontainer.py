@@ -14,6 +14,7 @@ from util.auto_chooser import AutoBuilder
 from util.flip_util import FlipUtil
 
 from subsystems.drivetrain import drivetrain
+from subsystems.vision import rpi_vision
 from subsystems.vision import multi_limelight
 from subsystems.intake.intake import IntakeSubsystem
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
@@ -51,6 +52,8 @@ class RobotContainer:
         self.hood_subsystem = ShooterHood()
         # self.climb_subsystem = ClimbSubsystem()
 
+
+        self.rpi_vision = rpi_vision.RpiVision()
         self.mono_vision = multi_limelight.Vision(kCamera.BACK_LL, kCamera.SHOOTER_LL)
         self.LED_controller = CANdleLEDController()
 
