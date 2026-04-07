@@ -16,7 +16,7 @@ class kIntakePivot:
     _CONFIG.slot1.k_d = 0
     _CONFIG.slot1.k_v = 1.5
 
-    _CONFIG.motion_magic.motion_magic_cruise_velocity = 25   # rotations/sec
+    _CONFIG.motion_magic.motion_magic_cruise_velocity = 25  # rotations/sec
     _CONFIG.motion_magic.motion_magic_acceleration = 20     # rotations/sec²
     _CONFIG.motion_magic.motion_magic_jerk = 20             # rotations/sec³
 
