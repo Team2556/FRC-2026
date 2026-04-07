@@ -89,6 +89,8 @@ class EditablePID:
 
     def periodic(self):
         """Apply configuration to motor only when a gain value has changed."""
+        return
+        
         values_changed = False
 
         if self.use_slot0:

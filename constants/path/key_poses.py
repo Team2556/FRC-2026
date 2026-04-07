@@ -13,8 +13,8 @@ class kPath:
     max_translational_acceleration = 8.0
     max_rotational_acceleration = 16.0
     
-    default_path_speed = 4
-    auto_path_speed = 3.4
+    default_path_speed = 1.5 # 4.0 maybe
+    auto_path_speed = 2.5 # 3.4 maybe
     bump_speed = 2.3
     intaking_speed = 0.6
     while_shooting_speed = 1.0

@@ -138,17 +138,17 @@ class CustomPathCommands:
                     DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_5
                             ).with_parallel_commands(
                                 ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem),
-                                IntakeRollerOscillate(self.roller_subsystem)
+                                # IntakeRollerOscillate(self.roller_subsystem)
                             ).with_override_speed(kPath.while_shooting_speed
                             ).with_goal_end_velocity(0.1
                             ).with_end_tolerance(0.1),
-                    # self.shoot_command_builder(5),
+                    self.shoot_command_builder(5),
                 ),
                 SequentialCommandGroup(
                     DriveToASpot(self.drivetrain, target_pose = kPoses.left_bump_shoot_1
                         ).with_parallel_commands(
                             ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem),
-                            IntakeRollerOscillate(self.roller_subsystem)
+                            # IntakeRollerOscillate(self.roller_subsystem)
                         ).with_override_speed(kPath.while_shooting_speed
                         ).with_goal_end_velocity(0.1
                         ).with_end_tolerance(0.1),
@@ -167,13 +167,13 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_3
                             ).with_parallel_commands(
                                 ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem),
-                                IntakeRollerOscillate(self.roller_subsystem)
+                                # IntakeRollerOscillate(self.roller_subsystem)
                             ).with_override_speed(kPath.while_shooting_speed
                             ).with_override_smoothing_radius(1.3),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_4
                             ).with_parallel_commands(
                                 ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem),
-                                IntakeRollerOscillate(self.roller_subsystem)
+                                # IntakeRollerOscillate(self.roller_subsystem)
                             ).with_override_speed(kPath.while_shooting_speed
                             ).with_goal_end_velocity(0.1),
             ),
@@ -182,7 +182,7 @@ class CustomPathCommands:
                     DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_5
                             ).with_parallel_commands(
                                 ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem),
-                                IntakeRollerOscillate(self.roller_subsystem)
+                                # IntakeRollerOscillate(self.roller_subsystem)
                             ).with_override_speed(kPath.while_shooting_speed
                             ).with_goal_end_velocity(0.1
                             ).with_end_tolerance(0.1),
@@ -191,7 +191,7 @@ class CustomPathCommands:
                     DriveToASpot(self.drivetrain, target_pose = kPoses.left_bump_shoot_1
                         ).with_parallel_commands(
                             ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem),
-                            IntakeRollerOscillate(self.roller_subsystem)
+                            # IntakeRollerOscillate(self.roller_subsystem)
                         ).with_override_speed(kPath.while_shooting_speed
                         ).with_goal_end_velocity(0.1
                         ).with_end_tolerance(0.1),
@@ -216,7 +216,7 @@ class CustomPathCommands:
                     DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_3
                             ).with_parallel_commands(
                                 ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem),
-                                IntakeRollerOscillate(self.roller_subsystem)
+                                # IntakeRollerOscillate(self.roller_subsystem)
                             ).with_override_speed(kPath.while_shooting_speed
                             ).with_goal_end_velocity(0.1
                             ).with_end_tolerance(0.1),
@@ -226,7 +226,7 @@ class CustomPathCommands:
                     DriveToASpot(self.drivetrain, target_pose = kPoses.left_bump_shoot_1
                         ).with_parallel_commands(
                             ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem),
-                            IntakeRollerOscillate(self.roller_subsystem)
+                            # IntakeRollerOscillate(self.roller_subsystem)
                         ).with_override_speed(kPath.while_shooting_speed
                         ).with_goal_end_velocity(0.1
                         ).with_end_tolerance(0.1),
@@ -241,7 +241,7 @@ class CustomPathCommands:
                 ).with_override_speed(kPath.auto_path_speed),
             ParallelRaceGroup(
                 IntakeRollerBackward(self.roller_subsystem),
-                WaitCommand(1.7)
+                WaitCommand(2)
             )
         ),
         "template" : lambda: SequentialCommandGroup(
@@ -289,6 +289,8 @@ class CustomPathCommands:
                 ConditionalCommand(
                     DriveToASpotSequence(
                         DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_right_bump)).with_closest_180(),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_far_right_bump)).with_override_speed(kPath.bump_speed).with_closest_180(),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_right_bump)).with_closest_180(),
                         DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_bump)).with_override_speed(kPath.bump_speed).with_closest_180(),
                     ),
                     cmd.none(),
@@ -333,6 +335,8 @@ class CustomPathCommands:
                 ConditionalCommand(
                     DriveToASpotSequence(
                         DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_left_bump)).with_closest_180(),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_far_left_bump)).with_override_speed(kPath.bump_speed).with_closest_180(),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_left_bump)).with_closest_180(),
                         DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_bump)).with_override_speed(kPath.bump_speed).with_closest_180(),
                     ),
                     cmd.none(),
@@ -360,6 +364,8 @@ class CustomPathCommands:
         "opposing_right_bump" : ConditionalCommand(
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_bump).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_bump).with_override_speed(kPath.bump_speed).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_right_bump).with_closest_180(),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_right_bump).with_override_speed(kPath.bump_speed).with_closest_180(),
             ),
             ConditionalCommand(
@@ -390,6 +396,8 @@ class CustomPathCommands:
         "opposing_left_bump" : ConditionalCommand(
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_bump).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_bump).with_override_speed(kPath.bump_speed).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_left_bump).with_closest_180(),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_left_bump).with_override_speed(kPath.bump_speed).with_closest_180(),
             ),
             ConditionalCommand(

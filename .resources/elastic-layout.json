@@ -460,12 +460,26 @@
             "x": 0.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 576.0,
+            "height": 640.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
             },
             "children": [
+              {
+                "title": "Max Speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Sequence Path/Max Speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
               {
                 "title": "Auto Speed",
                 "x": 0.0,
@@ -475,20 +489,6 @@
                 "type": "Text Display",
                 "properties": {
                   "topic": "/Sequence Path/Auto Speed",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "Bump Speed",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Sequence Path/Bump Speed",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
@@ -509,42 +509,56 @@
                 }
               },
               {
-                "title": "Max Speed",
+                "title": "While Shooting Speed",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/Sequence Path/Max Speed",
+                  "topic": "/Sequence Path/While Shooting Speed",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
                 }
               },
               {
-                "title": "Min Goal End Velocity Mult",
+                "title": "Bump Speed",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/Sequence Path/Min Goal End Velocity Mult",
+                  "topic": "/Sequence Path/Bump Speed",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
                 }
               },
               {
-                "title": "Smoothing Radius",
+                "title": "Smoothing Radius Auto",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/Sequence Path/Smoothing Radius",
+                  "topic": "/Sequence Path/Smoothing Radius Auto",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Smoothing Radius Teleop",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Sequence Path/Smoothing Radius Teleop",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
@@ -565,14 +579,14 @@
                 }
               },
               {
-                "title": "While Shooting Speed",
+                "title": "Min Goal End Velocity Mult",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/Sequence Path/While Shooting Speed",
+                  "topic": "/Sequence Path/Min Goal End Velocity Mult",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
@@ -584,7 +598,7 @@
         "containers": [
           {
             "title": "Initial Pose",
-            "x": 256.0,
+            "x": 512.0,
             "y": 0.0,
             "width": 256.0,
             "height": 256.0,
@@ -597,7 +611,7 @@
           },
           {
             "title": "Reverse Paths",
-            "x": 512.0,
+            "x": 256.0,
             "y": 0.0,
             "width": 256.0,
             "height": 256.0,

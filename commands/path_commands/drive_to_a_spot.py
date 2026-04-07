@@ -227,8 +227,6 @@ class DriveToASpot(commands2.Command):
         if not self.drivetrain._align_rotation == None: # Extra thing so command ignores rotation check if aligning to shoot
             self.is_within_rotation = True
         
-        print(self.is_within_distance and self.is_within_rotation, "HELLO", self.parallel_commands)
-        
         return self.is_within_distance and self.is_within_rotation
     
     def end(self, interrupted: bool):
@@ -251,8 +249,6 @@ class DriveToASpot(commands2.Command):
         If you give DriveToASpot a parallel command with this function, said parallel command 
         will be scheduled at the same time this command is scheduled (works with multiple parallel commands!)
         '''
-        for command in commands:
-            self.addRequirements(*command.getRequirements())
         self.parallel_commands.extend(commands)
         return self
     
