@@ -214,8 +214,8 @@ class DriveToASpot(commands2.Command):
     def isFinished(self):
         
         # Timer stuff doing the override if it's taking too long
-        if self.timer.get() >= self.max_time and self.max_speed > 0:
-            return True
+        # if self.timer.get() >= self.max_time and self.max_speed > 0:
+        #     return True
         
         # Translation stuff
         distance_from_target = self.pose_estimate.translation().distance(self.target_pose.translation())
