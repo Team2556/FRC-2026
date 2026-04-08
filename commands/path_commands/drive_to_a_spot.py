@@ -83,11 +83,16 @@ class DriveToASpot(commands2.Command):
         self.reset_variables()
         
     def initialize(self):
+        self.timer.stop()
+        self.timer.reset()
         for parallel_command in self.parallel_commands:
             parallel_command.schedule()
         self.reset_variables()
     
     def reset_variables(self):
+        self.timer.stop()
+        self.timer.reset()
+
         self.is_within_distance = False
         self.is_within_rotation = False
         
@@ -209,8 +214,8 @@ class DriveToASpot(commands2.Command):
     def isFinished(self):
         
         # Timer stuff doing the override if it's taking too long
-        if self.timer.get() >= self.max_time and self.max_speed > 0:
-            return True
+        # if self.timer.get() >= self.max_time and self.max_speed > 0:
+        #     return True
         
         # Translation stuff
         distance_from_target = self.pose_estimate.translation().distance(self.target_pose.translation())
@@ -229,6 +234,7 @@ class DriveToASpot(commands2.Command):
             self.drivetrain.stop()
         for parallel_command in self.parallel_commands:
             parallel_command.cancel()
+        self.timer.stop()
         self.timer.reset()
     
     def get_distance_progress(self):

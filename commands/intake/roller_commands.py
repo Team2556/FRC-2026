@@ -77,8 +77,8 @@ class IntakeRollerBackward(Command):
 
 
 class IntakeRollerOscillate(Command):
-    PERIOD = 0.6
-    INTAKE_DURATION = 0.45
+    PERIOD = 0.5
+    INTAKE_DURATION = 0.35
 
     def __init__(self, roller: IntakeRoller):
         super().__init__()
