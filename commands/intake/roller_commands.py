@@ -77,15 +77,22 @@ class IntakeRollerOscillate(Command):
     PERIOD = 0.5
     INTAKE_DURATION = 0.35
 
-    def __init__(self, roller: IntakeRoller):
+    def __init__(self, roller: IntakeRoller, drivetrain: SwerveDriveTrain):
         super().__init__()
         self._roller = roller
+        self._drivetrain = drivetrain
         self.addRequirements(roller)
 
     def initialize(self):
         pass
 
     def execute(self):
+        robot_vel_x = self._drivetrain.get_state().velocity.translation().x
+        toward_intake = robot_vel_x * kIntakePivot.INTAKE_DIRECTION
+        if toward_intake >= kIntakeRoller.AUTO_INTAKE_SPEED_THRESHOLD:
+            self._roller.set_target_rpm(kIntakeRoller.TARGET_RPM)
+            return
+        
         phase = wpilib.Timer.getFPGATimestamp() % self.PERIOD
         if phase < self.INTAKE_DURATION:
             self._roller.set_target_rpm(kIntakeRoller.TARGET_RPM)
