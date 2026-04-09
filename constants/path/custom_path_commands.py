@@ -66,7 +66,6 @@ class CustomPathCommands:
                 ).with_override_speed(0
                 ).with_override_rps(0
                 ).with_end_tolerance(0),
-            IntakeRollerOscillate(self.roller_subsystem)
         )
         
     def make_auto_paths(self):
@@ -79,7 +78,7 @@ class CustomPathCommands:
         "_none" : lambda: InstantCommand(),
         "TN_short_sweep" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_1).with_parallel_commands(IntakeRollerForward(self.roller_subsystem)),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_2
                     ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_3
@@ -93,7 +92,7 @@ class CustomPathCommands:
         ),
         "TN_wide_sweep" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.wide_sweep_1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.wide_sweep_1).with_parallel_commands(IntakeRollerForward(self.roller_subsystem)),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.wide_sweep_2
                     ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.wide_sweep_3
@@ -103,7 +102,7 @@ class CustomPathCommands:
         ),
         "TA_close_sweep" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.close_sweep_1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.close_sweep_1).with_parallel_commands(IntakeRollerForward(self.roller_subsystem)),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.close_sweep_2),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.close_sweep_3
                     ).with_override_speed(kPath.intaking_speed),
@@ -113,7 +112,7 @@ class CustomPathCommands:
         ),
         "TN_cleanup_sweep" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.cleanup_sweep_1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.cleanup_sweep_1).with_parallel_commands(IntakeRollerForward(self.roller_subsystem)),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.cleanup_sweep_2
                     ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.cleanup_sweep_3

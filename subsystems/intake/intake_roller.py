@@ -33,6 +33,7 @@ class IntakeRoller(commands2.Subsystem):
         self.nt = NTTable("Intake")
         self.nt.float("Roller RPM", 0.0)
         self.nt.float("Target Roller RPM", 0.0)
+        self.nt.string("Roller Command", "_none")
 
         self.roller_editable_pid = EditablePID(
             "Intake/RollerPID", self.roller_motor, self.roller_cfg
@@ -52,6 +53,11 @@ class IntakeRoller(commands2.Subsystem):
             self.roller_motor.set_control(
                 self._vel_req.with_velocity(self._target_rpm / 60)
             )
+        
+        try:
+            self.nt.set("Roller Command", self.getCurrentCommand().getName())
+        except:
+            pass
 
         self.nt.set("Roller RPM", self.roller_motor.get_velocity().value * 60)
         self.nt.set("Target Roller RPM", self._target_rpm if self._enabled else 0.0)
