@@ -46,7 +46,7 @@ class kPoses:
 
     initial_poses = {
         "_none" : None,
-        "BUMP" : Pose2d(3.5, trench_from_edge, Rotation2d()),
+        "BUMP" : Pose2d(3.65, bump_from_edge, Rotation2d()),
         "TRENCH" : Pose2d(4, trench_from_edge, Rotation2d(pi)),
     }
     
@@ -109,7 +109,6 @@ class kPoses:
     bump_shoot_3 = Pose2d(2.5, 0, Rotation2d(pi))
     bump_shoot_4 = Pose2d(2.5, 3, Rotation2d(pi))
     bump_shoot_5 = Pose2d(2.8, trench_from_edge + 0.05, Rotation2d(pi))
-    
     left_bump_shoot_1 = Pose2d(2.3, 2.6, Rotation2d(pi))
     
     bump_half_shoot_1 = Pose2d(6.5, bump_from_edge + 0.20, Rotation2d(pi))
@@ -120,3 +119,26 @@ class kPoses:
     spot_shoot_2 = Pose2d(3.2, trench_from_edge, Rotation2d(pi))
     
     trench_extake_1 = Pose2d(6.5, trench_from_edge + 0.2, Rotation2d(pi))
+    
+    stay_bump_shoot_1 = Pose2d(6.5, bump_from_edge + 0.10, Rotation2d(pi))
+    stay_bump_shoot_2 = Pose2d(2.5, bump_from_edge, Rotation2d(pi))
+    stay_bump_shoot_3 = Pose2d(3.5, bump_from_edge, Rotation2d())
+    
+    bump_middle_sweep_1 = Pose2d(6.2, bump_from_edge, Rotation2d())
+    bump_middle_sweep_2 = Pose2d(6.5, 4.2, Rotation2d())
+    bump_middle_sweep_3 = Pose2d(8.5, 4.2, Rotation2d())
+    bump_middle_sweep_4 = Pose2d(7.2, 2.5, Rotation2d(7*pi/6))
+    
+    bump_side_sweep_1 = Pose2d(6.3, bump_from_edge, Rotation2d())
+    bump_side_sweep_2 = Pose2d(7.5, 3.5, Rotation2d(-pi/2 + 0.1))
+    bump_side_sweep_3 = Pose2d(7.5, 1.2, Rotation2d(-pi/2 - 0.1))
+    bump_side_sweep_4 = Pose2d(6.2, bump_from_edge, Rotation2d(3*pi/4))
+    # bump_side_sweep_4 = Pose2d(6.2, 3.5, Rotation2d())
+    
+    # bump_close_sweep_1 = Pose2d(6.3, bump_from_edge, Rotation2d())
+    # bump_close_sweep_2 = Pose2d(7.5, 3.5, Rotation2d(-pi/2 + 0.1))
+    # bump_close_sweep_3 = Pose2d(7.5, 1.2, Rotation2d(-pi/2 - 0.1))
+    # bump_close_sweep_4 = Pose2d(6.2, bump_from_edge, Rotation2d(3*pi/4))
+    
+    sit_middle = Pose2d(8.5, 4, Rotation2d())
+    

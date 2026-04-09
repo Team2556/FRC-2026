@@ -200,49 +200,90 @@ class CustomPathCommands:
                 lambda : RobotZoneChecker.is_on_right_side(self.drivetrain.get_state().pose)
             )
         ),
-        "NT_bump_half_shoot" : lambda: SequentialCommandGroup(
+        "NB_stay_bump_shoot" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_1),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_2
+                DriveToASpot(self.drivetrain, target_pose = kPoses.stay_bump_shoot_1
+                    ).with_override_smoothing_radius(0.1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.stay_bump_shoot_2
                     ).with_override_speed(kPath.bump_speed).with_precise_values(),
             ),
-            ParallelRaceGroup(
-                IntakeRollerBackward(self.roller_subsystem),
-                WaitCommand(1.3),
+            self.shoot_command_builder(5),
+            DriveToASpot(self.drivetrain, target_pose = kPoses.stay_bump_shoot_3),
+        ),
+        "BN_bump_middle_sweep" : lambda: SequentialCommandGroup(
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_middle_sweep_1
+                    ).with_override_speed(kPath.bump_speed
+                    ).with_override_smoothing_radius(0.5),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_middle_sweep_2
+                    ).with_override_smoothing_radius(0.5),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_middle_sweep_3
+                    ).with_override_speed(kPath.intaking_speed).with_precise_values(
+                    ).with_override_smoothing_radius(0.1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_middle_sweep_4
+                    ).with_override_speed(kPath.intaking_speed * 2
+                    ).with_override_rps(0.3),
             ),
-            ConditionalCommand( # different on left side
-                SequentialCommandGroup(
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_3
-                            ).with_parallel_commands(
-                                ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem),
-                                # IntakeRollerOscillate(self.roller_subsystem)
-                            ).with_override_speed(kPath.while_shooting_speed
-                            ).with_goal_end_velocity(0.1
-                            ).with_end_tolerance(0.1),
-                    self.shoot_command_builder(3),
-                ),
-                SequentialCommandGroup(
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.left_bump_shoot_1
-                        ).with_parallel_commands(
-                            ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem),
-                            # IntakeRollerOscillate(self.roller_subsystem)
-                        ).with_override_speed(kPath.while_shooting_speed
-                        ).with_goal_end_velocity(0.1
-                        ).with_end_tolerance(0.1),
-                    self.shoot_command_builder(3),
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_3),
-                ),
-                lambda : RobotZoneChecker.is_on_right_side(self.drivetrain.get_state().pose)
-            )
         ),
-        "NN_trench_extake" : lambda: SequentialCommandGroup(
-            DriveToASpot(self.drivetrain, target_pose = kPoses.trench_extake_1
-                ).with_override_speed(kPath.auto_path_speed),
-            ParallelRaceGroup(
-                IntakeRollerBackward(self.roller_subsystem),
-                WaitCommand(2)
-            )
+        "BN_bump_side_sweep" : lambda: SequentialCommandGroup(
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_side_sweep_1
+                    ).with_override_speed(kPath.bump_speed),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_side_sweep_2
+                    ).with_override_rps(0.3),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_side_sweep_3
+                    ).with_override_speed(kPath.intaking_speed * 1.25),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.bump_side_sweep_4
+                    ).with_override_speed(kPath.intaking_speed * 2
+                    ).with_override_rps(0.4),
+            ),
         ),
+        "NN_sit_middle" : lambda: SequentialCommandGroup(
+            DriveToASpot(self.drivetrain, target_pose = kPoses.sit_middle)
+        ),
+        # "NT_bump_half_shoot" : lambda: SequentialCommandGroup(
+        #     DriveToASpotSequence(
+        #         DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_1),
+        #         DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_2
+        #             ).with_override_speed(kPath.bump_speed).with_precise_values(),
+        #     ),
+        #     ParallelRaceGroup(
+        #         IntakeRollerBackward(self.roller_subsystem),
+        #         WaitCommand(1.3),
+        #     ),
+        #     ConditionalCommand( # different on left side
+        #         SequentialCommandGroup(
+        #             DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_3
+        #                     ).with_parallel_commands(
+        #                         ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem),
+        #                         # IntakeRollerOscillate(self.roller_subsystem)
+        #                     ).with_override_speed(kPath.while_shooting_speed
+        #                     ).with_goal_end_velocity(0.1
+        #                     ).with_end_tolerance(0.1),
+        #             self.shoot_command_builder(3),
+        #         ),
+        #         SequentialCommandGroup(
+        #             DriveToASpot(self.drivetrain, target_pose = kPoses.left_bump_shoot_1
+        #                 ).with_parallel_commands(
+        #                     ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem),
+        #                     # IntakeRollerOscillate(self.roller_subsystem)
+        #                 ).with_override_speed(kPath.while_shooting_speed
+        #                 ).with_goal_end_velocity(0.1
+        #                 ).with_end_tolerance(0.1),
+        #             self.shoot_command_builder(3),
+        #             DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_3),
+        #         ),
+        #         lambda : RobotZoneChecker.is_on_right_side(self.drivetrain.get_state().pose)
+        #     )
+        # ),
+        # "NN_trench_extake" : lambda: SequentialCommandGroup(
+        #     DriveToASpot(self.drivetrain, target_pose = kPoses.trench_extake_1
+        #         ).with_override_speed(kPath.auto_path_speed),
+        #     ParallelRaceGroup(
+        #         IntakeRollerBackward(self.roller_subsystem),
+        #         WaitCommand(2)
+        #     )
+        # ),
         "template" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_1),
