@@ -27,7 +27,7 @@ from commands.auto_align import align_with_controller
 from commands.drive import drive_commands
 from commands.vision import vision_odometry
 from constants.path import custom_path_commands, key_poses
-from commands.transfer.run_transfer_motors import RunTransferCommand, ReverseTransferCommand
+from commands.transfer.run_transfer_motors import RunTransferCommand, ReverseTransferCommand, SpindexOnlyCommand
 from commands.intake.pivot_commands import (
     IntakePivotDefaultCommand,
     IntakePivotForward,
@@ -61,7 +61,7 @@ class RobotContainer:
 
         self.rpi_vision = rpi_vision.RpiVision()
         self.mono_vision = multi_limelight.Vision(kCamera.BACK_LL, kCamera.SHOOTER_LL)
-        self.LED_controller = CANdleLEDController()
+        # self.LED_controller = CANdleLEDController()
 
         self.custom_path_commands = custom_path_commands.CustomPathCommands(
             self._drivetrain,
@@ -180,7 +180,7 @@ class RobotContainer:
         
         # Testing button for precision
         self._controller_1.povUp().onTrue(
-            cmd.runOnce(drive_commands.reset_heading)
+            drive_commands.reset_heading(self._drivetrain)
         )
 
         # -------------------------------------------------------------------
@@ -188,6 +188,7 @@ class RobotContainer:
         # -------------------------------------------------------------------
 
         self._controller_2.a().whileTrue(ReverseTransferCommand(self.transfer_subsystem))
+        self._controller_2.x().whileTrue(SpindexOnlyCommand(self.transfer_subsystem))
         
         self._controller_2.b().whileTrue(RunTransferCommand(self.transfer_subsystem))
 

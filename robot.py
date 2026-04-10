@@ -38,7 +38,7 @@ class Gravedigger(commands2.TimedCommandRobot):
             wpilib.DataLogManager.log(f"Git Branch:  {deploy_config.get('git-branch', '')}")
 
         self.container = RobotContainer()
-        wpilib.CameraServer.launch()
+        # wpilib.CameraServer.launch()
 
     def robotPeriodic(self) -> None:
         self.container.auto_chooser.update()

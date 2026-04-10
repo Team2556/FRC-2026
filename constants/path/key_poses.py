@@ -83,9 +83,9 @@ class kPoses:
     
     short_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
     short_sweep_2 = Pose2d(8.8, 1.6, Rotation2d(pi/2))
-    short_sweep_3 = Pose2d(7.9, 2.5, Rotation2d(pi/2 + 0.1))
-    short_sweep_4 = Pose2d(7.9, 3.0, Rotation2d(pi))
-    short_sweep_5 = Pose2d(6.5, 3.05, Rotation2d(pi))
+    short_sweep_3 = Pose2d(7.9, 2.4, Rotation2d(pi/2 + 0.1))
+    # short_sweep_4 = Pose2d(7.9, 2.5, Rotation2d(pi))
+    # short_sweep_5 = Pose2d(6.5, 2.55, Rotation2d(pi))
     
     close_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
     close_sweep_2 = Pose2d(7.5, 1.6, Rotation2d(pi/2))
@@ -143,5 +143,5 @@ class kPoses:
 
     trench_only_shoot_1 = Pose2d(6.0, trench_from_edge + 0.05, Rotation2d())
     trench_only_shoot_2 = Pose2d(2.5, trench_from_edge, Rotation2d())
-    trench_only_shoot_3 = Pose2d(1.5, 1, Rotation2d())
-    trench_only_shoot_4 = Pose2d(2.5, trench_from_edge, Rotation2d())
+    trench_only_shoot_3 = Pose2d(1.5, 1.2, Rotation2d())
+    trench_only_shoot_4 = Pose2d(2.5, trench_from_edge, Rotation2d(pi))
