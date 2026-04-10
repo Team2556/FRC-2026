@@ -84,7 +84,7 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_3
                     ).with_override_speed(kPath.intaking_speed),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_4
-                    ).with_override_speed(kPath.intaking_speed
+                    ).with_override_speed(kPath.intaking_speed * 1.3
                     ).with_override_rps(0.2),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.short_sweep_5
                     ).with_override_speed(kPath.intaking_speed * 1.5)
@@ -128,7 +128,8 @@ class CustomPathCommands:
         "NT_bump_shoot" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_1
-                    ).with_override_smoothing_radius(0.1),
+                    ).with_override_smoothing_radius(0.1
+                    ).with_override_speed(kPath.intaking_speed * 1.2),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_2
                     ).with_override_speed(kPath.bump_speed).with_precise_values(),
             ),
@@ -141,7 +142,8 @@ class CustomPathCommands:
                             ).with_override_speed(kPath.while_shooting_speed
                             ).with_goal_end_velocity(0.1
                             ).with_end_tolerance(0.1),
-                    self.shoot_command_builder(5),
+                    # self.shoot_command_builder(4),
+                    self.shoot_command_builder(10), # temporary shoot forever
                 ),
                 SequentialCommandGroup(
                     DriveToASpot(self.drivetrain, target_pose = kPoses.left_bump_shoot_1
@@ -151,7 +153,8 @@ class CustomPathCommands:
                         ).with_override_speed(kPath.while_shooting_speed
                         ).with_goal_end_velocity(0.1
                         ).with_end_tolerance(0.1),
-                    self.shoot_command_builder(5),
+                    # self.shoot_command_builder(5.5),
+                    self.shoot_command_builder(10), # shoot forever
                     DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_5),
                 ),
                 lambda : RobotZoneChecker.is_on_right_side(self.drivetrain.get_state().pose)
@@ -160,7 +163,8 @@ class CustomPathCommands:
         "NT_bump_move_shoot" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_1
-                    ).with_override_smoothing_radius(0.1),
+                    ).with_override_smoothing_radius(0.1
+                    ).with_override_speed(kPath.intaking_speed * 1.2),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_2
                     ).with_override_speed(kPath.bump_speed).with_precise_values(),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.bump_shoot_3
@@ -207,7 +211,7 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.stay_bump_shoot_2
                     ).with_override_speed(kPath.bump_speed).with_precise_values(),
             ),
-            self.shoot_command_builder(5),
+            self.shoot_command_builder(4),
             DriveToASpot(self.drivetrain, target_pose = kPoses.stay_bump_shoot_3),
         ),
         "BN_bump_middle_sweep" : lambda: SequentialCommandGroup(

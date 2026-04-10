@@ -27,7 +27,7 @@ from commands.auto_align import align_with_controller
 from commands.drive import drive_commands
 from commands.vision import vision_odometry
 from constants.path import custom_path_commands, key_poses
-from commands.transfer.run_transfer_motors import RunTransferCommand
+from commands.transfer.run_transfer_motors import RunTransferCommand, ReverseTransferCommand
 from commands.intake.pivot_commands import (
     IntakePivotDefaultCommand,
     IntakePivotForward,
@@ -76,6 +76,7 @@ class RobotContainer:
         )
         SmartDashboard.putData("Update ALL (auto) Values", cmd.runOnce(self.update_auto))
 
+        self.auto = None
         self.time_manager = SendFMSData()
 
         self.configureButtonBindings()
@@ -138,7 +139,7 @@ class RobotContainer:
         self._controller_1.leftTrigger().whileTrue(
             cmd.runEnd(
                 lambda: self._drivetrain.set_modifiers(
-                    drivetrain.SwerveDriveTrain.SLOW
+                    drivetrain.SwerveDriveTrain.FAST
                 ),
                 lambda: self._drivetrain.reset_modifiers(),
             )
@@ -187,6 +188,8 @@ class RobotContainer:
         # CONTROLLER 2
         # -------------------------------------------------------------------
 
+        self._controller_2.a().whileTrue(ReverseTransferCommand(self.transfer_subsystem))
+        
         self._controller_2.b().whileTrue(RunTransferCommand(self.transfer_subsystem))
 
         self._controller_2.y().whileTrue(

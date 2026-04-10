@@ -72,7 +72,8 @@ class ConditionalAlignAndShoot(commands2.Command):
         ):
             self._transfer.activate()
         else:
-            self._transfer.stop()
+            pass
+            # self._transfer.stop()
 
     def end(self, interrupted: bool) -> None:
         self._drivetrain.clear_align_rotation()

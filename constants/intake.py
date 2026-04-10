@@ -29,7 +29,7 @@ class kIntakePivot:
 
 class kIntakeRoller:
     _CONFIG = TalonFXConfiguration()
-    _CONFIG.slot0.k_p = 0
+    _CONFIG.slot0.k_p = 0.3
     _CONFIG.slot0.k_i = 0
     _CONFIG.slot0.k_d = 0
     _CONFIG.slot0.k_v = 0.11

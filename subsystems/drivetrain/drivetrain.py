@@ -24,13 +24,14 @@ print("LOADING NEW DRIVETRAIN", __file__)
 
 @dataclass
 class DriveModifiers:
-    speed: float = 1.0
+    speed: float = 1.00
     rotation: float = 1.0
 
 
 class SwerveDriveTrain(commands2.Subsystem):
-    NORMAL      = DriveModifiers(speed=1.0, rotation=1.0)
-    SLOW        = DriveModifiers(speed=kDriveConfig.SLOW_SPEED_MULT, rotation=0.75)
+    NORMAL      = DriveModifiers(speed=0.45, rotation=0.2)
+    FAST        = DriveModifiers(speed=1.0, rotation=0.3)
+    SLOW        = DriveModifiers(speed=kDriveConfig.SLOW_SPEED_MULT, rotation=0.5)
     SLOW_ROTATE = DriveModifiers(speed=kDriveConfig.SLOW_SPEED_MULT, rotation=0.2)
 
     # ------------------------------------------------------------------
@@ -96,7 +97,7 @@ class SwerveDriveTrain(commands2.Subsystem):
         self._modifiers = modifiers
 
     def reset_modifiers(self) -> None:
-        self._modifiers = DriveModifiers()
+        self._modifiers = self.NORMAL
 
     @property
     def modifiers(self) -> DriveModifiers:

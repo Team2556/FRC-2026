@@ -19,7 +19,7 @@ class kPath:
     intaking_speed = 0.6
     while_shooting_speed = 1.0
     
-    smoothing_radius_auto = 0.12 # 1.3 with 5.5 speed
+    smoothing_radius_auto = 0.15 # 1.3 with 5.5 speed
     smoothing_radius_teleop = 0.28
     smoothing_radius_wide = 2
     
@@ -81,11 +81,10 @@ class kPoses:
     # Auto Poses
     # -------------------------------------------------------------------
     
-    
     short_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
     short_sweep_2 = Pose2d(8.9, 1.6, Rotation2d(pi/2))
-    short_sweep_3 = Pose2d(7.9, 2.0, Rotation2d(pi/2 + 0.1))
-    short_sweep_4 = Pose2d(7.9, 2.5, Rotation2d(pi))
+    short_sweep_3 = Pose2d(7.9, 2.5, Rotation2d(pi/2 + 0.1))
+    short_sweep_4 = Pose2d(7.9, 3.0, Rotation2d(pi))
     short_sweep_5 = Pose2d(6.5, 3.05, Rotation2d(pi))
     
     close_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
@@ -125,8 +124,8 @@ class kPoses:
     stay_bump_shoot_3 = Pose2d(3.5, bump_from_edge, Rotation2d())
     
     bump_middle_sweep_1 = Pose2d(6.2, bump_from_edge, Rotation2d())
-    bump_middle_sweep_2 = Pose2d(6.5, 4.2, Rotation2d())
-    bump_middle_sweep_3 = Pose2d(8.5, 4.2, Rotation2d())
+    bump_middle_sweep_2 = Pose2d(6.5, 3.8, Rotation2d())
+    bump_middle_sweep_3 = Pose2d(8.5, 3.8, Rotation2d())
     bump_middle_sweep_4 = Pose2d(7.2, 2.5, Rotation2d(7*pi/6))
     
     bump_side_sweep_1 = Pose2d(6.3, bump_from_edge, Rotation2d())
