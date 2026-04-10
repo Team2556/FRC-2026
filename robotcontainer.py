@@ -74,7 +74,6 @@ class RobotContainer:
         self.auto_chooser = AutoBuilder(
             self.custom_path_commands.get_auto_paths()
         )
-        SmartDashboard.putData("Update ALL (auto) Values", cmd.runOnce(self.update_auto))
 
         self.auto = None
         self.time_manager = SendFMSData()
@@ -180,8 +179,8 @@ class RobotContainer:
         )
         
         # Testing button for precision
-        self._controller_1.povLeft().whileTrue(
-            self.custom_path_commands.teleop_paths["back_left_corner"]
+        self._controller_1.povUp().onTrue(
+            cmd.runOnce(drive_commands.reset_heading)
         )
 
         # -------------------------------------------------------------------

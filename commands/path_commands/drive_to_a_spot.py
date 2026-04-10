@@ -209,7 +209,7 @@ class DriveToASpot(commands2.Command):
         robot_speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
             field_speeds, self.drivetrain.get_rotation()
         )
-        self.drivetrain.run_velocity(robot_speeds)
+        self.drivetrain.run_velocity(robot_speeds, ignore_modifiers=True)
     
     def isFinished(self):
         

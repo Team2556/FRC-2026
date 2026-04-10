@@ -36,7 +36,7 @@ class kPoses:
     field_height = 8.07
     field_width = 16.54
     
-    trench_from_edge = 0.72 # was 0.55 maybe this will work better
+    trench_from_edge = 0.55 # was 0.72 maybe this will work better
     bump_from_edge = 2.66 # was 2.55
     
     alliance_x = 3.0
@@ -82,7 +82,7 @@ class kPoses:
     # -------------------------------------------------------------------
     
     short_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
-    short_sweep_2 = Pose2d(8.9, 1.6, Rotation2d(pi/2))
+    short_sweep_2 = Pose2d(8.8, 1.6, Rotation2d(pi/2))
     short_sweep_3 = Pose2d(7.9, 2.5, Rotation2d(pi/2 + 0.1))
     short_sweep_4 = Pose2d(7.9, 3.0, Rotation2d(pi))
     short_sweep_5 = Pose2d(6.5, 3.05, Rotation2d(pi))
@@ -93,7 +93,7 @@ class kPoses:
     close_sweep_4 = Pose2d(5.85, 3.4, Rotation2d(pi))
     
     wide_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
-    wide_sweep_2 = Pose2d(8.9, 1.6, Rotation2d(pi/2))
+    wide_sweep_2 = Pose2d(8.8, 1.6, Rotation2d(pi/2))
     wide_sweep_3 = Pose2d(8.0, 4.0, Rotation2d(pi/2 + 0.1))
     wide_sweep_4 = Pose2d(6.5, bump_from_edge, Rotation2d(2*pi/3))
     
@@ -140,4 +140,8 @@ class kPoses:
     # bump_close_sweep_4 = Pose2d(6.2, bump_from_edge, Rotation2d(3*pi/4))
     
     sit_middle = Pose2d(8.5, 4, Rotation2d())
-    
+
+    trench_only_shoot_1 = Pose2d(6.0, trench_from_edge + 0.05, Rotation2d())
+    trench_only_shoot_2 = Pose2d(2.5, trench_from_edge, Rotation2d())
+    trench_only_shoot_3 = Pose2d(1.5, 1, Rotation2d())
+    trench_only_shoot_4 = Pose2d(2.5, trench_from_edge, Rotation2d())

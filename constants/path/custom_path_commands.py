@@ -245,6 +245,15 @@ class CustomPathCommands:
         "NN_sit_middle" : lambda: SequentialCommandGroup(
             DriveToASpot(self.drivetrain, target_pose = kPoses.sit_middle)
         ),
+        "NT_trench_only_shoot" : lambda: SequentialCommandGroup(
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.trench_only_shoot_1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.trench_only_shoot_2),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.trench_only_shoot_3),
+            ),
+            self.shoot_command_builder(4.3),
+            DriveToASpot(self.drivetrain, target_pose = kPoses.trench_only_shoot_4),
+        ),
         # "NT_bump_half_shoot" : lambda: SequentialCommandGroup(
         #     DriveToASpotSequence(
         #         DriveToASpot(self.drivetrain, target_pose = kPoses.bump_half_shoot_1),

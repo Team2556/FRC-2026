@@ -88,7 +88,6 @@ class AutoBuilder:
         
         kPath.min_goal_end_velocity_mult = self._nt_path.get("Min Goal End Velocity Mult")
         kPath.smoothing_time_multiplier = self._nt_path.get("Smoothing Time Multiplier")
-        
     
     def get_initial_pose(self):
         return self.initial_pose.getSelected()
@@ -96,9 +95,6 @@ class AutoBuilder:
     def choose_auto(self):
         return SequentialCommandGroup(
             (
-                SequentialCommandGroup(
-                    AutoIntermediate(self.nt_subtables[i].get("Min Time to Start"), self.nt_subtables[i].get("Cancel if Too Late")),
-                    self.auto_choosers[i].getSelected()()
-                )
+                self.auto_choosers[i].getSelected()()
             ) for i in range(self.path_amount)
         )

@@ -24,8 +24,8 @@ print("LOADING NEW DRIVETRAIN", __file__)
 
 @dataclass
 class DriveModifiers:
-    speed: float = 1.00
-    rotation: float = 1.0
+    speed: float = 0.45
+    rotation: float = 0.2
 
 
 class SwerveDriveTrain(commands2.Subsystem):
@@ -64,7 +64,7 @@ class SwerveDriveTrain(commands2.Subsystem):
     # Velocity
     # ------------------------------------------------------------------
 
-    def run_velocity(self, speeds: ChassisSpeeds) -> None:
+    def run_velocity(self, speeds: ChassisSpeeds, ignore_modifiers=False) -> None:
         """Run the drivetrain at the given robot-relative ChassisSpeeds.
 
         Applies the speed modifier to translation, discretizes for skew
@@ -73,8 +73,8 @@ class SwerveDriveTrain(commands2.Subsystem):
         """
         
         scaled = ChassisSpeeds(
-            speeds.vx * self._modifiers.speed,
-            speeds.vy * self._modifiers.speed,
+            speeds.vx * (1 if ignore_modifiers else self._modifiers.speed),
+            speeds.vy * (1 if ignore_modifiers else self._modifiers.speed),
             self._align_rotation if self._align_rotation else speeds.omega,
         )
 
