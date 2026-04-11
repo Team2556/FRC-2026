@@ -52,7 +52,7 @@ class IntakePivotForward(Command):
         return self._pivot.is_at_forward_limit()
 
     def end(self, interrupted: bool):
-        self._pivot.set_pivot_neutral_mode(signals.NeutralModeValue.COAST)
+        self._pivot.set_pivot_neutral_mode(signals.NeutralModeValue.BRAKE)
         self._pivot.set_deployer_speed(0)
         self._pivot.state = "deployed"
 

@@ -116,12 +116,12 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.cleanup_sweep_2
                     ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.cleanup_sweep_3
-                    ).with_override_speed(kPath.intaking_speed * 1.3),
+                    ).with_override_speed(kPath.intaking_speed), #was *1.3
                 DriveToASpot(self.drivetrain, target_pose = kPoses.cleanup_sweep_4
-                    ).with_override_speed(kPath.intaking_speed * 2
+                    ).with_override_speed(kPath.intaking_speed# * 2
                     ).with_override_rps(0.3),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.cleanup_sweep_5
-                    ).with_override_speed(kPath.intaking_speed * 2
+                    ).with_override_speed(kPath.intaking_speed# * 2
                     ).with_override_rps(0.3),
             ),
         ),
@@ -247,16 +247,19 @@ class CustomPathCommands:
         ),
         "NT_trench_only_shoot" : lambda: SequentialCommandGroup(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.trench_only_shoot_1
-                    ).with_override_speed(1
-                    ).with_override_rps(0.3),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.trench_only_shoot_2
-                    ).with_override_speed(1.8),
-                DriveToASpot(self.drivetrain, target_pose = kPoses.trench_only_shoot_3
-                    ).with_override_speed(1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.trench_only_shoot_1).with_override_rps(0.3).with_override_speed(2),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.trench_only_shoot_2),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.trench_only_shoot_3)
             ),
-            self.shoot_command_builder(10), # temporary shoot forever
-            DriveToASpot(self.drivetrain, target_pose = kPoses.trench_only_shoot_4),
+            self.shoot_command_builder(6.5),
+            ConditionalCommand( # different on left side
+                DriveToASpot(self.drivetrain, target_pose = kPoses.trench_only_shoot_4),
+                DriveToASpotSequence(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.left_trench_only_shoot_4),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.trench_only_shoot_4)
+                ),
+                lambda : RobotZoneChecker.is_on_right_side(self.drivetrain.get_state().pose)
+            )
         ),
         # "NT_bump_half_shoot" : lambda: SequentialCommandGroup(
         #     DriveToASpotSequence(

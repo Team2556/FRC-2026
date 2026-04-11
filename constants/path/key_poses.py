@@ -145,3 +145,4 @@ class kPoses:
     trench_only_shoot_2 = Pose2d(2.5, trench_from_edge, Rotation2d())
     trench_only_shoot_3 = Pose2d(1.5, 1.2, Rotation2d())
     trench_only_shoot_4 = Pose2d(2.5, trench_from_edge, Rotation2d(pi))
+    left_trench_only_shoot_4 = Pose2d(2.5, 2, Rotation2d(pi))

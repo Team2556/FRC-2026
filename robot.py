@@ -26,16 +26,16 @@ class Gravedigger(commands2.TimedCommandRobot):
         wpilib.LiveWindow.disableAllTelemetry()
 
 
-        wpilib.DataLogManager.start()
-        wpilib.DriverStation.startDataLog(wpilib.DataLogManager.getLog())
+        # wpilib.DataLogManager.start()
+        # wpilib.DriverStation.startDataLog(wpilib.DataLogManager.getLog())
 
-        deploy_config = wpilib.deployinfo.getDeployData()
-        if deploy_config is not None:
-            wpilib.DataLogManager.log(f"Deploy Host: {deploy_config.get('deploy-host', '')}")
-            wpilib.DataLogManager.log(f"Deploy User: {deploy_config.get('deploy-user', '')}")
-            wpilib.DataLogManager.log(f"Deploy Date: {deploy_config.get('deploy-date', '')}")
-            wpilib.DataLogManager.log(f"Git Hash:    {deploy_config.get('git-hash', '')}")
-            wpilib.DataLogManager.log(f"Git Branch:  {deploy_config.get('git-branch', '')}")
+        # deploy_config = wpilib.deployinfo.getDeployData()
+        # if deploy_config is not None:
+        #     wpilib.DataLogManager.log(f"Deploy Host: {deploy_config.get('deploy-host', '')}")
+        #     wpilib.DataLogManager.log(f"Deploy User: {deploy_config.get('deploy-user', '')}")
+        #     wpilib.DataLogManager.log(f"Deploy Date: {deploy_config.get('deploy-date', '')}")
+        #     wpilib.DataLogManager.log(f"Git Hash:    {deploy_config.get('git-hash', '')}")
+        #     wpilib.DataLogManager.log(f"Git Branch:  {deploy_config.get('git-branch', '')}")
 
         self.container = RobotContainer()
         # wpilib.CameraServer.launch()

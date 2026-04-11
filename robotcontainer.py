@@ -15,7 +15,7 @@ from util.flip_util import FlipUtil
 
 from subsystems.drivetrain import drivetrain
 from subsystems.vision import rpi_vision
-from subsystems.vision import multi_limelight
+# from subsystems.vision import multi_limelight
 from subsystems.intake.intake_pivot import IntakePivot
 from subsystems.intake.intake_roller import IntakeRoller
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
@@ -25,7 +25,7 @@ from subsystems.shooter.dual_shooter import DualMotorShooter
 
 from commands.auto_align import align_with_controller
 from commands.drive import drive_commands
-from commands.vision import vision_odometry
+# from commands.vision import vision_odometry
 from constants.path import custom_path_commands, key_poses
 from commands.transfer.run_transfer_motors import RunTransferCommand, ReverseTransferCommand, SpindexOnlyCommand
 from commands.intake.pivot_commands import (
@@ -41,7 +41,14 @@ from commands.intake.roller_commands import (
 )
 from commands.shooter import shooter_commands, hood_commands
 
-from constants.vision import kCamera
+# from constants.vision import kCamera
+
+from magnolia_vision import (
+    magnolia_limelight_helpers,
+    magnolia_limelight_commands,
+    magnolia_limelight_constants,
+    magnolia_limelight_subsystem
+)
 
 
 class RobotContainer:
@@ -60,7 +67,8 @@ class RobotContainer:
 
 
         self.rpi_vision = rpi_vision.RpiVision()
-        self.mono_vision = multi_limelight.Vision(kCamera.BACK_LL, kCamera.SHOOTER_LL)
+        # self.mono_vision = multi_limelight.Vision(kCamera.BACK_LL, kCamera.SHOOTER_LL)
+        self.magnolia_vision_subsystem = magnolia_limelight_subsystem.Vision(magnolia_limelight_constants.kCamera.SHOOTER_LL, magnolia_limelight_constants.kCamera.BACK_LL)
         # self.LED_controller = CANdleLEDController()
 
         self.custom_path_commands = custom_path_commands.CustomPathCommands(
@@ -86,8 +94,8 @@ class RobotContainer:
         # Default commands
         # -------------------------------------------------------------------
 
-        self.mono_vision.setDefaultCommand(
-            vision_odometry.UpdateOdometry(self.mono_vision, self._drivetrain)
+        self.magnolia_vision_subsystem.setDefaultCommand(
+            magnolia_limelight_commands.UpdateOdometry(self.magnolia_vision_subsystem, self._drivetrain)
         )
         self.shooter_subsystem.setDefaultCommand(
             shooter_commands.DisableShooter(self.shooter_subsystem)
@@ -184,7 +192,7 @@ class RobotContainer:
         )
 
         # -------------------------------------------------------------------
-        # CONTROLLER 2
+        # CONTROLLER 2 
         # -------------------------------------------------------------------
 
         self._controller_2.a().whileTrue(ReverseTransferCommand(self.transfer_subsystem))
@@ -234,4 +242,4 @@ class RobotContainer:
             drive_commands.initial_pose(self._drivetrain, initial_pose).schedule()
         
         self.update_auto()
-        return self.auto
+        return self.auto 

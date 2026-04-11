@@ -115,7 +115,10 @@ def reset_heading(drivetrain: SwerveDriveTrain) -> commands2.Command:
     """Instant command that zeros heading while keeping the current translation."""
     def _reset():
         p = drivetrain.get_pose()
-        drivetrain.reset_pose(Pose2d(p.X(), p.Y(), Rotation2d(math.pi)))
+        if DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
+            drivetrain.reset_pose(Pose2d(p.X(), p.Y(), Rotation2d()))
+        else:
+            drivetrain.reset_pose(Pose2d(p.X(), p.Y(), Rotation2d(math.pi)))
 
     return cmd.runOnce(_reset, drivetrain)
 
