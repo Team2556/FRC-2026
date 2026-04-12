@@ -166,16 +166,16 @@ class RobotContainer:
             self.custom_path_commands.teleop_paths["right_trench"]
         )
         # Go to opposing zone paths
-        self._controller_1.x().and_(self._controller_1.leftBumper()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+        self._controller_1.x().and_(self._controller_1.povUp()).and_(self._controller_1.rightBumper().not_()).whileTrue(
             self.custom_path_commands.teleop_paths["opposing_left_trench"]
         )
-        self._controller_1.a().and_(self._controller_1.leftBumper()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+        self._controller_1.a().and_(self._controller_1.povUp()).and_(self._controller_1.rightBumper().not_()).whileTrue(
             self.custom_path_commands.teleop_paths["opposing_left_bump"]
         )
-        self._controller_1.y().and_(self._controller_1.leftBumper()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+        self._controller_1.y().and_(self._controller_1.povUp()).and_(self._controller_1.rightBumper().not_()).whileTrue(
             self.custom_path_commands.teleop_paths["opposing_right_bump"]
         )
-        self._controller_1.b().and_(self._controller_1.leftBumper()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+        self._controller_1.b().and_(self._controller_1.povUp()).and_(self._controller_1.rightBumper().not_()).whileTrue(
             self.custom_path_commands.teleop_paths["opposing_right_trench"]
         )
         # Extake spot paths
@@ -187,7 +187,7 @@ class RobotContainer:
         )
         
         # Testing button for precision
-        self._controller_1.povUp().onTrue(
+        self._controller_1.leftBumper().onTrue(
             drive_commands.reset_heading(self._drivetrain)
         )
 
