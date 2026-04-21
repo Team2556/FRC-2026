@@ -59,6 +59,7 @@ class SwerveDriveTrain(commands2.Subsystem):
         self.nt.bool("Align Active")
         self.nt.float("Align Rotation Rate")
         self.nt.float("Distance to Hub")
+        self.nt.string("Current Command")
 
     # ------------------------------------------------------------------
     # Velocity
@@ -88,6 +89,9 @@ class SwerveDriveTrain(commands2.Subsystem):
 
     def stop_with_brake(self) -> None:
         self._drivetrain.set_control(self._brake)
+    
+    def drive_blank(self):
+        self.run_velocity(ChassisSpeeds(), ignore_modifiers=True)
 
     # ------------------------------------------------------------------
     # Modifiers
@@ -191,3 +195,5 @@ class SwerveDriveTrain(commands2.Subsystem):
         self.nt.set("Align Active", self._align_rotation is not None)
         self.nt.set("Align Rotation Rate", self._align_rotation or 0.0)
         self.nt.update_sendables()
+        
+        self.nt.set("Current Command", self.getCurrentCommand().__str__())

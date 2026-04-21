@@ -83,7 +83,6 @@ class RobotContainer:
             self.custom_path_commands.get_auto_paths()
         )
 
-        self.auto = None
         self.time_manager = SendFMSData()
 
         self.configureButtonBindings()
@@ -186,9 +185,9 @@ class RobotContainer:
             self.custom_path_commands.teleop_paths["extake_right_trench"]
         )
         
-        # Testing button for precision
-        self._controller_1.leftBumper().onTrue(
-            drive_commands.reset_heading(self._drivetrain)
+        from commands.path_commands import drive_to_a_spot
+        self._controller_1.povUp().whileTrue(
+            drive_to_a_spot.DriveToASpot(self._drivetrain).with_lock_values()
         )
 
         # -------------------------------------------------------------------
@@ -228,18 +227,14 @@ class RobotContainer:
             IntakeRollerBackward(self.intake_roller)
         )
 
-    def update_auto(self):
-        self.auto = self.auto_chooser.choose_auto()
-
     def getAutonomousCommand(self):
         IntakePivotForward(self.intake_pivot).schedule()
         IntakeRollerForward(self.intake_roller).schedule()
 
         initial_pose = self.auto_chooser.get_initial_pose()
-        if key_poses.kPath.MIRROR_REVERSE_PATHS:
-            initial_pose = FlipUtil.mirrorPose(initial_pose)
         if initial_pose:
+            if key_poses.kPath.MIRROR_REVERSE_PATHS:
+                initial_pose = FlipUtil.mirrorPose(initial_pose)
             drive_commands.initial_pose(self._drivetrain, initial_pose).schedule()
         
-        self.update_auto()
-        return self.auto 
+        return self.auto_chooser.choose_auto()

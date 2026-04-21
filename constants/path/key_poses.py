@@ -16,18 +16,22 @@ class kPath:
     default_path_speed = 4 # 4.0 maybe
     auto_path_speed = 3.2 # 3.4 maybe
     bump_speed = 2.3
-    intaking_speed = 0.6
+    intaking_speed = 3
     while_shooting_speed = 1.0
     
     smoothing_radius_auto = 0.15 # 1.3 with 5.5 speed
+    smoothing_radius_auto_sweep = 0.9
     smoothing_radius_teleop = 0.28
     smoothing_radius_wide = 2
     
     min_goal_end_velocity_mult = 0.1
     smoothing_time_multiplier = 1
     
-    # Global variable thing for mirroring paths.
+    # Global auto modifier variables
     MIRROR_REVERSE_PATHS = False
+    START_DELAY = 0
+    CHECKPOINT_1 = 0
+    CHECKPOINT_2 = 0
 
 class kPoses:
     '''Locations of every pose that has to do with drive_to_a_spot pathfinding'''
@@ -81,68 +85,23 @@ class kPoses:
     # Auto Poses
     # -------------------------------------------------------------------
     
-    short_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
-    short_sweep_2 = Pose2d(8.8, 1.6, Rotation2d(pi/2))
-    short_sweep_3 = Pose2d(7.9, 2.4, Rotation2d(pi/2 + 0.1))
-    # short_sweep_4 = Pose2d(7.9, 2.5, Rotation2d(pi))
-    # short_sweep_5 = Pose2d(6.5, 2.55, Rotation2d(pi))
+    double_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
+    double_sweep_2 = Pose2d(8.8, 1.6, Rotation2d(pi/2))
+    double_sweep_3 = Pose2d(8.0, 3.5, Rotation2d(pi/2 + 0.1))
+    double_sweep_4 = Pose2d(6.0, bump_from_edge - 0.2, Rotation2d(3*pi/4))
+    double_sweep_5 = Pose2d(3.0, bump_from_edge, Rotation2d(3*pi/4))
+    double_sweep_6 = Pose2d(3.0, trench_from_edge + 0.05, Rotation2d(pi))
+    double_sweep_7 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
+    double_sweep_8 = Pose2d(8.0, 2, Rotation2d(pi/2))
+    double_sweep_9 = Pose2d(7.6, 3.2, Rotation2d(pi/2))
+    double_sweep_10 = Pose2d(7.2, 4, Rotation2d(pi))
+    double_sweep_11 = Pose2d(5.85, 3.5, Rotation2d(3*pi/2))
+    double_sweep_12 = Pose2d(6.0, bump_from_edge - 0.2, Rotation2d(3*pi/4))
+    double_sweep_13 = Pose2d(3.0, bump_from_edge, Rotation2d(3*pi/4))
+    double_sweep_14 = Pose2d(3.0, trench_from_edge + 0.05, Rotation2d(pi))
     
-    close_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
-    close_sweep_2 = Pose2d(7.5, 1.6, Rotation2d(pi/2))
-    close_sweep_3 = Pose2d(7, 3.9, Rotation2d(pi/2 + 0.1))
-    close_sweep_4 = Pose2d(5.85, 3.4, Rotation2d(pi))
-    
-    wide_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
-    wide_sweep_2 = Pose2d(8.8, 1.6, Rotation2d(pi/2))
-    wide_sweep_3 = Pose2d(8.0, 4.0, Rotation2d(pi/2 + 0.1))
-    wide_sweep_4 = Pose2d(6.5, bump_from_edge, Rotation2d(2*pi/3))
-    
-    cleanup_sweep_1 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d(pi))
-    cleanup_sweep_2 = Pose2d(8.9, 1.6, Rotation2d(pi/2))
-    cleanup_sweep_3 = Pose2d(7.8, 3.5, Rotation2d(pi/2 + 0.1))
-    cleanup_sweep_4 = Pose2d(6.5, 4.0, Rotation2d(pi))
-    cleanup_sweep_5 = Pose2d(6.2, 2.2, Rotation2d(4*pi/3))
-    
-    bump_shoot_1 = Pose2d(6.5, bump_from_edge + 0.20, Rotation2d(pi))
-    bump_shoot_2 = Pose2d(2.5, bump_from_edge, Rotation2d(pi))
-    bump_shoot_3 = Pose2d(2.5, 0, Rotation2d(pi))
-    bump_shoot_4 = Pose2d(2.5, 3, Rotation2d(pi))
-    bump_shoot_5 = Pose2d(2.8, trench_from_edge + 0.05, Rotation2d(pi))
-    left_bump_shoot_1 = Pose2d(2.3, 2.6, Rotation2d(pi))
-    
-    bump_half_shoot_1 = Pose2d(6.5, bump_from_edge + 0.20, Rotation2d(pi))
-    bump_half_shoot_2 = Pose2d(2.5, bump_from_edge, Rotation2d(5*pi/4))
-    bump_half_shoot_3 = Pose2d(2.5, trench_from_edge + 0.1, Rotation2d(pi))
-    
-    spot_shoot_1 = Pose2d(2.9, trench_from_edge, Rotation2d(pi))
-    spot_shoot_2 = Pose2d(3.2, trench_from_edge, Rotation2d(pi))
-    
-    trench_extake_1 = Pose2d(6.5, trench_from_edge + 0.2, Rotation2d(pi))
-    
-    stay_bump_shoot_1 = Pose2d(6.5, bump_from_edge + 0.10, Rotation2d(pi))
-    stay_bump_shoot_2 = Pose2d(2.5, bump_from_edge, Rotation2d(pi))
-    stay_bump_shoot_3 = Pose2d(3.5, bump_from_edge, Rotation2d())
-    
-    bump_middle_sweep_1 = Pose2d(6.2, bump_from_edge, Rotation2d())
-    bump_middle_sweep_2 = Pose2d(6.5, 3.8, Rotation2d())
-    bump_middle_sweep_3 = Pose2d(8.5, 3.8, Rotation2d())
-    bump_middle_sweep_4 = Pose2d(7.2, 2.5, Rotation2d(7*pi/6))
-    
-    bump_side_sweep_1 = Pose2d(6.3, bump_from_edge, Rotation2d())
-    bump_side_sweep_2 = Pose2d(7.5, 3.5, Rotation2d(-pi/2 + 0.1))
-    bump_side_sweep_3 = Pose2d(7.5, 1.2, Rotation2d(-pi/2 - 0.1))
-    bump_side_sweep_4 = Pose2d(6.2, bump_from_edge, Rotation2d(3*pi/4))
-    # bump_side_sweep_4 = Pose2d(6.2, 3.5, Rotation2d())
-    
-    # bump_close_sweep_1 = Pose2d(6.3, bump_from_edge, Rotation2d())
-    # bump_close_sweep_2 = Pose2d(7.5, 3.5, Rotation2d(-pi/2 + 0.1))
-    # bump_close_sweep_3 = Pose2d(7.5, 1.2, Rotation2d(-pi/2 - 0.1))
-    # bump_close_sweep_4 = Pose2d(6.2, bump_from_edge, Rotation2d(3*pi/4))
-    
-    sit_middle = Pose2d(8.5, 4, Rotation2d())
-
-    trench_only_shoot_1 = Pose2d(6.0, trench_from_edge + 0.05, Rotation2d())
-    trench_only_shoot_2 = Pose2d(2.5, trench_from_edge, Rotation2d())
-    trench_only_shoot_3 = Pose2d(1.5, 1.2, Rotation2d())
-    trench_only_shoot_4 = Pose2d(2.5, trench_from_edge, Rotation2d(pi))
-    left_trench_only_shoot_4 = Pose2d(2.5, 2, Rotation2d(pi))
+    double_sweep_left_4 = Pose2d(6.0, bump_from_edge - 0.2, Rotation2d(7*pi/4))
+    double_sweep_left_5 = Pose2d(2.5, bump_from_edge, Rotation2d(7*pi/4))
+    double_sweep_left_6 = Pose2d(2.5, trench_from_edge + 0.15, Rotation2d())
+    double_sweep_left_extra_6 = Pose2d(4.45, trench_from_edge + 0.03, Rotation2d())
+    double_sweep_left_7 = Pose2d(6.5, trench_from_edge + 0.1, Rotation2d())
