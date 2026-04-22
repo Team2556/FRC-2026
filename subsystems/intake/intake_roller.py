@@ -61,4 +61,3 @@ class IntakeRoller(commands2.Subsystem):
 
         self.nt.set("Roller RPM", self.roller_motor.get_velocity().value * 60)
         self.nt.set("Target Roller RPM", self._target_rpm if self._enabled else 0.0)
-        self.roller_editable_pid.periodic()

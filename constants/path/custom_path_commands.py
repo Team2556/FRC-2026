@@ -11,6 +11,7 @@ from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 from subsystems.shooter.shooter_hood import ShooterHood
 from subsystems.shooter.dual_shooter import DualMotorShooter
 from subsystems.trasnfer.transfer_subsystem import TransferSubsystem
+from subsystems.intake.intake_pivot import IntakePivot
 from subsystems.intake.intake_roller import IntakeRoller
 from subsystems.led.LED_controller import CANdleLEDController
 
@@ -18,7 +19,8 @@ from commands.path_commands.drive_to_a_spot import DriveToASpot
 from commands.path_commands.drive_to_a_spot_sequence import DriveToASpotSequence
 from commands.auto_align.align_with_controller import ConditionalAlignAndShoot
 from commands.auto_align.alignio import AlignIntakeToVelocity
-from commands.intake.roller_commands import IntakeRollerForward, IntakeRollerBackward, IntakeRollerOscillate
+from commands.intake.roller_commands import IntakeRollerForwardInstant, IntakeRollerBackward, IntakeRollerOscillate
+from commands.intake.pivot_commands import IntakePivotForward, IntakePivotReverse
 from commands.shooter.shooter_commands import EnableShooter, DisableShooter
 from commands.path_commands.auto_helpers import AutoCheckpoint, DriveBlank
 
@@ -31,17 +33,18 @@ class CustomPathCommands:
     def __init__(
         self,
         drivetrain : SwerveDriveTrain = None,
+        pivot_subsystem : IntakePivot = None,
         roller_subsystem : IntakeRoller = None,
         transfer_subsystem : TransferSubsystem = None,
         shooter_subsystem : DualMotorShooter = None,
         hood_subsystem : ShooterHood = None,
         led_subsystem : CANdleLEDController = None,
-        climb_subsyetem : None = None,
         ):
         
         self.drivetrain = drivetrain
         self.shooter_subsystem = shooter_subsystem
         self.transfer_subsystem = transfer_subsystem
+        self.pivot_subsystem = pivot_subsystem
         self.roller_subsystem = roller_subsystem
         self.hood_subsystem = hood_subsystem
         self.led_subsystem = led_subsystem
@@ -79,6 +82,8 @@ class CustomPathCommands:
         "_none" : InstantCommand(),
         "double_sweep" : SequentialCommandGroup(
             AutoCheckpoint(0),
+            IntakeRollerForwardInstant(self.roller_subsystem),
+            WaitCommand(0.2),
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.double_sweep_1
                     ).with_override_smoothing_radius(kPath.smoothing_radius_auto_sweep),
@@ -113,10 +118,12 @@ class CustomPathCommands:
                 ),
                 lambda : RobotZoneChecker.is_on_right_side(self.drivetrain.get_state().pose)
             ),
+            IntakeRollerForwardInstant(self.roller_subsystem),
             AutoCheckpoint(1),
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = (kPoses.double_sweep_7, kPoses.double_sweep_left_7)
-                    ).with_override_smoothing_radius(kPath.smoothing_radius_auto_sweep),
+                    ).with_override_smoothing_radius(kPath.smoothing_radius_auto_sweep
+                    ).with_override_speed(kPath.auto_path_speed * 0.67),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.double_sweep_8
                     ).with_override_smoothing_radius(kPath.smoothing_radius_wide),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.double_sweep_9
@@ -128,7 +135,7 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.double_sweep_11
                     ).with_override_smoothing_radius(kPath.smoothing_radius_auto_sweep)
                     .with_override_speed(kPath.intaking_speed),
-                DriveToASpot(self.drivetrain, target_pose = (kPoses.double_sweep_4, kPoses.double_sweep_left_4))
+                DriveToASpot(self.drivetrain, target_pose = (kPoses.double_sweep_12, kPoses.double_sweep_left_12))
                     .with_override_speed(kPath.intaking_speed),
                 DriveToASpot(self.drivetrain, target_pose = (kPoses.double_sweep_5, kPoses.double_sweep_left_5)
                     ).with_override_speed(kPath.bump_speed
@@ -155,7 +162,17 @@ class CustomPathCommands:
                 ),
                 lambda : RobotZoneChecker.is_on_right_side(self.drivetrain.get_state().pose)
             ),
-        )
+        ),
+        "middle_sweep" : SequentialCommandGroup(
+            AutoCheckpoint(0),
+            IntakeRollerForwardInstant(self.roller_subsystem),
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.double_sweep_1),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.double_sweep_2),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.double_sweep_3),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.double_sweep_4),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.double_sweep_5)
+        ))
         }
         
     def make_teleop_paths(self):

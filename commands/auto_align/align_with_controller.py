@@ -20,7 +20,7 @@ from commands.auto_align.alignio import RotationCalculator
 from constants.field import kHub, kPassSpots
 from constants.drive import kAutoAlign
 from constants.intake import kIntakeRoller
-from constants.shooter import kShooterMotor
+from constants.shooter import kShooterMotor, kHoodMotor
 
 
 class ConditionalAlignAndShoot(commands2.Command):
@@ -78,6 +78,7 @@ class ConditionalAlignAndShoot(commands2.Command):
     def end(self, interrupted: bool) -> None:
         self._drivetrain.clear_align_rotation()
         self._transfer.stop()
+        self._hood.set_target_angle(kHoodMotor.HOME_ANGLE_DEG)
 
     def getInterruptionBehavior(self):
         return InterruptionBehavior.kCancelSelf
