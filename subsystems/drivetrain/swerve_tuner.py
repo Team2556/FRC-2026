@@ -18,20 +18,12 @@ class TunerConstants:
     # output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
     _steer_gains = (
         configs.Slot0Configs()
-        # .with_k_p(sum([0.010095, 0.13685, 0.02603, 0.15159])/4) # velocity loop
-        .with_k_p(10.82)#sum([ 10.739, 13.242, 12.16, 7.1703])/4) # position loop
+        .with_k_p(50)
         .with_k_i(0)
-        .with_k_d(0.25971)#sum([ 0.11989, 0.26857, 0.37575,0.27463])/4)
-        .with_k_s(0.1)#sum([0.35797,0.3839 , 0.45442,0.30588 ])/4)
-        .with_k_v(1.1881)#sum([1.3281, 1.3062, 1.0138, 1.1043 ])/4)
-        .with_k_a(0.03334075)#sum([0.026809, 0.032434, 0.032061,  0.042059])/4)
-        #used at magnolia:
-        # .with_k_p(40)
-        # .with_k_i(0)
-        # .with_k_d(0.5)
-        # .with_k_s(0.1)
-        # .with_k_v(1.59)
-        # .with_k_a(0)
+        .with_k_d(0.7)
+        .with_k_s(0.1)
+        .with_k_v(1.91)
+        .with_k_a(0)
         .with_static_feedforward_sign(
             signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN
         )
@@ -104,7 +96,7 @@ class TunerConstants:
 
     _drive_gear_ratio = 8.142857142857142
     _steer_gear_ratio = 12.8
-    _wheel_radius: units.meter = inchesToMeters(3)
+    _wheel_radius: units.meter = inchesToMeters(2.95)
 
     _invert_left_side = False
     _invert_right_side = True
