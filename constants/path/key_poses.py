@@ -86,33 +86,43 @@ class kPoses:
     # Auto Poses
     # -------------------------------------------------------------------
     
-    double_sweep_1 = Pose2d(6.5, trench_from_edge, Rotation2d(pi))
+    # The DOUBLE SWEEP
+    double_sweep_1 = Pose2d(6.0, trench_from_edge, Rotation2d(pi))
     double_sweep_2 = Pose2d(8.7, 1.6, Rotation2d(pi/2))
-    double_sweep_3 = Pose2d(8.0, 3.5, Rotation2d(pi/2 + 0.1))
-    double_sweep_4 = Pose2d(6.0, bump_from_edge, Rotation2d(3*pi/4))
-    double_sweep_5 = Pose2d(2.8, bump_from_edge + 0.08, Rotation2d(3*pi/4))
+    double_sweep_3 = Pose2d(8.0, 3.6, Rotation2d(pi/2 + 0.1))
+    double_sweep_4 = Pose2d(6.0, bump_from_edge - 0.15, Rotation2d(pi))
+    double_sweep_5 = Pose2d(2.8, bump_from_edge - 0.05, Rotation2d(pi))
     double_sweep_6 = Pose2d(2.8, trench_from_edge + 0.05, Rotation2d(pi))
     double_sweep_7 = Pose2d(6.5, trench_from_edge, Rotation2d(pi))
     double_sweep_8 = Pose2d(8.0, 2, Rotation2d(pi/2))
     double_sweep_9 = Pose2d(7.6, 3.2, Rotation2d(pi/2))
     double_sweep_10 = Pose2d(7.2, 4, Rotation2d(pi))
-    double_sweep_11 = Pose2d(5.55, 3.5, Rotation2d(pi))
-    double_sweep_12 = Pose2d(6.0, bump_from_edge - 0.2, Rotation2d(3*pi/4))
+    double_sweep_11 = Pose2d(5.75, 3.5, Rotation2d(pi))
+    double_sweep_12 = Pose2d(6.0, bump_from_edge - 0.05, Rotation2d(pi))
     
-    double_sweep_left_4 = Pose2d(6.0, bump_from_edge - 0.2, Rotation2d(7*pi/4))
-    double_sweep_left_5 = Pose2d(2.3, bump_from_edge, Rotation2d(7*pi/4))
+    double_sweep_left_4 = Pose2d(6.0, bump_from_edge, Rotation2d(pi))
+    double_sweep_left_5 = Pose2d(2.3, bump_from_edge + 0.05, Rotation2d(pi))
     double_sweep_left_6 = Pose2d(2.3, trench_from_edge + 0.05, Rotation2d())
-    double_sweep_left_extra_6 = Pose2d(4.45, trench_from_edge + 0.03, Rotation2d())
+    double_sweep_left_extra_6 = Pose2d(4.25, trench_from_edge + 0.03, Rotation2d())
     double_sweep_left_7 = Pose2d(6.5, trench_from_edge, Rotation2d())
-    double_sweep_left_12 = Pose2d(6.0, bump_from_edge - 0.3, Rotation2d(3*pi/4))
+    double_sweep_left_12 = Pose2d(6.0, bump_from_edge - 0.15, Rotation2d(pi))
     
+    # The TRENCH DOUBLE SWEEP
+    trench_double_sweep_4 = Pose2d(6.0, trench_from_edge + 0.04, Rotation2d(pi))
+    trench_double_sweep_5 = Pose2d(3.5, trench_from_edge, Rotation2d(pi))
+    trench_double_sweep_extra_12 = Pose2d(6.25, 2.6, Rotation2d(-pi/2))
+    
+    trench_double_sweep_left_4 = Pose2d(6.0, trench_from_edge + 0.04, Rotation2d())
+    trench_double_sweep_left_5 = Pose2d(4.2, trench_from_edge, Rotation2d())
+    
+    # The MIDDLE SWEEP
     middle_sweep_1 = Pose2d(6.0, bump_from_edge, Rotation2d())
     middle_sweep_2 = Pose2d(6.7, 4.3, Rotation2d())
     middle_sweep_3 = Pose2d(6.7, 4.0, Rotation2d())
     middle_sweep_4 = Pose2d(8.3, 4.0, Rotation2d())
-    middle_sweep_5 = Pose2d(8.0, 2.0, Rotation2d(pi/2))
-    middle_sweep_6 = Pose2d(6.5, trench_from_edge, Rotation2d(pi))
-    middle_sweep_7 = Pose2d(2.0, trench_from_edge, Rotation2d(pi))
+    middle_sweep_5 = Pose2d(7.5, 3.5, Rotation2d(-pi/2))
+    middle_sweep_6 = Pose2d(6.5, bump_from_edge - 0.2, Rotation2d(pi))
+    middle_sweep_7 = Pose2d(2.3, bump_from_edge, Rotation2d(pi))
     middle_sweep_8 = Pose2d(1.5, 1.35, Rotation2d(3*pi/4))
     middle_sweep_9 = Pose2d(2.0, trench_from_edge, Rotation2d(pi))
     middle_sweep_10 = Pose2d(6.0, trench_from_edge, Rotation2d(pi))

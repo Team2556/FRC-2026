@@ -20,6 +20,10 @@ class kAutoAlign:
     AUTO_ALIGN_MAX_ANGULAR_RATE = rotationsToRadians(1.5)
 
     ALIGN_TUNER_OFFSET = 0
+    
+    WIGGLE_PERIOD = 0.35
+    WIGGLE_AMPLITUDE = 1.15
+    WIGGLE_MIN_VEOCITY = 0.05
 
 
 class kDriveConfig:

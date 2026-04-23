@@ -21,13 +21,12 @@ class IntakeRollerDefaultCommand(Command):
         pass
 
     def execute(self):
-        # robot_vel_x = self._drivetrain.get_state().velocity.translation().x
-        # toward_intake = robot_vel_x * kIntakePivot.INTAKE_DIRECTION
-        # if toward_intake >= kIntakeRoller.AUTO_INTAKE_SPEED_THRESHOLD:
-        #     self._roller.set_target_rpm(kIntakeRoller.TARGET_RPM)
-        # else:
-        #     self._roller.stop_roller()
-        self._roller.stop_roller()
+        robot_vel_x = self._drivetrain.get_state().velocity.translation().x
+        toward_intake = robot_vel_x * kIntakePivot.INTAKE_DIRECTION
+        if toward_intake >= kIntakeRoller.AUTO_INTAKE_SPEED_THRESHOLD:
+            self._roller.set_target_rpm(kIntakeRoller.TARGET_RPM)
+        else:
+            self._roller.stop_roller()
 
     def isFinished(self) -> bool:
         return False

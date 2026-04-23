@@ -1,10 +1,10 @@
 import wpilib
 
-
 import commands2
 from commands2 import InterruptionBehavior
 
 from wpimath.geometry import Pose2d
+from math import sin, hypot, pi
 
 from util.robot_zone_checker import RobotZoneChecker
 from util.flip_util import FlipUtil
@@ -55,8 +55,15 @@ class ConditionalAlignAndShoot(commands2.Command):
         if target_pose is not None:
             self._calc.with_target(target=target_pose)
 
+        robot_velocity = drive_state.velocity.translation()
+        speed = hypot(robot_velocity.x, robot_velocity.y)
+        if speed < kAutoAlign.WIGGLE_MIN_VEOCITY or wpilib.DriverStation.isAutonomous():
+            wiggle_modifier = kAutoAlign.WIGGLE_AMPLITUDE * sin(wpilib.Timer.getFPGATimestamp() * 2*pi / kAutoAlign.WIGGLE_PERIOD)
+        else:
+            wiggle_modifier = 0
+        
         self._drivetrain.set_align_rotation(
-            self._calc.calculate_rotation() * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
+            (self._calc.calculate_rotation() * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE) + wiggle_modifier
         )
 
         distance = robot_pose.translation().distance(
