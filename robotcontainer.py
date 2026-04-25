@@ -174,37 +174,30 @@ class RobotContainer:
         )
         
         # All the path to pose commands for doing bump/trench
-        self._controller_1.x().and_(self._controller_1.leftBumper().not_()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+        self._controller_1.x().and_(self._controller_1.leftBumper().not_()).whileTrue(
             self.custom_path_commands.teleop_paths["left_trench"]
         )
-        self._controller_1.a().and_(self._controller_1.leftBumper().not_()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+        self._controller_1.a().and_(self._controller_1.leftBumper().not_()).whileTrue(
             self.custom_path_commands.teleop_paths["left_bump"]
         )
-        self._controller_1.y().and_(self._controller_1.leftBumper().not_()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+        self._controller_1.y().and_(self._controller_1.leftBumper().not_()).whileTrue(
             self.custom_path_commands.teleop_paths["right_bump"]
         )
-        self._controller_1.b().and_(self._controller_1.leftBumper().not_()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+        self._controller_1.b().and_(self._controller_1.leftBumper().not_()).whileTrue(
             self.custom_path_commands.teleop_paths["right_trench"]
         )
         # Go to opposing zone paths
-        self._controller_1.x().and_(self._controller_1.povUp()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+        self._controller_1.x().and_(self._controller_1.leftBumper()).whileTrue(
             self.custom_path_commands.teleop_paths["opposing_left_trench"]
         )
-        self._controller_1.a().and_(self._controller_1.povUp()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+        self._controller_1.a().and_(self._controller_1.leftBumper()).whileTrue(
             self.custom_path_commands.teleop_paths["opposing_left_bump"]
         )
-        self._controller_1.y().and_(self._controller_1.povUp()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+        self._controller_1.y().and_(self._controller_1.leftBumper()).whileTrue(
             self.custom_path_commands.teleop_paths["opposing_right_bump"]
         )
-        self._controller_1.b().and_(self._controller_1.povUp()).and_(self._controller_1.rightBumper().not_()).whileTrue(
+        self._controller_1.b().and_(self._controller_1.leftBumper()).whileTrue(
             self.custom_path_commands.teleop_paths["opposing_right_trench"]
-        )
-        # Extake spot paths
-        self._controller_1.x().and_(self._controller_1.leftBumper().not_()).and_(self._controller_1.rightBumper()).whileTrue(
-            self.custom_path_commands.teleop_paths["extake_left_trench"]
-        )
-        self._controller_1.b().and_(self._controller_1.leftBumper().not_()).and_(self._controller_1.rightBumper()).whileTrue(
-            self.custom_path_commands.teleop_paths["extake_right_trench"]
         )
         
         from commands.path_commands import drive_to_a_spot

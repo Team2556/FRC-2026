@@ -321,17 +321,17 @@ class CustomPathCommands:
         self.teleop_paths = {
         "right_trench" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_trench).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_trench).with_closest_180().with_override_max_acceleration(kPath.trench_path_max_acceleration),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_trench).with_closest_180(),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_right_trench)).with_closest_180(),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_right_trench)).with_closest_180().with_override_max_acceleration(kPath.trench_path_max_acceleration),
                     DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_trench)).with_closest_180(),
                 ),
                 ConditionalCommand(
                     DriveToASpotSequence(
-                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_right_trench)).with_closest_180(),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_right_trench)).with_closest_180().with_override_max_acceleration(kPath.trench_path_max_acceleration),
                         DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_right_trench)).with_closest_180(),
                     ),
                     cmd.none(),
@@ -367,17 +367,17 @@ class CustomPathCommands:
         ),
         "left_trench" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_trench).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_trench).with_closest_180().with_override_max_acceleration(kPath.trench_path_max_acceleration),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_trench).with_closest_180(),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_left_trench)).with_closest_180(),
+                    DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.neutral_close_left_trench)).with_closest_180().with_override_max_acceleration(kPath.trench_path_max_acceleration),
                     DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_trench)).with_closest_180(),
                 ),
                 ConditionalCommand(
                     DriveToASpotSequence(
-                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_left_trench)).with_closest_180(),
+                        DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.opposing_left_trench)).with_closest_180().with_override_max_acceleration(kPath.trench_path_max_acceleration),
                         DriveToASpot(self.drivetrain, target_pose = self.opposite_pose_rotation(kPoses.alliance_left_trench)).with_closest_180(),
                     ),
                     cmd.none(),
@@ -413,12 +413,12 @@ class CustomPathCommands:
         ),
         "opposing_right_trench" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_trench).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_right_trench).with_closest_180().with_override_max_acceleration(kPath.trench_path_max_acceleration),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_right_trench).with_closest_180(),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_right_trench).with_closest_180(),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_right_trench).with_closest_180().with_override_max_acceleration(kPath.trench_path_max_acceleration),
                     DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_right_trench).with_closest_180(),
                 ),
                 cmd.none(),
@@ -445,12 +445,12 @@ class CustomPathCommands:
         ),
         "opposing_left_trench" : ConditionalCommand(
             DriveToASpotSequence(
-                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_trench).with_closest_180(),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.alliance_left_trench).with_closest_180().with_override_max_acceleration(kPath.trench_path_max_acceleration),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_left_trench).with_closest_180(),
             ),
             ConditionalCommand(
                 DriveToASpotSequence(
-                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_left_trench).with_closest_180(),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_far_left_trench).with_closest_180().with_override_max_acceleration(kPath.trench_path_max_acceleration),
                     DriveToASpot(self.drivetrain, target_pose = kPoses.opposing_left_trench).with_closest_180(),
                 ),
                 cmd.none(),
@@ -473,21 +473,6 @@ class CustomPathCommands:
                 cmd.none(),
                 lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose) 
             ),
-            lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)  
-        ),
-        "extake_left_trench" : ConditionalCommand(
-            DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_left_trench).with_precise_values(),
-            cmd.none(),
-            lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose)  
-        ),
-        "extake_right_trench" : ConditionalCommand(
-            DriveToASpot(self.drivetrain, target_pose = kPoses.neutral_close_right_trench).with_precise_values(),
-            cmd.none(),
-            lambda : RobotZoneChecker.is_in_neutral_zone(self.drivetrain.get_state().pose)  
-        ),
-        "back_left_corner" : ConditionalCommand(
-            DriveToASpot(self.drivetrain, target_pose = Pose2d(0.5, 7.77, Rotation2d(pi))).with_precise_values().with_override_speed(1),
-            cmd.none(),
             lambda : RobotZoneChecker.is_in_alliance_zone(self.drivetrain.get_state().pose)  
         ),
         }
