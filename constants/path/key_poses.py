@@ -27,6 +27,8 @@ class kPath:
     min_goal_end_velocity_mult = 0.1
     smoothing_time_multiplier = 1
     
+    trench_path_max_acceleration = 4
+    
     # Global auto modifier variables
     MIRROR_REVERSE_PATHS = False
     START_DELAY = 0
@@ -43,6 +45,8 @@ class kPoses:
     trench_from_edge = 0.65 # was 0.72 maybe this will work better
     bump_from_edge = 2.66 # was 2.55
     
+    trench_from_edge_teleop_path = 0.67 # 67
+    
     alliance_x = 3.0
     neutral_close_x = 6.35
     neutral_far_x = 10.3
@@ -56,28 +60,25 @@ class kPoses:
     # General poses (the rotations are the ideal direction to face when traveling in the positive x direction)
     # ------------------------------------------------------------------------------------------------------------------
     
-    alliance_left_trench = Pose2d(alliance_x, field_height - trench_from_edge, Rotation2d(pi))
+    alliance_left_trench = Pose2d(alliance_x, field_height - trench_from_edge_teleop_path, Rotation2d(pi))
     alliance_left_bump = Pose2d(alliance_x, field_height - bump_from_edge, Rotation2d())
     alliance_right_bump = Pose2d(alliance_x, bump_from_edge, Rotation2d())
-    alliance_right_trench = Pose2d(alliance_x, trench_from_edge, Rotation2d(pi))
+    alliance_right_trench = Pose2d(alliance_x, trench_from_edge_teleop_path, Rotation2d(pi))
     
-    neutral_close_left_trench = Pose2d(neutral_close_x, field_height - trench_from_edge, Rotation2d(pi))
+    neutral_close_left_trench = Pose2d(neutral_close_x, field_height - trench_from_edge_teleop_path, Rotation2d(pi))
     neutral_close_left_bump = Pose2d(neutral_close_x, field_height - bump_from_edge, Rotation2d())
     neutral_close_right_bump = Pose2d(neutral_close_x, bump_from_edge, Rotation2d())
-    neutral_close_right_trench = Pose2d(neutral_close_x, trench_from_edge, Rotation2d(pi))
+    neutral_close_right_trench = Pose2d(neutral_close_x, trench_from_edge_teleop_path, Rotation2d(pi))
     
-    neutral_far_left_trench = Pose2d(neutral_far_x, field_height - trench_from_edge, Rotation2d(pi))
+    neutral_far_left_trench = Pose2d(neutral_far_x, field_height - trench_from_edge_teleop_path, Rotation2d(pi))
     neutral_far_left_bump = Pose2d(neutral_far_x, field_height - bump_from_edge, Rotation2d())
     neutral_far_right_bump = Pose2d(neutral_far_x, bump_from_edge, Rotation2d())
-    neutral_far_right_trench = Pose2d(neutral_far_x, trench_from_edge, Rotation2d(pi))
+    neutral_far_right_trench = Pose2d(neutral_far_x, trench_from_edge_teleop_path, Rotation2d(pi))
     
-    opposing_left_trench = Pose2d(opposing_x, field_height - trench_from_edge, Rotation2d(pi))
+    opposing_left_trench = Pose2d(opposing_x, field_height - trench_from_edge_teleop_path, Rotation2d(pi))
     opposing_right_bump = Pose2d(opposing_x, bump_from_edge, Rotation2d())
     opposing_left_bump = Pose2d(opposing_x, field_height - bump_from_edge, Rotation2d())
-    opposing_right_trench = Pose2d(opposing_x, trench_from_edge, Rotation2d(pi))
-    
-    left_trench_feed = Pose2d(neutral_close_x, field_height - trench_from_edge, Rotation2d())
-    right_trench_feed = Pose2d(neutral_close_x, trench_from_edge, Rotation2d())
+    opposing_right_trench = Pose2d(opposing_x, trench_from_edge_teleop_path, Rotation2d(pi))
     
     # -------------------------------------------------------------------
     # Auto Poses
@@ -86,7 +87,7 @@ class kPoses:
     # The DOUBLE SWEEP
     double_sweep_1 = Pose2d(6.0, trench_from_edge, Rotation2d(pi))
     double_sweep_2 = Pose2d(8.7, 1.6, Rotation2d(pi/2))
-    double_sweep_3 = Pose2d(8.0, 3.6, Rotation2d(pi/2 + 0.1))
+    double_sweep_3 = Pose2d(8.0, 2.4, Rotation2d(pi/2 + 0.1)) # Was y value 3.6
     double_sweep_4 = Pose2d(6.0, bump_from_edge - 0.15, Rotation2d(pi))
     double_sweep_5 = Pose2d(2.8, bump_from_edge - 0.05, Rotation2d(pi))
     double_sweep_6 = Pose2d(2.8, trench_from_edge + 0.05, Rotation2d(pi))

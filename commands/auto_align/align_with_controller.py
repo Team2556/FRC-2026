@@ -58,7 +58,7 @@ class ConditionalAlignAndShoot(commands2.Command):
         robot_velocity = drive_state.velocity.translation()
         speed = hypot(robot_velocity.x, robot_velocity.y)
         wiggle_modifier = 0
-        if speed < kAutoAlign.WIGGLE_MIN_VEOCITY or wpilib.DriverStation.isAutonomous():
+        if speed < kAutoAlign.WIGGLE_MIN_VEOCITY:
             wiggle_modifier = kAutoAlign.WIGGLE_AMPLITUDE * sin(
                 wpilib.Timer.getFPGATimestamp() * 2 * pi / kAutoAlign.WIGGLE_PERIOD
             )
@@ -70,7 +70,7 @@ class ConditionalAlignAndShoot(commands2.Command):
         distance = robot_pose.translation().distance(
             self._calc.leading_target.translation()
         )
-
+        
         self._drivetrain.set_align_rotation(
             (self._calc.calculate_rotation() * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE)
             + wiggle_modifier
