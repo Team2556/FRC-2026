@@ -27,7 +27,7 @@ class kPath:
     min_goal_end_velocity_mult = 0.1
     smoothing_time_multiplier = 1
     
-    trench_path_max_acceleration = 4
+    trench_path_max_acceleration = 7
     
     # Global auto modifier variables
     MIRROR_REVERSE_PATHS = False
@@ -45,7 +45,7 @@ class kPoses:
     trench_from_edge = 0.65 # was 0.72 maybe this will work better
     bump_from_edge = 2.66 # was 2.55
     
-    trench_from_edge_teleop_path = 0.67 # 67
+    trench_from_edge_teleop_path = 0.70 # 67
     
     alliance_x = 3.0
     neutral_close_x = 6.35
@@ -117,10 +117,10 @@ class kPoses:
     # The MIDDLE SWEEP
     middle_sweep_1 = Pose2d(6.0, bump_from_edge, Rotation2d())
     middle_sweep_2 = Pose2d(6.7, 4.3, Rotation2d())
-    middle_sweep_3 = Pose2d(8.6, 4.0, Rotation2d())
+    middle_sweep_3 = Pose2d(8.1, 4.0, Rotation2d()) # Would be 8.6 if faster intake
     middle_sweep_4 = Pose2d(7.5, 3.5, Rotation2d(-pi/2))
     middle_sweep_5 = Pose2d(6.5, bump_from_edge - 0.2, Rotation2d(pi))
-    middle_sweep_6 = Pose2d(3.1, bump_from_edge, Rotation2d(pi))
+    middle_sweep_6 = Pose2d(2.9, bump_from_edge, Rotation2d(pi))
     middle_sweep_7 = Pose2d(1.7, 2.5, Rotation2d(3*pi/4))
     middle_sweep_8 = Pose2d(4.0, bump_from_edge, Rotation2d())
     middle_sweep_9 = Pose2d(6.0, bump_from_edge, Rotation2d())
@@ -130,10 +130,10 @@ class kPoses:
     middle_sweep_left_7 = Pose2d(1.7, 2.5, Rotation2d(7*pi/4))
     middle_sweep_left_8 = Pose2d(1.5, field_height - 6.1, Rotation2d(pi))
     middle_sweep_left_9 = Pose2d(0.6, field_height - 6.1, Rotation2d(pi))
-    middle_sweep_left_10 = Pose2d(2.0, 1.5, Rotation2d(7*pi/4))
+    middle_sweep_left_10 = Pose2d(1.7, 2.5, Rotation2d(7*pi/4))
     
     # The MIDDLE SUPPORT
-    middle_support_4 = Pose2d(8.3, 6.0, Rotation2d(pi/4))
-    middle_support_4_extra = Pose2d(8.3, 2.0, Rotation2d(-pi/4))
+    middle_support_4 = Pose2d(8.3, 5.5, Rotation2d(pi/4))
+    middle_support_4_extra = Pose2d(8.3, 2.5, Rotation2d(-pi/4))
     middle_support_4_extra_2 = Pose2d(8.3, 4.0, Rotation2d(pi/4))
     middle_support_4_extra_3 = Pose2d(8.3, 4.0, Rotation2d())

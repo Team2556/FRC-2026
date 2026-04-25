@@ -226,16 +226,21 @@ class CustomPathCommands:
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_4
                     ).with_override_smoothing_radius(kPath.smoothing_radius_auto_sweep
-                    ).with_override_speed(kPath.auto_path_speed * 0.5
+                    ).with_override_speed(kPath.auto_path_speed * 0.7
                     ).with_override_rps(0.3),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_5
-                    ).with_override_speed(kPath.auto_path_speed * 0.5
+                    ).with_override_speed(kPath.auto_path_speed * 0.7
                     ).with_override_rps(0.3),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_6
                     ).with_override_speed(kPath.bump_speed),
-                DriveToASpot(self.drivetrain, target_pose = (kPoses.middle_sweep_7, kPoses.middle_sweep_left_7)),
             ),
-            self.shoot_command_builder(5),
+            ParallelDeadlineGroup(
+                DriveToASpot(self.drivetrain, target_pose = (kPoses.middle_sweep_7, kPoses.middle_sweep_left_7)
+                    ).with_override_speed(kPath.while_shooting_speed
+                    ).with_override_max_acceleration(1
+                    ).with_end_tolerance(0.1),
+                ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem)
+            ),
             AutoCheckpoint(2),
             IntakeRollerForwardInstant(self.roller_subsystem),
             ConditionalCommand(
@@ -254,7 +259,7 @@ class CustomPathCommands:
                         DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_left_8
                             ).with_override_speed(1),
                         DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_left_9
-                            ).with_override_speed(0.2),
+                            ).with_override_speed(0.35),
                         DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_left_10),
                     ),
                     self.shoot_command_builder(5)
@@ -277,22 +282,22 @@ class CustomPathCommands:
             AutoCheckpoint(1),
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.middle_support_4
-                    ).with_override_speed(1).with_override_rps(0.25),
+                    ).with_override_speed(1.3).with_override_rps(0.25),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.middle_support_4_extra
-                    ).with_override_speed(1).with_override_rps(0.25),
+                    ).with_override_speed(1.3).with_override_rps(0.25),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.middle_support_4_extra_2
-                    ).with_override_speed(1).with_override_rps(0.25),
+                    ).with_override_speed(1.3).with_override_rps(0.25),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.middle_support_4_extra_3
-                    ).with_override_speed(1).with_override_rps(0.25),
+                    ).with_override_speed(1.3).with_override_rps(0.25),
             ),
             AutoCheckpoint(2),
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_4
                     ).with_override_smoothing_radius(kPath.smoothing_radius_auto_sweep
-                    ).with_override_speed(kPath.auto_path_speed * 0.5
+                    ).with_override_speed(kPath.auto_path_speed * 0.8
                     ).with_override_rps(0.3),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_5
-                    ).with_override_speed(kPath.auto_path_speed * 0.5
+                    ).with_override_speed(kPath.auto_path_speed * 0.8
                     ).with_override_rps(0.3),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_6
                     ).with_override_speed(kPath.bump_speed),
@@ -309,7 +314,7 @@ class CustomPathCommands:
                     DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_left_8
                         ).with_override_speed(2),
                     DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_left_9
-                        ).with_override_speed(0.2),
+                        ).with_override_speed(0.35),
                     DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_left_10),
                 ),
                 self.shoot_command_builder(10)
