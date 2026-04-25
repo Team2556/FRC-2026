@@ -144,6 +144,25 @@ class RobotContainer:
                 IntakeRollerOscillate(self.intake_roller, self._drivetrain)
             ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
         ).debounce(0.2)
+        
+        self._controller_1.rightBumper().whileTrue(
+            ParallelCommandGroup(
+                cmd.runEnd(
+                    lambda: self._drivetrain.set_modifiers(
+                        drivetrain.SwerveDriveTrain.SLOW_ROTATE
+                    ),
+                    lambda: self._drivetrain.reset_modifiers(),
+                ),
+                shooter_commands.ConditionalShoot(
+                    self._drivetrain,
+                    self.shooter_subsystem,
+                    self.transfer_subsystem,
+                    self.hood_subsystem,
+                    self._controller_2
+                ),
+                IntakeRollerOscillate(self.intake_roller, self._drivetrain)
+            ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        ).debounce(0.2)
 
         self._controller_1.leftTrigger().whileTrue(
             cmd.runEnd(
