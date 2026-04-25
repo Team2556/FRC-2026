@@ -1,10 +1,10 @@
 import wpilib
 
-
 import commands2
 from commands2 import InterruptionBehavior
 
 from wpimath.geometry import Pose2d
+from math import sin, hypot, pi
 
 from util.robot_zone_checker import RobotZoneChecker
 from util.flip_util import FlipUtil
@@ -20,7 +20,7 @@ from commands.auto_align.alignio import RotationCalculator
 from constants.field import kHub, kPassSpots
 from constants.drive import kAutoAlign
 from constants.intake import kIntakeRoller
-from constants.shooter import kShooterMotor
+from constants.shooter import kShooterMotor, kHoodMotor
 
 
 class ConditionalAlignAndShoot(commands2.Command):
@@ -55,8 +55,15 @@ class ConditionalAlignAndShoot(commands2.Command):
         if target_pose is not None:
             self._calc.with_target(target=target_pose)
 
+        robot_velocity = drive_state.velocity.translation()
+        speed = hypot(robot_velocity.x, robot_velocity.y)
+        if speed < kAutoAlign.WIGGLE_MIN_VEOCITY or wpilib.DriverStation.isAutonomous():
+            wiggle_modifier = kAutoAlign.WIGGLE_AMPLITUDE * sin(wpilib.Timer.getFPGATimestamp() * 2*pi / kAutoAlign.WIGGLE_PERIOD)
+        else:
+            wiggle_modifier = 0
+        
         self._drivetrain.set_align_rotation(
-            self._calc.calculate_rotation() * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE
+            (self._calc.calculate_rotation() * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE) + wiggle_modifier
         )
 
         distance = robot_pose.translation().distance(
@@ -70,14 +77,16 @@ class ConditionalAlignAndShoot(commands2.Command):
             and self._shooter.is_at_rpm()
             and self._hood.is_at_angle()
         ):
-            self._transfer.activate()
+            # self._transfer.activate() TEMPORARY BECAUSE ITS GETTING MECHANICALLY WORKED ON
+            pass
         else:
             pass
             # self._transfer.stop()
 
     def end(self, interrupted: bool) -> None:
         self._drivetrain.clear_align_rotation()
-        self._transfer.stop()
+        # self._transfer.stop() TEMPORARY BECAUSE ITS GETTING MECHANICALLY WORKED ON
+        self._hood.set_target_angle(kHoodMotor.HOME_ANGLE_DEG)
 
     def getInterruptionBehavior(self):
         return InterruptionBehavior.kCancelSelf

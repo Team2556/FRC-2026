@@ -18,6 +18,7 @@ from subsystems.drivetrain.telemetry import Telemetry
 
 from constants.drive import kDriveConfig, kAutoAlign
 from constants.field import kHub
+from constants.path.key_poses import kPath
 
 
 print("LOADING NEW DRIVETRAIN", __file__)
@@ -59,6 +60,7 @@ class SwerveDriveTrain(commands2.Subsystem):
         self.nt.bool("Align Active")
         self.nt.float("Align Rotation Rate")
         self.nt.float("Distance to Hub")
+        self.nt.string("Current Command")
 
     # ------------------------------------------------------------------
     # Velocity
@@ -88,6 +90,9 @@ class SwerveDriveTrain(commands2.Subsystem):
 
     def stop_with_brake(self) -> None:
         self._drivetrain.set_control(self._brake)
+    
+    def drive_blank(self):
+        self.run_velocity(ChassisSpeeds(), ignore_modifiers=True)
 
     # ------------------------------------------------------------------
     # Modifiers
@@ -167,6 +172,8 @@ class SwerveDriveTrain(commands2.Subsystem):
     # ------------------------------------------------------------------
 
     def reset_pose(self, pose: Pose2d) -> None:
+        if kPath.MIRROR_REVERSE_PATHS and wpilib.DriverStation.isAutonomous():
+            pose = FlipUtil.mirrorPose(pose)
         self._drivetrain.reset_pose(pose)
 
     def add_vision_measurement(self, pose, timestamp_seconds, std_devs) -> None:
@@ -191,3 +198,5 @@ class SwerveDriveTrain(commands2.Subsystem):
         self.nt.set("Align Active", self._align_rotation is not None)
         self.nt.set("Align Rotation Rate", self._align_rotation or 0.0)
         self.nt.update_sendables()
+        
+        self.nt.set("Current Command", self.getCurrentCommand().__str__())

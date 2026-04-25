@@ -50,9 +50,16 @@ class IntakeRollerForward(Command):
     def isFinished(self) -> bool:
         return False
 
-    def end(self, interrupted: bool):
-        self._roller.stop_roller()
+class IntakeRollerForwardInstant(Command):
+    def __init__(self, roller: IntakeRoller):
+        super().__init__()
+        self._roller = roller
 
+    def execute(self):
+        self._roller.set_target_rpm(kIntakeRoller.TARGET_RPM)
+
+    def isFinished(self) -> bool:
+        return True
 
 class IntakeRollerBackward(Command):
     def __init__(self, roller: IntakeRoller):
@@ -68,9 +75,6 @@ class IntakeRollerBackward(Command):
 
     def isFinished(self) -> bool:
         return False
-
-    def end(self, interrupted: bool):
-        self._roller.stop_roller()
 
 
 class IntakeRollerOscillate(Command):

@@ -20,7 +20,7 @@ class DriveToASpot(commands2.Command):
     def __init__(
         self, 
         subsystem: drivetrain.SwerveDriveTrain, 
-        target_pose : Pose2d = Pose2d(),
+        target_pose : Pose2d | tuple = Pose2d(),
         max_speed : float = kPath.default_path_speed, 
         max_rps : float = 0.75, 
         end_tolerance : float = 0.3,
@@ -70,10 +70,12 @@ class DriveToASpot(commands2.Command):
         self.override_speed : float | None = None
         self.override_rps : float | None = None
         self.override_smoothing_radius : float | None = None
+        self.override_max_acceleration : float | None = None
         
         self.parallel_commands : list[commands2.Command] = []
         
         self.is_part_of_sequence = False
+        self.is_lock_command = False
         self.do_closest_180 = False
         self._nt = NTTable("Autonomous")
         
@@ -101,10 +103,24 @@ class DriveToASpot(commands2.Command):
         self.command_weight = 1.0
         self.next_command_velocity : Pose2d = Pose2d()
         
-        self.target_pose = FlipUtil.fieldPose(self.blue_alliance_target_pose)
+        # Create target pose with all the modifier stuff
+        if type(self.blue_alliance_target_pose) is tuple:
+            if kPath.MIRROR_REVERSE_PATHS and DriverStation.isAutonomous():
+                self.target_pose = self.blue_alliance_target_pose[1]
+            else:
+                self.target_pose = self.blue_alliance_target_pose[0]
+        else:
+            self.target_pose = self.blue_alliance_target_pose
+        
+        self.target_pose = FlipUtil.fieldPose(self.target_pose)
+        
         if kPath.MIRROR_REVERSE_PATHS and DriverStation.isAutonomous():
             self.target_pose = FlipUtil.mirrorPose(self.target_pose)
         
+        if self.is_lock_command: # Override pose to current pose if lock command
+            self.target_pose = self.drivetrain.get_state().pose
+        
+        # Extra auto stuff
         if DriverStation.isAutonomous():
             self.smoothing_radius = kPath.smoothing_radius_auto
         else:
@@ -154,7 +170,11 @@ class DriveToASpot(commands2.Command):
             self.max_time = (linear_distance / self.max_speed) * 2.2 # <-- time to wait to skip path multiplier
             self.timer.start()
         
-        self.slow_distance = abs(self.max_speed ** 2) / (kPath.max_translational_acceleration * 2)
+        if self.override_max_acceleration: # TODO maybe fix override acceleration logic it's kinda copied
+            max_acceleration = self.override_max_acceleration
+        else:
+            max_acceleration = kPath.max_translational_acceleration
+        self.slow_distance = abs(self.max_speed ** 2) / (max_acceleration * 2)
         
         # If robot is within "slow distance" then make robot move slower
         target_speed = self.max_speed
@@ -262,6 +282,7 @@ class DriveToASpot(commands2.Command):
     def with_override_speed(self, new_speed): self.override_speed = new_speed; return self
     def with_override_rps(self, new_rps): self.override_rps = new_rps; return self
     def with_override_smoothing_radius(self, new_smooth_radius): self.override_smoothing_radius = new_smooth_radius; return self
+    def with_override_max_acceleration(self, new_max_acceleration): self.override_max_acceleration = new_max_acceleration; return self
     
     def with_closest_180(self): self.do_closest_180 = True; return self
     
@@ -279,10 +300,26 @@ class DriveToASpot(commands2.Command):
         self.end_tolerance = 0.0
         self.end_rotation_tolerance = 0.0
         
+        if self.override_max_acceleration:
+            max_acceleration = self.override_max_acceleration
+        else:
+            max_acceleration = kPath.max_translational_acceleration
+        
         # Shoutout to third kinematic equation
-        self.slow_distance = abs(self.max_speed ** 2) / (kPath.max_translational_acceleration * 2)
-        self.goal_end_velocity = (self.max_speed ** 2 - 2 * kPath.max_translational_acceleration * self.slow_distance) ** 0.5
+        self.slow_distance = abs(self.max_speed ** 2) / (max_acceleration * 2)
+        self.goal_end_velocity = (self.max_speed ** 2 - 2 * max_acceleration * self.slow_distance) ** 0.5
         
         self.smoothing_time = self.smoothing_radius / self.max_speed * kPath.smoothing_time_multiplier
+        
+        return self
+
+    def with_lock_values(self):
+        self.is_lock_command = True
+        
+        self.end_tolerance = 0
+        
+        self.max_speed = 3
+        self.goal_end_velocity = 0
+        self.smoothing_radius = 0.25
         
         return self

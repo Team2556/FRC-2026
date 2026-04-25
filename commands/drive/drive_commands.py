@@ -26,7 +26,7 @@ from subsystems.drivetrain.drivetrain import SwerveDriveTrain
 
 from constants.field import kField
 from constants.drive import kDriveConfig
-
+from constants.path.key_poses import kPath
 
 DEADBAND = 0.1
 
