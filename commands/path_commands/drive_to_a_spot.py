@@ -72,8 +72,6 @@ class DriveToASpot(commands2.Command):
         self.override_smoothing_radius : float | None = None
         self.override_max_acceleration : float | None = None
         
-        self.parallel_commands : list[commands2.Command] = []
-        
         self.is_part_of_sequence = False
         self.is_lock_command = False
         self.do_closest_180 = False
@@ -87,8 +85,6 @@ class DriveToASpot(commands2.Command):
     def initialize(self):
         self.timer.stop()
         self.timer.reset()
-        for parallel_command in self.parallel_commands:
-            parallel_command.schedule()
         self.reset_variables()
     
     def reset_variables(self):
@@ -252,8 +248,6 @@ class DriveToASpot(commands2.Command):
     def end(self, interrupted: bool):
         if not self.is_part_of_sequence:
             self.drivetrain.stop()
-        for parallel_command in self.parallel_commands:
-            parallel_command.cancel()
         self.timer.stop()
         self.timer.reset()
     
@@ -263,14 +257,6 @@ class DriveToASpot(commands2.Command):
             self.pose_estimate.X() - self.target_pose.X(),
             self.pose_estimate.Y() - self.target_pose.Y()
         ).norm()
-    
-    def with_parallel_commands(self, *commands : commands2.Command):
-        '''
-        If you give DriveToASpot a parallel command with this function, said parallel command 
-        will be scheduled at the same time this command is scheduled (works with multiple parallel commands!)
-        '''
-        self.parallel_commands.extend(commands)
-        return self
     
     def with_target_pose(self, value): self.target_pose = value; return self
     def with_max_speed(self, value): self.max_speed = value; return self
@@ -318,7 +304,7 @@ class DriveToASpot(commands2.Command):
         
         self.end_tolerance = 0
         
-        self.max_speed = 3
+        self.max_speed = 4
         self.goal_end_velocity = 0
         self.smoothing_radius = 0.25
         

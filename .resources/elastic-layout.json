@@ -107,7 +107,7 @@
             "title": "limelight-shooter",
             "x": 768.0,
             "y": 192.0,
-            "width": 512.0,
+            "width": 576.0,
             "height": 448.0,
             "type": "Camera Stream",
             "properties": {
@@ -118,9 +118,9 @@
           },
           {
             "title": "Distance to Hub",
-            "x": 64.0,
+            "x": 0.0,
             "y": 512.0,
-            "width": 448.0,
+            "width": 512.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -137,324 +137,6 @@
       "name": "Build an Auto !!! :))",
       "grid_layout": {
         "layouts": [
-          {
-            "title": "Path 1",
-            "x": 768.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Path",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "ComboBox Chooser",
-                "properties": {
-                  "topic": "/Autonomous/Path 1/Path",
-                  "period": 0.06,
-                  "sort_options": false
-                }
-              },
-              {
-                "title": "Cancel if Too Late",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/Autonomous/Path 1/Cancel if Too Late",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "Min Time to Start",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Autonomous/Path 1/Min Time to Start",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              }
-            ]
-          },
-          {
-            "title": "Path 2",
-            "x": 1024.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Path",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "ComboBox Chooser",
-                "properties": {
-                  "topic": "/Autonomous/Path 2/Path",
-                  "period": 0.06,
-                  "sort_options": false
-                }
-              },
-              {
-                "title": "Cancel if Too Late",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/Autonomous/Path 2/Cancel if Too Late",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "Min Time to Start",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Autonomous/Path 2/Min Time to Start",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              }
-            ]
-          },
-          {
-            "title": "Path 3",
-            "x": 256.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Path",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "ComboBox Chooser",
-                "properties": {
-                  "topic": "/Autonomous/Path 3/Path",
-                  "period": 0.06,
-                  "sort_options": false
-                }
-              },
-              {
-                "title": "Cancel if Too Late",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/Autonomous/Path 3/Cancel if Too Late",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "Min Time to Start",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Autonomous/Path 3/Min Time to Start",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              }
-            ]
-          },
-          {
-            "title": "Path 4",
-            "x": 512.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Path",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "ComboBox Chooser",
-                "properties": {
-                  "topic": "/Autonomous/Path 4/Path",
-                  "period": 0.06,
-                  "sort_options": false
-                }
-              },
-              {
-                "title": "Cancel if Too Late",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/Autonomous/Path 4/Cancel if Too Late",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "Min Time to Start",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Autonomous/Path 4/Min Time to Start",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              }
-            ]
-          },
-          {
-            "title": "Path 5",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Path",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "ComboBox Chooser",
-                "properties": {
-                  "topic": "/Autonomous/Path 5/Path",
-                  "period": 0.06,
-                  "sort_options": false
-                }
-              },
-              {
-                "title": "Cancel if Too Late",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/Autonomous/Path 5/Cancel if Too Late",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "Min Time to Start",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Autonomous/Path 5/Min Time to Start",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              }
-            ]
-          },
-          {
-            "title": "Path 6",
-            "x": 1024.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Path",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "ComboBox Chooser",
-                "properties": {
-                  "topic": "/Autonomous/Path 6/Path",
-                  "period": 0.06,
-                  "sort_options": false
-                }
-              },
-              {
-                "title": "Cancel if Too Late",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/Autonomous/Path 6/Cancel if Too Late",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "Min Time to Start",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/Autonomous/Path 6/Min Time to Start",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              }
-            ]
-          },
           {
             "title": "Sequence Path",
             "x": 0.0,
@@ -477,7 +159,7 @@
                   "topic": "/Sequence Path/Max Speed",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -491,7 +173,7 @@
                   "topic": "/Sequence Path/Auto Speed",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -505,7 +187,7 @@
                   "topic": "/Sequence Path/Intaking Speed",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -519,7 +201,7 @@
                   "topic": "/Sequence Path/While Shooting Speed",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -533,7 +215,7 @@
                   "topic": "/Sequence Path/Bump Speed",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -547,7 +229,7 @@
                   "topic": "/Sequence Path/Smoothing Radius Auto",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -561,7 +243,7 @@
                   "topic": "/Sequence Path/Smoothing Radius Teleop",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -575,7 +257,7 @@
                   "topic": "/Sequence Path/Smoothing Time Multiplier",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -589,7 +271,7 @@
                   "topic": "/Sequence Path/Min Goal End Velocity Mult",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               }
             ]
@@ -597,29 +279,71 @@
         ],
         "containers": [
           {
-            "title": "Initial Pose",
-            "x": 512.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "ComboBox Chooser",
-            "properties": {
-              "topic": "/Autonomous/Initial Pose",
-              "period": 0.06,
-              "sort_options": false
-            }
-          },
-          {
             "title": "Reverse Paths",
             "x": 256.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 256.0,
+            "height": 192.0,
             "type": "Toggle Switch",
             "properties": {
               "topic": "/Autonomous/Reverse Paths",
               "period": 0.06,
               "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Path",
+            "x": 256.0,
+            "y": 192.0,
+            "width": 256.0,
+            "height": 192.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/Autonomous/Path",
+              "period": 0.06,
+              "sort_options": false
+            }
+          },
+          {
+            "title": "Start Delay",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 192.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Autonomous/Start Delay",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Checkpoint 1 Time",
+            "x": 512.0,
+            "y": 192.0,
+            "width": 256.0,
+            "height": 192.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Autonomous/Checkpoint 1 Time",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Checkpoint 2 Time",
+            "x": 512.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 192.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Autonomous/Checkpoint 2 Time",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
             }
           }
         ]

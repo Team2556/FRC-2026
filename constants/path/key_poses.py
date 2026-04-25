@@ -130,3 +130,9 @@ class kPoses:
     middle_sweep_left_8 = Pose2d(1.5, field_height - 6.1, Rotation2d(pi))
     middle_sweep_left_9 = Pose2d(0.6, field_height - 6.1, Rotation2d(pi))
     middle_sweep_left_10 = Pose2d(2.0, 1.5, Rotation2d(7*pi/4))
+    
+    # The MIDDLE SUPPORT
+    middle_support_4 = Pose2d(8.3, 6.0, Rotation2d(pi/4))
+    middle_support_4_extra = Pose2d(8.3, 2.0, Rotation2d(-pi/4))
+    middle_support_4_extra_2 = Pose2d(8.3, 4.0, Rotation2d(pi/4))
+    middle_support_4_extra_3 = Pose2d(8.3, 4.0, Rotation2d())

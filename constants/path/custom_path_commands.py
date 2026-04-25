@@ -262,6 +262,59 @@ class CustomPathCommands:
                 lambda : RobotZoneChecker.is_on_right_side(self.drivetrain.get_state().pose)
             ),
         ),
+        "middle_support" : SequentialCommandGroup(
+            drive_commands.initial_pose(self.drivetrain, kPoses.initial_pose_bump),
+            AutoCheckpoint(0),
+            IntakeRollerForwardInstant(self.roller_subsystem),
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_1
+                    ).with_override_smoothing_radius(kPath.smoothing_radius_auto_sweep),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_2
+                    ).with_override_smoothing_radius(kPath.smoothing_radius_auto_sweep),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_3
+                    ).with_override_speed(kPath.intaking_speed),
+            ),
+            AutoCheckpoint(1),
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.middle_support_4
+                    ).with_override_speed(1).with_override_rps(0.25),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.middle_support_4_extra
+                    ).with_override_speed(1).with_override_rps(0.25),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.middle_support_4_extra_2
+                    ).with_override_speed(1).with_override_rps(0.25),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.middle_support_4_extra_3
+                    ).with_override_speed(1).with_override_rps(0.25),
+            ),
+            AutoCheckpoint(2),
+            DriveToASpotSequence(
+                DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_4
+                    ).with_override_smoothing_radius(kPath.smoothing_radius_auto_sweep
+                    ).with_override_speed(kPath.auto_path_speed * 0.5
+                    ).with_override_rps(0.3),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_5
+                    ).with_override_speed(kPath.auto_path_speed * 0.5
+                    ).with_override_rps(0.3),
+                DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_6
+                    ).with_override_speed(kPath.bump_speed),
+                DriveToASpot(self.drivetrain, target_pose = (kPoses.middle_sweep_7, kPoses.middle_sweep_left_7)),
+            ),
+            self.shoot_command_builder(5),
+        ),
+        "just_depot" : SequentialCommandGroup(
+            drive_commands.initial_pose(self.drivetrain, kPoses.initial_pose_center),
+            AutoCheckpoint(0),
+            IntakeRollerForwardInstant(self.roller_subsystem),
+            SequentialCommandGroup(
+                DriveToASpotSequence(
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_left_8
+                        ).with_override_speed(2),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_left_9
+                        ).with_override_speed(0.2),
+                    DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_left_10),
+                ),
+                self.shoot_command_builder(10)
+            ),
+        ),
         }
         
     def make_teleop_paths(self):
