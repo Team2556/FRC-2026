@@ -202,9 +202,9 @@ class RobotContainer:
         
         self._controller_2.b().whileTrue(RunTransferCommand(self.transfer_subsystem))
 
-        self._controller_2.y().whileTrue(
-            shooter_commands.EnableShooter(self.shooter_subsystem)
-        )
+        # self._controller_2.y().whileTrue(
+        #     shooter_commands.EnableShooter(self.shooter_subsystem)
+        # )
 
         self._controller_2.leftTrigger().whileTrue(
             IntakeRollerForward(self.intake_roller)
@@ -222,7 +222,7 @@ class RobotContainer:
             IntakePivotForward(self.intake_pivot),
         )
 
-        self._controller_2.povUp().onTrue(
+        self._controller_2.povDown().onTrue(
             hood_commands.ResetShooterHood(self.hood_subsystem)
         )
 
