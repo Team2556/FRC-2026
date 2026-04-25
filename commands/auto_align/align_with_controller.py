@@ -8,6 +8,7 @@ from math import sin, hypot, pi
 
 from util.robot_zone_checker import RobotZoneChecker
 from util.flip_util import FlipUtil
+from util.custom_controller import XboxController
 
 from subsystems.shooter.dual_shooter import DualMotorShooter
 from subsystems.led.LED_controller import CANdleLEDController
@@ -30,6 +31,7 @@ class ConditionalAlignAndShoot(commands2.Command):
         shooter: DualMotorShooter,
         transfer_subsystem: TransferSubsystem,
         hood: ShooterHood,
+        controller: XboxController | None = None,
     ):
         super().__init__()
         self._drivetrain = drivetrain
@@ -37,6 +39,7 @@ class ConditionalAlignAndShoot(commands2.Command):
         self._transfer = transfer_subsystem
         self._hood = hood
         self._calc = RotationCalculator(drivetrain, kHub.POS)
+        self._controller = controller
 
         self.addRequirements(transfer_subsystem, shooter, hood)
 
@@ -45,11 +48,8 @@ class ConditionalAlignAndShoot(commands2.Command):
         self._shooter.enable()
 
     def execute(self) -> None:
-        self._calc.update_pid()
-
         drive_state = self._drivetrain.get_state()
         robot_pose = drive_state.pose
-
         target_pose = self._find_target(robot_pose)
 
         if target_pose is not None:
@@ -57,17 +57,23 @@ class ConditionalAlignAndShoot(commands2.Command):
 
         robot_velocity = drive_state.velocity.translation()
         speed = hypot(robot_velocity.x, robot_velocity.y)
+        wiggle_modifier = 0
         if speed < kAutoAlign.WIGGLE_MIN_VEOCITY or wpilib.DriverStation.isAutonomous():
-            wiggle_modifier = kAutoAlign.WIGGLE_AMPLITUDE * sin(wpilib.Timer.getFPGATimestamp() * 2*pi / kAutoAlign.WIGGLE_PERIOD)
-        else:
-            wiggle_modifier = 0
-        
-        self._drivetrain.set_align_rotation(
-            (self._calc.calculate_rotation() * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE) + wiggle_modifier
-        )
+            wiggle_modifier = kAutoAlign.WIGGLE_AMPLITUDE * sin(
+                wpilib.Timer.getFPGATimestamp() * 2 * pi / kAutoAlign.WIGGLE_PERIOD
+            )
+
+        if self._controller:
+            if self._controller.getHID().getPOV() == 0:
+                wiggle_modifier = 0
 
         distance = robot_pose.translation().distance(
             self._calc.leading_target.translation()
+        )
+
+        self._drivetrain.set_align_rotation(
+            (self._calc.calculate_rotation() * kAutoAlign.AUTO_ALIGN_MAX_ANGULAR_RATE)
+            + wiggle_modifier
         )
         self._hood.set_target_angle(ShooterHood.get_angle_by_distance(distance))
         self._shooter.set_target_rpm(DualMotorShooter.get_rpm_by_distance(distance))
@@ -77,15 +83,15 @@ class ConditionalAlignAndShoot(commands2.Command):
             and self._shooter.is_at_rpm()
             and self._hood.is_at_angle()
         ):
-            # self._transfer.activate() TEMPORARY BECAUSE ITS GETTING MECHANICALLY WORKED ON
-            pass
-        else:
-            pass
-            # self._transfer.stop()
+            self._transfer.activate()
+            
+        if self._controller:
+            if self._controller.getHID().getYButton():
+                self._transfer.stop()
 
     def end(self, interrupted: bool) -> None:
         self._drivetrain.clear_align_rotation()
-        # self._transfer.stop() TEMPORARY BECAUSE ITS GETTING MECHANICALLY WORKED ON
+        self._transfer.stop()
         self._hood.set_target_angle(kHoodMotor.HOME_ANGLE_DEG)
 
     def getInterruptionBehavior(self):

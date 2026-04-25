@@ -139,6 +139,7 @@ class RobotContainer:
                     self.shooter_subsystem,
                     self.transfer_subsystem,
                     self.hood_subsystem,
+                    self._controller_2
                 ),
                 IntakeRollerOscillate(self.intake_roller, self._drivetrain)
             ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
