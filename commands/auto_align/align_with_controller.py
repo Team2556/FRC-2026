@@ -77,14 +77,15 @@ class ConditionalAlignAndShoot(commands2.Command):
             and self._shooter.is_at_rpm()
             and self._hood.is_at_angle()
         ):
-            self._transfer.activate()
+            # self._transfer.activate() TEMPORARY BECAUSE ITS GETTING MECHANICALLY WORKED ON
+            pass
         else:
             pass
             # self._transfer.stop()
 
     def end(self, interrupted: bool) -> None:
         self._drivetrain.clear_align_rotation()
-        self._transfer.stop()
+        # self._transfer.stop() TEMPORARY BECAUSE ITS GETTING MECHANICALLY WORKED ON
         self._hood.set_target_angle(kHoodMotor.HOME_ANGLE_DEG)
 
     def getInterruptionBehavior(self):

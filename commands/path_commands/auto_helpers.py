@@ -10,7 +10,14 @@ class AutoCheckpoint(Command):
     def __init__(self, checkpoint_id : int, cancel_if_too_late = False):
         super().__init__()
         
-        match checkpoint_id:
+        self.checkpoint_id = checkpoint_id
+        
+        self.cancel_if_too_late = cancel_if_too_late
+        
+        self.cancelled = False
+    
+    def initialize(self):
+        match self.checkpoint_id:
             case 0:
                 self.delay_time = kPath.START_DELAY
             case 1:
@@ -18,11 +25,6 @@ class AutoCheckpoint(Command):
             case 2:
                 self.delay_time = kPath.CHECKPOINT_2
         
-        self.cancel_if_too_late = cancel_if_too_late
-        
-        self.cancelled = False
-    
-    def initialize(self):
         time_remaining = DriverStation.getMatchTime()
         if self.cancel_if_too_late and time_remaining < (AutoCheckpoint.auto_time - self.delay_time):
             self.cancelled = True

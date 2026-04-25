@@ -232,11 +232,5 @@ class RobotContainer:
     def getAutonomousCommand(self):
         IntakePivotForward(self.intake_pivot).schedule()
         IntakeRollerForward(self.intake_roller).schedule()
-
-        initial_pose = self.auto_chooser.get_initial_pose()
-        if initial_pose:
-            if key_poses.kPath.MIRROR_REVERSE_PATHS:
-                initial_pose = FlipUtil.mirrorPose(initial_pose)
-            drive_commands.initial_pose(self._drivetrain, initial_pose).schedule()
         
         return self.auto_chooser.choose_auto()

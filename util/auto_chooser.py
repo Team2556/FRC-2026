@@ -49,16 +49,6 @@ class AutoBuilder:
                 self.auto_chooser.addOption(name, command)
         self._nt_auto.sendable("Path", self.auto_chooser)
         
-        self.initial_pose = SendableChooser()
-        first = True
-        for name in kPoses.initial_poses:
-            if first:
-                self.initial_pose.setDefaultOption(name, kPoses.initial_poses[name])
-                first = False
-            else:
-                self.initial_pose.addOption(name, kPoses.initial_poses[name])
-        self._nt_auto.sendable("Initial Pose", self.initial_pose)
-        
         self._nt_auto.float("Checkpoint 1 Time", kPath.CHECKPOINT_1)
         self._nt_auto.float("Checkpoint 2 Time", kPath.CHECKPOINT_2)
         self._nt_auto.float("Start Delay", kPath.START_DELAY)
@@ -85,9 +75,6 @@ class AutoBuilder:
         kPath.START_DELAY = self._nt_auto.get("Start Delay")
         kPath.CHECKPOINT_1 = self._nt_auto.get("Checkpoint 1 Time")
         kPath.CHECKPOINT_2 = self._nt_auto.get("Checkpoint 2 Time")
-    
-    def get_initial_pose(self):
-        return self.initial_pose.getSelected()
 
     def choose_auto(self):
         return self.auto_chooser.getSelected()

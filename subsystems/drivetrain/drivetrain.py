@@ -18,6 +18,7 @@ from subsystems.drivetrain.telemetry import Telemetry
 
 from constants.drive import kDriveConfig, kAutoAlign
 from constants.field import kHub
+from constants.path.key_poses import kPath
 
 
 print("LOADING NEW DRIVETRAIN", __file__)
@@ -171,6 +172,8 @@ class SwerveDriveTrain(commands2.Subsystem):
     # ------------------------------------------------------------------
 
     def reset_pose(self, pose: Pose2d) -> None:
+        if kPath.MIRROR_REVERSE_PATHS and wpilib.DriverStation.isAutonomous():
+            pose = FlipUtil.mirrorPose(pose)
         self._drivetrain.reset_pose(pose)
 
     def add_vision_measurement(self, pose, timestamp_seconds, std_devs) -> None:
