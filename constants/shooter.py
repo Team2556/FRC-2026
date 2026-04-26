@@ -23,8 +23,8 @@ class kHoodMotor:
     DEGREES_PER_REVOLUTION = 1 / GEAR_RATIO
 
     # Positions in degrees — converted to revolutions where needed
-    HOME_ANGLE_DEG = 5.0
-    MAX_ANGLE_DEG = 42.0
+    HOME_ANGLE_DEG = 15.0
+    MAX_ANGLE_DEG = 52.0
     REACH_TARGET_ANGLE_ERROR = 2.0  # degrees
     
     INNER_RING_ANGLE = 13.9
@@ -34,7 +34,7 @@ class kHoodMotor:
     OVERRIDE_ENABLED = False
     OVERRIDE_ANGLE_DEG = 25.0
     
-    OPPOSING_ANGLE_DEG = 35.0
+    OPPOSING_ANGLE_DEG = 50.0
     
     TUNER_OFFSET = 0
     
@@ -82,7 +82,7 @@ class kShooterData:
         (4.03, 36.5),
         (4.50, 37.5),
         (5.03, 40.0),
-        (7.43, 40.0),
+        (7.43, 45.0),
     ]
 
     # (distance_m, shooter_rpm)  — negative because motor is inverted

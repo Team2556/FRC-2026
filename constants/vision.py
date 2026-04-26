@@ -26,7 +26,7 @@ class kOdometry:
     MT2_MIN_APRILTAGS = 1
     MT2_XY_COEFF      = 0.4
     MT2_THETA_STD_DEV = 9999999.0
-    MT2_MAX_POSE_ERROR = 0.6
+    MT2_MAX_POSE_ERROR = 1
 
     MAX_TILT_ERROR = 5
     IGNORE_TILT = True
