@@ -29,7 +29,8 @@ class kPath:
     
     trench_path_max_acceleration = 7
     
-    antidefense_lock_radius = 0.1
+    antidefense_lock_radius = 0.05
+    antidefense_lock_rotation = 2 / 57.295
     
     # Global auto modifier variables
     MIRROR_REVERSE_PATHS = False
