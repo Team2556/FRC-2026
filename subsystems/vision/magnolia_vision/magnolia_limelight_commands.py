@@ -1,5 +1,5 @@
 import commands2
-from magnolia_vision import magnolia_limelight_subsystem
+from subsystems.vision.magnolia_vision import magnolia_limelight_subsystem
 from subsystems.drivetrain import drivetrain
 
 
