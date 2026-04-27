@@ -41,7 +41,7 @@ from commands.intake.roller_commands import (
 )
 from commands.shooter import shooter_commands, hood_commands
 
-from constants.vision import kCamera
+from constants.vision import kCamera, kOdometry
 
 # from magnolia_vision import (
 #     magnolia_limelight_helpers,
@@ -209,14 +209,6 @@ class RobotContainer:
         # CONTROLLER 2 
         # -------------------------------------------------------------------
 
-        self._controller_2.a().whileTrue(ReverseTransferCommand(self.transfer_subsystem))
-        self._controller_2.x().whileTrue(SpindexOnlyCommand(self.transfer_subsystem))
-        
-        self._controller_2.b().whileTrue(RunTransferCommand(self.transfer_subsystem))
-
-        # self._controller_2.y().whileTrue(
-        #     shooter_commands.EnableShooter(self.shooter_subsystem)
-        # )
 
         self._controller_2.leftTrigger().whileTrue(
             IntakeRollerForward(self.intake_roller)
@@ -226,11 +218,11 @@ class RobotContainer:
             IntakeRollerBackward(self.intake_roller)
         )
 
-        self._controller_2.leftBumper().onTrue(
+        self._controller_2.leftBumper().whileTrue(
             IntakePivotReverse(self.intake_pivot),
         )
 
-        self._controller_2.rightBumper().onTrue(
+        self._controller_2.rightBumper().whileTrue(
             IntakePivotForward(self.intake_pivot),
         )
 
@@ -238,8 +230,17 @@ class RobotContainer:
             hood_commands.ResetShooterHood(self.hood_subsystem)
         )
 
-        self._controller_2.povLeft().whileTrue(
-            IntakeRollerBackward(self.intake_roller)
+        self._controller_2.povUp().whileTrue(
+            cmd.startEnd(
+                lambda: (
+                    setattr(kOdometry, "MT1_RESET_MAX_AMBIGUITY", 0.5),
+                    setattr(kOdometry, "MT1_RESET_MAX_TAG_DIST", 5.0),
+                ),
+                lambda: (
+                    setattr(kOdometry, "MT1_RESET_MAX_AMBIGUITY", 0.2),
+                    setattr(kOdometry, "MT1_RESET_MAX_TAG_DIST", 2.0),
+                ),
+            )
         )
 
     def getAutonomousCommand(self):
