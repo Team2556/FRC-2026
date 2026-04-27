@@ -10,7 +10,7 @@ class AntiDefenseCommand(DriveToASpot):
         
         self.end_tolerance = 0
         
-        self.max_speed = 4
+        self.max_speed = 5
         self.goal_end_velocity = 0
         self.smoothing_radius = 0.25
     
@@ -20,11 +20,13 @@ class AntiDefenseCommand(DriveToASpot):
     
     def execute(self):
         linear_distance = Translation2d(
-            self.target_pose.X() - self.pose_estimate.X(),
-            self.target_pose.Y() - self.pose_estimate.Y()
+            self.target_pose.X() - self.drivetrain.get_state().pose.X(),
+            self.target_pose.Y() - self.drivetrain.get_state().pose.Y()
         ).norm()
         
         if linear_distance < kPath.antidefense_lock_radius:
             self.drivetrain.stop_with_brake()
         else:
             super().execute()
+            
+        print(self.target_pose)
