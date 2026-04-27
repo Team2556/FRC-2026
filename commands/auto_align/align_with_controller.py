@@ -78,21 +78,15 @@ class ConditionalAlignAndShoot(commands2.Command):
         self._hood.set_target_angle(ShooterHood.get_angle_by_distance(distance))
         self._shooter.set_target_rpm(DualMotorShooter.get_rpm_by_distance(distance))
 
-        ready_to_shoot = (
+        if (
             self._calc.current_accuracy < kAutoAlign.REQUIRED_SHOOT_ACCURACY_DEGREES
             and self._shooter.is_at_rpm()
             and self._hood.is_at_angle()
-        )
-        will_miss = self._drivetrain.should_stop_shooting()
-
-        driver2_override = False
-        if self._controller is not None:
-            driver2_override = self._controller.getHID().getBButton()
-
-        if (ready_to_shoot and not will_miss) or driver2_override:
+        ):
             self._transfer.activate()
-        else:
-            if not wpilib.DriverStation.isAutonomous():
+            
+        if self._controller:
+            if self._controller.getHID().getYButton():
                 self._transfer.stop()
 
     def end(self, interrupted: bool) -> None:

@@ -226,7 +226,7 @@ class RobotContainer:
                 ),
                 lambda: (
                     setattr(kOdometry, "MT1_RESET_MAX_AMBIGUITY", 0.2),
-                    setattr(kOdometry, "MT1_RESET_MAX_TAG_DIST", 3.0),
+                    setattr(kOdometry, "MT1_RESET_MAX_TAG_DIST", 2.0),
                 ),
             )
         )
