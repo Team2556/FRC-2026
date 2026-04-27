@@ -84,10 +84,10 @@ class ConditionalAlignAndShoot(commands2.Command):
             and self._hood.is_at_angle()
         )
         will_miss = self._drivetrain.should_stop_shooting()
-        driver2_override = (
-            self._controller is not None
-            and self._controller.getHID().getAButton()
-        )
+
+        driver2_override = False
+        if self._controller is not None:
+            driver2_override = self._controller.getHID().getBButton()
 
         if (ready_to_shoot and not will_miss) or driver2_override:
             self._transfer.activate()

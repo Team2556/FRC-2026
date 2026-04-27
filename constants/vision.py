@@ -19,7 +19,7 @@ class kOdometry:
     MT1_THETA_COEFF = 0.5
     
     MT1_RESET_MAX_AMBIGUITY = 0.2
-    MT1_RESET_MAX_TAG_DIST  = 2.0
+    MT1_RESET_MAX_TAG_DIST  = 3.0
     MT1_RESET_XY_STD    = 0.1
     MT1_RESET_THETA_STD = 0.1 
 
