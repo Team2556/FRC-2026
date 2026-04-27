@@ -41,6 +41,7 @@ class Gravedigger(commands2.TimedCommandRobot):
         # wpilib.CameraServer.launch()
 
     def robotPeriodic(self) -> None:
+        self.container.update_vision()
         self.container.auto_chooser.update()
         commands2.CommandScheduler.getInstance().run()
 

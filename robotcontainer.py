@@ -25,7 +25,7 @@ from subsystems.shooter.dual_shooter import DualMotorShooter
 
 from commands.auto_align import align_with_controller
 from commands.drive import drive_commands
-from commands.vision import vision_odometry
+from subsystems.vision import vision_odometry
 from constants.path import custom_path_commands, key_poses
 from commands.transfer.run_transfer_motors import RunTransferCommand, ReverseTransferCommand, SpindexOnlyCommand
 from commands.intake.pivot_commands import (
@@ -97,7 +97,6 @@ class RobotContainer:
         # self.magnolia_vision_subsystem.setDefaultCommand(
         #     magnolia_limelight_commands.UpdateOdometry(self.magnolia_vision_subsystem, self._drivetrain)
         # )
-        self.mono_vision.setDefaultCommand(vision_odometry.UpdateOdometry(self.mono_vision, self._drivetrain))
         self.shooter_subsystem.setDefaultCommand(
             shooter_commands.DisableShooter(self.shooter_subsystem)
         )
@@ -241,6 +240,9 @@ class RobotContainer:
         self._controller_2.povLeft().whileTrue(
             IntakeRollerBackward(self.intake_roller)
         )
+
+    def update_vision(self) -> None:
+        vision_odometry.update_odometry(self.mono_vision, self._drivetrain)
 
     def getAutonomousCommand(self):
         IntakePivotForward(self.intake_pivot).schedule()
