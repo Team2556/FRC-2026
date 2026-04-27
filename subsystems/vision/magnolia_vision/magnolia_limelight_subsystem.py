@@ -8,12 +8,12 @@ from wpilib import SmartDashboard
 from phoenix6.swerve.swerve_drivetrain import SwerveDrivetrain
 from phoenix6.hardware.pigeon2 import Pigeon2
 
-from magnolia_vision import magnolia_limelight_helpers
+from subsystems.vision.magnolia_vision import magnolia_limelight_helpers
 from util.nt_util import NTTable
 
 from subsystems.drivetrain.swerve_tuner import TunerConstants
 
-from magnolia_vision.magnolia_limelight_constants import kOdometry
+from subsystems.vision.magnolia_vision.magnolia_limelight_constants import kOdometry
 
 
 class Vision(commands2.Subsystem):
