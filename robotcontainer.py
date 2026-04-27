@@ -27,6 +27,8 @@ from commands.auto_align import align_with_controller
 from commands.drive import drive_commands
 from commands.path_commands.antidefense_command import AntiDefenseCommand
 from commands.vision import vision_odometry
+from subsystems.vision import vision_odometry
+from constants.path import custom_path_commands, key_poses
 from commands.transfer.run_transfer_motors import RunTransferCommand, ReverseTransferCommand, SpindexOnlyCommand
 from commands.intake.pivot_commands import (
     IntakePivotDefaultCommand,
@@ -44,6 +46,7 @@ from commands.shooter import shooter_commands, hood_commands
 from constants.path import custom_path_commands, key_poses
 from constants.vision import kCamera
 from math import pi
+from constants.vision import kCamera, kOdometry
 
 # from magnolia_vision import (
 #     magnolia_limelight_helpers,
@@ -69,7 +72,7 @@ class RobotContainer:
 
 
         self.rpi_vision = rpi_vision.RpiVision()
-        self.mono_vision = multi_limelight.Vision(kCamera.BACK_LL, kCamera.SHOOTER_LL)
+        self.limelight_vision = multi_limelight.Vision(kCamera.BACK_LL, kCamera.SHOOTER_LL)
         # self.magnolia_vision_subsystem = magnolia_limelight_subsystem.Vision(magnolia_limelight_constants.kCamera.SHOOTER_LL, magnolia_limelight_constants.kCamera.BACK_LL)
         # self.LED_controller = CANdleLEDController()
 
@@ -99,7 +102,6 @@ class RobotContainer:
         # self.magnolia_vision_subsystem.setDefaultCommand(
         #     magnolia_limelight_commands.UpdateOdometry(self.magnolia_vision_subsystem, self._drivetrain)
         # )
-        self.mono_vision.setDefaultCommand(vision_odometry.UpdateOdometry(self.mono_vision, self._drivetrain))
         self.shooter_subsystem.setDefaultCommand(
             shooter_commands.DisableShooter(self.shooter_subsystem)
         )
@@ -223,14 +225,6 @@ class RobotContainer:
         # CONTROLLER 2 
         # -------------------------------------------------------------------
 
-        self._controller_2.a().whileTrue(ReverseTransferCommand(self.transfer_subsystem))
-        self._controller_2.x().whileTrue(SpindexOnlyCommand(self.transfer_subsystem))
-        
-        self._controller_2.b().whileTrue(RunTransferCommand(self.transfer_subsystem))
-
-        # self._controller_2.y().whileTrue(
-        #     shooter_commands.EnableShooter(self.shooter_subsystem)
-        # )
 
         self._controller_2.leftTrigger().whileTrue(
             IntakeRollerForward(self.intake_roller)
@@ -240,11 +234,11 @@ class RobotContainer:
             IntakeRollerBackward(self.intake_roller)
         )
 
-        self._controller_2.leftBumper().onTrue(
+        self._controller_2.leftBumper().whileTrue(
             IntakePivotReverse(self.intake_pivot),
         )
 
-        self._controller_2.rightBumper().onTrue(
+        self._controller_2.rightBumper().whileTrue(
             IntakePivotForward(self.intake_pivot),
         )
 
@@ -252,9 +246,21 @@ class RobotContainer:
             hood_commands.ResetShooterHood(self.hood_subsystem)
         )
 
-        self._controller_2.povLeft().whileTrue(
-            IntakeRollerBackward(self.intake_roller)
+        self._controller_2.povUp().whileTrue(
+            cmd.startEnd(
+                lambda: (
+                    setattr(kOdometry, "MT1_RESET_MAX_AMBIGUITY", 0.5),
+                    setattr(kOdometry, "MT1_RESET_MAX_TAG_DIST", 5.0),
+                ),
+                lambda: (
+                    setattr(kOdometry, "MT1_RESET_MAX_AMBIGUITY", 0.2),
+                    setattr(kOdometry, "MT1_RESET_MAX_TAG_DIST", 2.0),
+                ),
+            )
         )
+
+    def update_vision(self) -> None:
+        vision_odometry.update_odometry(self.limelight_vision, self._drivetrain)
 
     def getAutonomousCommand(self):
         IntakePivotForward(self.intake_pivot).schedule()
