@@ -20,7 +20,7 @@ class TunerConstants:
         configs.Slot0Configs()
         .with_k_p(50)
         .with_k_i(0)
-        .with_k_d(0.7)
+        .with_k_d(0.5)
         .with_k_s(0.1)
         .with_k_v(1.91)
         .with_k_a(0)
@@ -32,12 +32,12 @@ class TunerConstants:
     # output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     _drive_gains = (
         configs.Slot0Configs()
-        .with_k_p(sum([ 0.092102 , 0.15798, 0.13838, 0.18059 ])/4)
+        .with_k_p(0.1)
         .with_k_i(0)
         .with_k_d(0)
-        .with_k_s(sum([ 0.1569 , 0.072046, 0.066353 ,  0.078697 ])/4)
-        .with_k_v(sum([0.11654 , 0.11804, 0.11832, 0.11765 ])/4)
-        .with_k_a(sum([ 0.0043711 , 0.012229,  0.016051, 0.012999 ])/4)
+        .with_k_s(0)
+        .with_k_v(0)
+        .with_k_a(0.124)
         #Used at Magnolia:
         # .with_k_p(0.00442645)
         # .with_k_i(0)
