@@ -67,7 +67,7 @@ class RobotContainer:
 
 
         self.rpi_vision = rpi_vision.RpiVision()
-        self.mono_vision = multi_limelight.Vision(kCamera.BACK_LL, kCamera.SHOOTER_LL)
+        self.limelight_vision = multi_limelight.Vision(kCamera.BACK_LL, kCamera.SHOOTER_LL)
         # self.magnolia_vision_subsystem = magnolia_limelight_subsystem.Vision(magnolia_limelight_constants.kCamera.SHOOTER_LL, magnolia_limelight_constants.kCamera.BACK_LL)
         # self.LED_controller = CANdleLEDController()
 
@@ -242,7 +242,7 @@ class RobotContainer:
         )
 
     def update_vision(self) -> None:
-        vision_odometry.update_odometry(self.mono_vision, self._drivetrain)
+        vision_odometry.update_odometry(self.limelight_vision, self._drivetrain)
 
     def getAutonomousCommand(self):
         IntakePivotForward(self.intake_pivot).schedule()
