@@ -73,7 +73,6 @@ class DriveToASpot(commands2.Command):
         self.override_max_acceleration : float | None = None
         
         self.is_part_of_sequence = False
-        self.is_lock_command = False
         self.do_closest_180 = False
         self._nt = NTTable("Autonomous")
         
@@ -112,9 +111,6 @@ class DriveToASpot(commands2.Command):
         
         if kPath.MIRROR_REVERSE_PATHS and DriverStation.isAutonomous():
             self.target_pose = FlipUtil.mirrorPose(self.target_pose)
-        
-        if self.is_lock_command: # Override pose to current pose if lock command
-            self.target_pose = self.drivetrain.get_state().pose
         
         # Extra auto stuff
         if DriverStation.isAutonomous():
@@ -296,16 +292,5 @@ class DriveToASpot(commands2.Command):
         self.goal_end_velocity = (self.max_speed ** 2 - 2 * max_acceleration * self.slow_distance) ** 0.5
         
         self.smoothing_time = self.smoothing_radius / self.max_speed * kPath.smoothing_time_multiplier
-        
-        return self
-
-    def with_lock_values(self):
-        self.is_lock_command = True
-        
-        self.end_tolerance = 0
-        
-        self.max_speed = 4
-        self.goal_end_velocity = 0
-        self.smoothing_radius = 0.25
         
         return self

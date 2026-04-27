@@ -345,6 +345,20 @@
               "data_type": "double",
               "show_submit_button": true
             }
+          },
+          {
+            "title": "Robot",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 576.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Drivetrain/Field/Robot",
+              "period": 0.06,
+              "data_type": "double[]",
+              "show_submit_button": false
+            }
           }
         ]
       }

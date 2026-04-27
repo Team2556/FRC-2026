@@ -25,6 +25,8 @@ from subsystems.shooter.dual_shooter import DualMotorShooter
 
 from commands.auto_align import align_with_controller
 from commands.drive import drive_commands
+from commands.path_commands.antidefense_command import AntiDefenseCommand
+from commands.vision import vision_odometry
 from subsystems.vision import vision_odometry
 from constants.path import custom_path_commands, key_poses
 from commands.transfer.run_transfer_motors import RunTransferCommand, ReverseTransferCommand, SpindexOnlyCommand
@@ -41,6 +43,9 @@ from commands.intake.roller_commands import (
 )
 from commands.shooter import shooter_commands, hood_commands
 
+from constants.path import custom_path_commands, key_poses
+from constants.vision import kCamera
+from math import pi
 from constants.vision import kCamera, kOdometry
 
 # from magnolia_vision import (
@@ -198,10 +203,22 @@ class RobotContainer:
         self._controller_1.b().and_(self._controller_1.leftBumper()).whileTrue(
             self.custom_path_commands.teleop_paths["opposing_right_trench"]
         )
+        # Reset pose POV buttons (might be useful or might not do anything at all but it won't crash this time)
+        self._controller_1.povUp().onTrue(
+            drive_commands.reset_heading(self._drivetrain, angle_offset=0)
+        )
+        self._controller_1.povRight().onTrue(
+            drive_commands.reset_heading(self._drivetrain, angle_offset=-pi/2)
+        )
+        self._controller_1.povDown().onTrue(
+            drive_commands.reset_heading(self._drivetrain, angle_offset=pi)
+        )
+        self._controller_1.povLeft().onTrue(
+            drive_commands.reset_heading(self._drivetrain, angle_offset=pi/2)
+        )
         
-        from commands.path_commands import drive_to_a_spot
-        self._controller_1.povUp().whileTrue(
-            drive_to_a_spot.DriveToASpot(self._drivetrain).with_lock_values()
+        self._controller_1.leftStick().whileTrue(
+            AntiDefenseCommand(self._drivetrain)
         )
 
         # -------------------------------------------------------------------

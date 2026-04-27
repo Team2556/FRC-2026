@@ -111,14 +111,14 @@ def initial_pose(drivetrain: SwerveDriveTrain, pose: Pose2d) -> commands2.Comman
     )
 
 
-def reset_heading(drivetrain: SwerveDriveTrain) -> commands2.Command:
+def reset_heading(drivetrain: SwerveDriveTrain, angle_offset=0) -> commands2.Command:
     """Instant command that zeros heading while keeping the current translation."""
     def _reset():
         p = drivetrain.get_pose()
         if DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
-            drivetrain.reset_pose(Pose2d(p.X(), p.Y(), Rotation2d()))
+            drivetrain.reset_pose(Pose2d(p.X(), p.Y(), Rotation2d(angle_offset)))
         else:
-            drivetrain.reset_pose(Pose2d(p.X(), p.Y(), Rotation2d(math.pi)))
+            drivetrain.reset_pose(Pose2d(p.X(), p.Y(), Rotation2d(math.pi + angle_offset)))
 
     return cmd.runOnce(_reset, drivetrain)
 
