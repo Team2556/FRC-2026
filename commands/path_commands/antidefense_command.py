@@ -12,7 +12,7 @@ class AntiDefenseCommand(DriveToASpot):
         
         self.max_speed = 5
         self.goal_end_velocity = 0
-        self.smoothing_radius = 0.25
+        self.slow_distance = 0.25
         
         self.max_rps = 1
     

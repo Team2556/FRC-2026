@@ -18,6 +18,7 @@ class kPath:
     bump_speed = 2.3
     intaking_speed = 0.5
     while_shooting_speed = 1.0
+    depot_intake_speed = 0.4
     
     smoothing_radius_auto = 0.15 # 1.3 with 5.5 speed
     smoothing_radius_auto_sweep = 0.9
@@ -48,7 +49,7 @@ class kPoses:
     trench_from_edge = 0.65 # was 0.72 maybe this will work better
     bump_from_edge = 2.66 # was 2.55
     
-    trench_from_edge_teleop_path = 0.70 # 67
+    trench_from_edge_teleop_path = 0.70 # was 0.67
     
     alliance_x = 3.0
     neutral_close_x = 6.35
@@ -90,7 +91,7 @@ class kPoses:
     # The DOUBLE SWEEP
     double_sweep_1 = Pose2d(6.0, trench_from_edge, Rotation2d(pi))
     double_sweep_2 = Pose2d(8.7, 1.6, Rotation2d(pi/2))
-    double_sweep_3 = Pose2d(8.0, 2.4, Rotation2d(pi/2 + 0.1)) # Was y value 3.6
+    double_sweep_3 = Pose2d(8.0, 2.4, Rotation2d(pi/2 + 0.1)) # Was y value 3.6 change this for BIG sweep
     double_sweep_4 = Pose2d(6.0, bump_from_edge - 0.15, Rotation2d(pi))
     double_sweep_5 = Pose2d(2.8, bump_from_edge - 0.05, Rotation2d(pi))
     double_sweep_6 = Pose2d(2.8, trench_from_edge + 0.05, Rotation2d(pi))
@@ -107,6 +108,11 @@ class kPoses:
     double_sweep_left_extra_6 = Pose2d(4.25, trench_from_edge + 0.03, Rotation2d())
     double_sweep_left_7 = Pose2d(6.5, trench_from_edge, Rotation2d())
     double_sweep_left_12 = Pose2d(6.0, bump_from_edge - 0.15, Rotation2d(pi))
+    
+    # The DOUBLE BONUS SWEEP
+    double_bonus_sweep_3 = Pose2d(8.0, 3.5, Rotation2d(pi/2 + 0.1))
+    
+    double_bonus_sweep_left_1 = Pose2d(6.0, trench_from_edge, Rotation2d())
     
     # The TRENCH DOUBLE SWEEP
     trench_double_sweep_4 = Pose2d(6.0, trench_from_edge + 0.16, Rotation2d(pi))
@@ -130,10 +136,18 @@ class kPoses:
     middle_sweep_10 = Pose2d(6.9, 4.3, Rotation2d())
     middle_sweep_11 = Pose2d(8.6, 4.0, Rotation2d())
     
-    middle_sweep_left_7 = Pose2d(1.7, 2.5, Rotation2d(7*pi/4))
-    middle_sweep_left_8 = Pose2d(1.5, field_height - 6.1, Rotation2d(pi))
-    middle_sweep_left_9 = Pose2d(0.6, field_height - 6.1, Rotation2d(pi))
-    middle_sweep_left_10 = Pose2d(1.7, 2.5, Rotation2d(7*pi/4))
+    # The MIDDLE DEPOT
+    middle_sweep_depot_7 = Pose2d(1.7, 2.5, Rotation2d(7*pi/4))
+    middle_sweep_depot_8_before = Pose2d(2.4, 2.5, Rotation2d(pi))
+    middle_sweep_depot_8_before_2 = Pose2d(2.2, 6.1, Rotation2d(pi))
+    middle_sweep_depot_8 = Pose2d(1.5, 6.1, Rotation2d(pi))
+    middle_sweep_depot_9 = Pose2d(0.6, 6.1, Rotation2d(pi))
+    middle_sweep_depot_10 = Pose2d(1.7, field_height - 2.5, Rotation2d(3*pi/4))
+    
+    middle_sweep_depot_left_7 = Pose2d(1.7, 2.5, Rotation2d(7*pi/4))
+    middle_sweep_depot_left_8 = Pose2d(1.5, field_height - 6.1, Rotation2d(pi))
+    middle_sweep_depot_left_9 = Pose2d(0.6, field_height - 6.1, Rotation2d(pi))
+    middle_sweep_depot_left_10 = Pose2d(1.7, 2.5, Rotation2d(7*pi/4))
     
     # The MIDDLE SUPPORT
     middle_support_4 = Pose2d(8.3, 5.5, Rotation2d(pi/4))
