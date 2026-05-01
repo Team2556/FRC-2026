@@ -295,20 +295,20 @@ class CustomPathCommands:
                 DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_6
                     ).with_override_speed(kPath.bump_speed),
             ),
-            ParallelDeadlineGroup(
-                DriveToASpot(self.drivetrain, target_pose = (kPoses.middle_sweep_7, kPoses.middle_sweep_depot_left_7)
-                    ).with_override_speed(kPath.while_shooting_speed
-                    ).with_override_max_acceleration(1
-                    ).with_end_tolerance(0.1),
-                ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem)
-            ),
-            self.shoot_command_builder(3),
+            # ParallelDeadlineGroup(
+            #     DriveToASpot(self.drivetrain, target_pose = (kPoses.middle_sweep_7, kPoses.middle_sweep_depot_left_7)
+            #         ).with_override_speed(kPath.while_shooting_speed
+            #         ).with_override_max_acceleration(1
+            #         ).with_end_tolerance(0.1),
+            #     ConditionalAlignAndShoot(self.drivetrain, self.shooter_subsystem, self.transfer_subsystem, self.hood_subsystem)
+            # ),
+            self.shoot_command_builder(8),
             AutoCheckpoint(2),
             IntakeRollerForwardInstant(self.roller_subsystem),
             DriveToASpotSequence(
                 DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_8),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_9
-                    ).with_override_speed(kPath.bump_speed
+                    ).with_override_speed(1.5
                     ).with_override_smoothing_radius(kPath.smoothing_radius_auto_sweep),
                 DriveToASpot(self.drivetrain, target_pose = kPoses.middle_sweep_10
                     ).with_override_smoothing_radius(kPath.smoothing_radius_auto_sweep

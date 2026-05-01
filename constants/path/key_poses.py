@@ -126,7 +126,7 @@ class kPoses:
     # The MIDDLE SWEEP
     middle_sweep_1 = Pose2d(6.0, bump_from_edge, Rotation2d())
     middle_sweep_2 = Pose2d(6.7, 4.3, Rotation2d())
-    middle_sweep_3 = Pose2d(8.1, 4.0, Rotation2d()) # Would be 8.6 if faster intake
+    middle_sweep_3 = Pose2d(8.4, 4.0, Rotation2d()) # Would be 8.6 if faster intake
     middle_sweep_4 = Pose2d(7.5, 3.5, Rotation2d(-pi/2))
     middle_sweep_5 = Pose2d(6.5, bump_from_edge - 0.2, Rotation2d(pi))
     middle_sweep_6 = Pose2d(2.9, bump_from_edge, Rotation2d(pi))
