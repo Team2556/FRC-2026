@@ -51,39 +51,39 @@ class TransferSubsystem(Subsystem):
         self.up_transfer_motor.set_control(
             self.up_transfer_velocity_voltage.with_velocity(kTransfer.TARGET_RPM / 60)
         )
-        self.spindexer_nt.set("Ideal RPM", kSpindexer.TARGET_RPM)
-        self.up_transfer_nt.set("Ideal RPM", kTransfer.TARGET_RPM)
-        self.nt.set("Active", True)
+        # self.spindexer_nt.set("Ideal RPM", kSpindexer.TARGET_RPM)
+        # self.up_transfer_nt.set("Ideal RPM", kTransfer.TARGET_RPM)
+        # self.nt.set("Active", True)
 
     def reverse(self):
         self.spindex_motor.set_control(
             self.spindex_velocity_voltage.with_velocity(-kSpindexer.TARGET_RPM / 60)
         )
-        self.spindexer_nt.set("Ideal RPM", -kSpindexer.TARGET_RPM)
-        self.nt.set("Active", True)
+        # self.spindexer_nt.set("Ideal RPM", -kSpindexer.TARGET_RPM)
+        # self.nt.set("Active", True)
 
     def spindex_only(self):
         self.spindex_motor.set_control(
             self.spindex_velocity_voltage.with_velocity(kSpindexer.TARGET_RPM / 60)
         )
-        self.spindexer_nt.set("Ideal RPM", kSpindexer.TARGET_RPM)
-        self.nt.set("Active", True)
+        # self.spindexer_nt.set("Ideal RPM", kSpindexer.TARGET_RPM)
+        # self.nt.set("Active", True)
 
     def stop(self):
         self.spindex_motor.set_control(self._neutral)
         self.up_transfer_motor.set_control(self._neutral)
-        self.spindexer_nt.set("Ideal RPM", 0.0)
-        self.up_transfer_nt.set("Ideal RPM", 0.0)
-        self.nt.set("Active", False)
+        # self.spindexer_nt.set("Ideal RPM", 0.0)
+        # self.up_transfer_nt.set("Ideal RPM", 0.0)
+        # self.nt.set("Active", False)
 
     def periodic(self):
         self.spindex_editable_pid.periodic()
         self.up_transfer_editable_pid.periodic()
 
         # get_velocity() returns RPS — multiply by 60 to display RPM
-        self.spindexer_nt.set("RPM", self.spindex_motor.get_velocity().value * 60)
-        self.up_transfer_nt.set("RPM", self.up_transfer_motor.get_velocity().value * 60)
+        # self.spindexer_nt.set("RPM", self.spindex_motor.get_velocity().value * 60)
+        # self.up_transfer_nt.set("RPM", self.up_transfer_motor.get_velocity().value * 60)
 
         # Pull tunable targets from NT
-        kSpindexer.TARGET_RPM = self.spindexer_nt.get("Target RPM")
-        kTransfer.TARGET_RPM = self.up_transfer_nt.get("Target RPM")
+        # kSpindexer.TARGET_RPM = self.spindexer_nt.get("Target RPM")
+        # kTransfer.TARGET_RPM = self.up_transfer_nt.get("Target RPM")

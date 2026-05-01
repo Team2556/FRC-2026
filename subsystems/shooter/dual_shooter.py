@@ -43,12 +43,12 @@ class DualMotorShooter(commands2.Subsystem):
 
         self.nt = NTTable("Shooter")
         self.nt_sub = self.nt.get_subtable("Motor")
-        self.nt_sub.float("RPM", 0.0)
-        self.nt_sub.float("Target RPM", default=kShooterMotor.TARGET_RPM)
-        self.nt_sub.float(
-            "Reach Target Velocity Error",
-            default=kShooterMotor.REACH_TARGET_VELOCITY_ERROR,
-        )
+        # self.nt_sub.float("RPM", 0.0)
+        # self.nt_sub.float("Target RPM", default=kShooterMotor.TARGET_RPM)
+        # self.nt_sub.float(
+        #     "Reach Target Velocity Error",
+        #     default=kShooterMotor.REACH_TARGET_VELOCITY_ERROR,
+        # )
         self.nt.bool("Motor Charged")
 
         self.editable_PID = EditablePID(
@@ -65,9 +65,9 @@ class DualMotorShooter(commands2.Subsystem):
         self._target_rpm = rpm
 
     def is_at_rpm(self) -> None:
-        error_threshold = self.nt_sub.get("Reach Target Velocity Error")
+        # error_threshold = self.nt_sub.get("Reach Target Velocity Error")
         motor_rpm = self._top_motor.get_velocity().value * 60
-        return abs(motor_rpm - self._target_rpm) < error_threshold
+        return abs(motor_rpm - self._target_rpm) < kShooterMotor.REACH_TARGET_VELOCITY_ERROR
 
     @staticmethod
     def get_rpm_by_distance(distance: float) -> float:
@@ -86,5 +86,5 @@ class DualMotorShooter(commands2.Subsystem):
                 self._vel_req.with_velocity(self._target_rpm / 60)
             )
 
-        self.nt_sub.set("RPM", motor_rpm)
-        self.nt_sub.set("Target RPM", self._target_rpm)
+        # self.nt_sub.set("RPM", motor_rpm)
+        # self.nt_sub.set("Target RPM", self._target_rpm)

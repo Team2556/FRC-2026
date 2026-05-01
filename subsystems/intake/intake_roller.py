@@ -54,10 +54,10 @@ class IntakeRoller(commands2.Subsystem):
                 self._vel_req.with_velocity(self._target_rpm / 60)
             )
         
-        try:
-            self.nt.set("Roller Command", self.getCurrentCommand().getName())
-        except:
-            pass
+        # try:
+        #     self.nt.set("Roller Command", self.getCurrentCommand().getName())
+        # except:
+        #     pass
 
-        self.nt.set("Roller RPM", self.roller_motor.get_velocity().value * 60)
-        self.nt.set("Target Roller RPM", self._target_rpm if self._enabled else 0.0)
+        # self.nt.set("Roller RPM", self.roller_motor.get_velocity().value * 60)
+        # self.nt.set("Target Roller RPM", self._target_rpm if self._enabled else 0.0)

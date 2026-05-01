@@ -52,14 +52,14 @@ class IntakePivot(commands2.Subsystem):
 
     def set_deployer_position(self, pos: float) -> None:
         self.left_pivot_motor.set_control(self._position_request.with_position(pos))
-        self.nt.set("Ideal Pivot Position", pos)
+        # self.nt.set("Ideal Pivot Position", pos)
 
     def set_deployer_speed(self, speed: float) -> None:
         self.left_pivot_motor.set(speed)
 
     def set_internal_deployer_position(self, pos: float) -> None:
         self.left_pivot_motor.set_position(pos)
-        self.nt.set("Ideal Pivot Position", 0)
+        # self.nt.set("Ideal Pivot Position", 0)
 
     def is_at_forward_limit(self) -> bool:
         return self.left_pivot_motor.get_forward_limit().value is ForwardLimitValue.CLOSED_TO_GROUND
@@ -84,8 +84,8 @@ class IntakePivot(commands2.Subsystem):
             self.set_internal_deployer_position(kIntakePivot.DEPLOYED_POSITION)
         self._was_at_foward_limit = at_foward_limmit
 
-        kIntakePivot.DEPLOYED_POSITION = self.nt.get("Target Pivot Position")
+        # kIntakePivot.DEPLOYED_POSITION = self.nt.get("Target Pivot Position")
 
-        self.nt.set("Pivot Position", self.left_pivot_motor.get_position().value)
-        self.nt.set("State", self.state)
+        # self.nt.set("Pivot Position", self.left_pivot_motor.get_position().value)
+        # self.nt.set("State", self.state)
         # self.pivot_editable_pid.periodic()

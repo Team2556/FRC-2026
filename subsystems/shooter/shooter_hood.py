@@ -35,9 +35,9 @@ class ShooterHood(Subsystem):
 
         self.nt = NTTable("Shooter").get_subtable("Hood")
         self.nt.float("Hood Position (deg)", 0.0)
-        self.nt.float("Target Angle (deg)", 0.0)
-        self.nt.bool("NT Override Enabled", False)
-        self.nt.float("NT Override Angle (deg)", 0.0)
+        # self.nt.float("Target Angle (deg)", 0.0)
+        # self.nt.bool("NT Override Enabled", False)
+        # self.nt.float("NT Override Angle (deg)", 0.0)
 
     def set_target_angle(self, degrees: float) -> None:
         self._target_angle_deg = clamp(degrees, kHoodMotor.HOME_ANGLE_DEG, kHoodMotor.MAX_ANGLE_DEG)
@@ -67,10 +67,10 @@ class ShooterHood(Subsystem):
         return float(np.interp(distance, distances, angles))
 
     def _apply_position(self) -> None:
-        if self.nt.get("NT Override Enabled"):
-            target_deg = self.nt.get("NT Override Angle (deg)")
-        else:
-            target_deg = self._target_angle_deg + kHoodMotor.TUNER_OFFSET
+        # if self.nt.get("NT Override Enabled"):
+        #     target_deg = self.nt.get("NT Override Angle (deg)")
+        # else:
+        target_deg = self._target_angle_deg + kHoodMotor.TUNER_OFFSET
 
         self._target_pos_revs = clamp(
             kHoodMotor.to_revs(target_deg),
@@ -88,5 +88,5 @@ class ShooterHood(Subsystem):
             self._apply_position()
 
         self.nt.set("Hood Position (deg)", round(kHoodMotor.to_deg(self._motor.get_position().value), 1))
-        self.nt.set("Target Angle (deg)", self._target_angle_deg)
+        # self.nt.set("Target Angle (deg)", self._target_angle_deg)
         self.editable_pid.periodic()
