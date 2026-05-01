@@ -32,4 +32,3 @@ class AntiDefenseCommand(DriveToASpot):
         else:
             super().execute()
             
-        print(self.target_pose)

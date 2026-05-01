@@ -105,9 +105,9 @@ class RobotContainer:
         self.shooter_subsystem.setDefaultCommand(
             shooter_commands.DisableShooter(self.shooter_subsystem)
         )
-        self.intake_pivot.setDefaultCommand(
-            IntakePivotDefaultCommand(self.intake_pivot, self._drivetrain)
-        )
+        # self.intake_pivot.setDefaultCommand(
+        #     IntakePivotDefaultCommand(self.intake_pivot, self._drivetrain)
+        # )
         self.intake_roller.setDefaultCommand(
             IntakeRollerDefaultCommand(self.intake_roller, self.intake_pivot, self._drivetrain)
         )
@@ -145,7 +145,7 @@ class RobotContainer:
                     self.hood_subsystem,
                     self._controller_2
                 ),
-                IntakeRollerOscillate(self.intake_roller, self._drivetrain)
+                IntakeRollerOscillate(self.intake_roller, self._drivetrain, controller=self._controller_2)
             ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
         ).debounce(0.2)
         
@@ -204,20 +204,20 @@ class RobotContainer:
             self.custom_path_commands.teleop_paths["opposing_right_trench"]
         )
         # Reset pose POV buttons (might be useful or might not do anything at all but it won't crash this time)
-        self._controller_1.povUp().onTrue(
-            drive_commands.reset_heading(self._drivetrain, angle_offset=0)
-        )
-        self._controller_1.povRight().onTrue(
-            drive_commands.reset_heading(self._drivetrain, angle_offset=-pi/2)
-        )
-        self._controller_1.povDown().onTrue(
-            drive_commands.reset_heading(self._drivetrain, angle_offset=pi)
-        )
-        self._controller_1.povLeft().onTrue(
-            drive_commands.reset_heading(self._drivetrain, angle_offset=pi/2)
-        )
+        # self._controller_1.povUp().onTrue(
+        #     drive_commands.reset_heading(self._drivetrain, angle_offset=0)
+        # )
+        # self._controller_1.povRight().onTrue(
+        #     drive_commands.reset_heading(self._drivetrain, angle_offset=-pi/2)
+        # )
+        # self._controller_1.povDown().onTrue(
+        #     drive_commands.reset_heading(self._drivetrain, angle_offset=pi)
+        # )
+        # self._controller_1.povLeft().onTrue(
+        #     drive_commands.reset_heading(self._drivetrain, angle_offset=pi/2)
+        # )
         
-        self._controller_1.leftStick().whileTrue(
+        self._controller_1.povUp().whileTrue(
             AntiDefenseCommand(self._drivetrain)
         )
 
@@ -234,12 +234,16 @@ class RobotContainer:
             IntakeRollerBackward(self.intake_roller)
         )
 
-        self._controller_2.leftBumper().whileTrue(
+        self._controller_2.leftBumper().onTrue(
             IntakePivotReverse(self.intake_pivot),
         )
 
-        self._controller_2.rightBumper().whileTrue(
+        self._controller_2.rightBumper().onTrue(
             IntakePivotForward(self.intake_pivot),
+        )
+        
+        self._controller_2.a().whileTrue(
+            RunTransferCommand(self.transfer_subsystem)
         )
 
         self._controller_2.povDown().onTrue(

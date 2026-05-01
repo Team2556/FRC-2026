@@ -16,7 +16,7 @@ class kPath:
     default_path_speed = 4 # 4.0 maybe
     auto_path_speed = 3 # 3.4 maybe
     bump_speed = 2.3
-    intaking_speed = 0.5
+    intaking_speed = 1
     while_shooting_speed = 1.0
     depot_intake_speed = 0.4
     
@@ -90,8 +90,8 @@ class kPoses:
     
     # The DOUBLE SWEEP
     double_sweep_1 = Pose2d(6.0, trench_from_edge, Rotation2d(pi))
-    double_sweep_2 = Pose2d(8.7, 1.6, Rotation2d(pi/2))
-    double_sweep_3 = Pose2d(8.0, 2.4, Rotation2d(pi/2 + 0.1)) # Was y value 3.6 change this for BIG sweep
+    double_sweep_2 = Pose2d(8.8, 1.6, Rotation2d(pi/2))
+    double_sweep_3 = Pose2d(8.0, 3.3, Rotation2d(pi/2 + 0.1)) # Is y value 3.3 change this for BIG sweep
     double_sweep_4 = Pose2d(6.0, bump_from_edge - 0.15, Rotation2d(pi))
     double_sweep_5 = Pose2d(2.8, bump_from_edge - 0.05, Rotation2d(pi))
     double_sweep_6 = Pose2d(2.8, trench_from_edge + 0.05, Rotation2d(pi))
@@ -103,8 +103,8 @@ class kPoses:
     double_sweep_12 = Pose2d(6.0, bump_from_edge - 0.05, Rotation2d(pi))
     
     double_sweep_left_4 = Pose2d(6.0, bump_from_edge, Rotation2d(pi))
-    double_sweep_left_5 = Pose2d(2.3, bump_from_edge + 0.05, Rotation2d(pi))
-    double_sweep_left_6 = Pose2d(2.3, trench_from_edge + 0.05, Rotation2d())
+    double_sweep_left_5 = Pose2d(2.6, bump_from_edge + 0.05, Rotation2d(pi))
+    double_sweep_left_6 = Pose2d(2.6, trench_from_edge + 0.05, Rotation2d())
     double_sweep_left_extra_6 = Pose2d(4.25, trench_from_edge + 0.03, Rotation2d())
     double_sweep_left_7 = Pose2d(6.5, trench_from_edge, Rotation2d())
     double_sweep_left_12 = Pose2d(6.0, bump_from_edge - 0.15, Rotation2d(pi))

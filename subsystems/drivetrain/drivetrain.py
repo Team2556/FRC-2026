@@ -30,7 +30,7 @@ class DriveModifiers:
 
 
 class SwerveDriveTrain(commands2.Subsystem):
-    NORMAL      = DriveModifiers(speed=0.45, rotation=0.3)
+    NORMAL      = DriveModifiers(speed=0.55, rotation=0.45)
     FAST        = DriveModifiers(speed=1.0, rotation=1.0)
     SLOW        = DriveModifiers(speed=kDriveConfig.SLOW_SPEED_MULT, rotation=0.5)
     SLOW_ROTATE = DriveModifiers(speed=kDriveConfig.SLOW_SPEED_MULT, rotation=0.2)
@@ -51,7 +51,7 @@ class SwerveDriveTrain(commands2.Subsystem):
             lambda state: self._logger.telemeterize(state)
         )
 
-        self._modifiers = DriveModifiers()
+        self._modifiers = self.NORMAL
         self._align_rotation: float | None = None
 
         self.nt = NTTable("Drivetrain")

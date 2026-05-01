@@ -8,6 +8,7 @@ from subsystems.intake.intake_roller import IntakeRoller
 
 from constants.intake import kIntakePivot, kIntakeRoller
 
+from util.custom_controller import XboxController
 
 class IntakeRollerDefaultCommand(Command):
     def __init__(self, roller: IntakeRoller, pivot: IntakePivot, drivetrain: SwerveDriveTrain):
@@ -81,16 +82,22 @@ class IntakeRollerOscillate(Command):
     PERIOD = 0.5
     INTAKE_DURATION = 0.35
 
-    def __init__(self, roller: IntakeRoller, drivetrain: SwerveDriveTrain):
+    def __init__(self, roller: IntakeRoller, drivetrain: SwerveDriveTrain, controller: XboxController = None):
         super().__init__()
         self._roller = roller
         self._drivetrain = drivetrain
+        self._controller = controller
         self.addRequirements(roller)
 
     def initialize(self):
         pass
 
     def execute(self):
+        # if self._controller is not None:
+        #     if self._controller.getHID().getRightTriggerAxis() > 0.5:
+        #         self._roller.set_target_rpm(kIntakeRoller.TARGET_RPM * -1)
+        #         return
+        
         robot_vel_x = self._drivetrain.get_state().velocity.translation().x
         toward_intake = robot_vel_x * kIntakePivot.INTAKE_DIRECTION
         if toward_intake >= kIntakeRoller.AUTO_INTAKE_SPEED_THRESHOLD:

@@ -35,6 +35,7 @@ class IntakePivot(commands2.Subsystem):
         self._position_request = phoenix6.controls.MotionMagicVoltage(position=0, enable_foc=False, slot=0)
 
         self._was_at_reverse_limit = False
+        self._was_at_foward_limit = False
         self.state = "undeployed"
 
         self.nt = NTTable("Intake")
@@ -77,9 +78,14 @@ class IntakePivot(commands2.Subsystem):
         if at_reverse_limit and not self._was_at_reverse_limit:
             self.set_internal_deployer_position(0)
         self._was_at_reverse_limit = at_reverse_limit
+        
+        at_foward_limmit = self.is_at_forward_limit()
+        if at_foward_limmit and not self._was_at_foward_limit:
+            self.set_internal_deployer_position(kIntakePivot.DEPLOYED_POSITION)
+        self._was_at_foward_limit = at_foward_limmit
 
         kIntakePivot.DEPLOYED_POSITION = self.nt.get("Target Pivot Position")
 
         self.nt.set("Pivot Position", self.left_pivot_motor.get_position().value)
         self.nt.set("State", self.state)
-        self.pivot_editable_pid.periodic()
+        # self.pivot_editable_pid.periodic()
