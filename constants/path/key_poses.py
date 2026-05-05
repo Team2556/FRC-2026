@@ -16,7 +16,7 @@ class kPath:
     default_path_speed = 4 # 4.0 maybe
     auto_path_speed = 3 # 3.4 maybe
     bump_speed = 2.3
-    intaking_speed = 1
+    intaking_speed = 0.6
     while_shooting_speed = 1.0
     depot_intake_speed = 0.4
     

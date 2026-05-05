@@ -22,4 +22,4 @@ class kTransfer:
     _CONFIG.slot0.k_v = 0.117
     _CONFIG.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
 
-    TARGET_RPM = 4000
+    TARGET_RPM = 3000

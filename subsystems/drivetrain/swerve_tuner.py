@@ -73,7 +73,7 @@ class TunerConstants:
         configs.CurrentLimitsConfigs()
         # Swerve azimuth does not require much torque output, so we can set a relatively low
         # stator current limit to help avoid brownouts without impacting performance.
-        .with_stator_current_limit(60.0)
+        .with_stator_current_limit(80.0)
         # used at magnolia:  .with_stator_current_limit(35.0)
         .with_stator_current_limit_enable(True)
     )
